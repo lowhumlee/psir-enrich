@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] — 2026-05-07
+
+### Fixed
+- **UID lookup HTTP 400 error**: `lookup_by_uid()` was stripping the
+  `WOS:` prefix from the URL path, but Clarivate's `/documents/{uid}`
+  endpoint requires the full `<DB>:<id>` form. The colon is now URL-
+  encoded as `%3A` so it isn't misread as a port separator. (Caught by
+  user testing on Streamlit Cloud — thanks!)
+- **Streamlit 1.57 deprecation warning**: replaced
+  `use_container_width=True` with `width="stretch"` everywhere. Bumps
+  the minimum Streamlit version to 1.45.
+
+### Added
+- 6 regression tests in `tests/test_wos_client.py` pinning the URL
+  construction so the 400 bug can't recur silently.
+
 ## [0.2.0] — 2026-05-07
 
 ### Added
