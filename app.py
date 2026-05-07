@@ -208,7 +208,7 @@ with col1:
         "▶ Run enrichment",
         type="primary",
         disabled=(uploaded is None),
-        use_container_width=True,
+        width="stretch",
     )
 
 # --------------------------------------------------------------------------
@@ -291,7 +291,7 @@ if run_clicked and uploaded is not None:
             data=result.patch_xml_bytes,
             file_name=f"{base_name}_patch_{timestamp}.xml",
             mime="application/xml",
-            use_container_width=True,
+            width="stretch",
             disabled=(result.n_enriched == 0),
         )
         if result.n_enriched == 0:
@@ -302,7 +302,7 @@ if run_clicked and uploaded is not None:
             data=result.audit_df.to_csv(index=False).encode("utf-8-sig"),
             file_name=f"{base_name}_audit_{timestamp}.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
 
     # ---------------- Audit table ----------------
@@ -312,7 +312,7 @@ if run_clicked and uploaded is not None:
     )
     st.dataframe(
         result.audit_df,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         column_config={
             "wrote_to_xml": st.column_config.CheckboxColumn(
