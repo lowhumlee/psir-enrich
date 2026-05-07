@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "psir-enrich"
+version = "0.2.0"
+description = "Enrich OMEGA-PSIR publication records with WoS Identifiers and PubMed IDs via the Clarivate WoS Starter API. Web GUI + CLI."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Medical University of Varna" }
+]
+keywords = ["omega-psir", "psir", "web-of-science", "clarivate", "bibliometrics", "cris", "streamlit"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "lxml>=4.9",
+    "pandas>=2.0",
+    "requests>=2.31",
+    "streamlit>=1.32",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+    "pytest-cov>=4",
+]
+
+[project.scripts]
+psir-enrich = "psir_enrich.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/YOUR_GITHUB_USER/psir-enrich"
+Issues = "https://github.com/YOUR_GITHUB_USER/psir-enrich/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+psir_enrich = ["py.typed"]

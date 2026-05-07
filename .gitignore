@@ -1,0 +1,50 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local artefacts (never commit real PSIR/WoS data!)
+*.audit.csv
+patch_*.xml
+*_audit.csv
+*_patch.xml
+local_runs/
+
+# Secrets — never commit any of these
+.env
+.env.*
+secrets.json
+*.key
+.streamlit/secrets.toml
+
+# Don't commit downloaded sample data
+/inputs/
+/outputs/
