@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<collection xmlns:ns2="http://ii.pw.edu.pl/lib">
+    <ns2:article type="article">
+        <id>UMVcomplete</id>
+        <title>Already complete</title>
+        <doi>10.1234/done</doi>
+        <extid>
+            <id>UMVext1</id>
+            <idtype>
+                <systemName>WoSId</systemName>
+            </idtype>
+            <value>WOS:001000</value>
+        </extid>
+        <extid>
+            <id>UMVext2</id>
+            <idtype>
+                <systemName>PubMedID</systemName>
+            </idtype>
+            <value>1000000</value>
+        </extid>
+    </ns2:article>
+    <ns2:article type="article">
+        <id>UMVcslonly</id>
+        <title>Csl gives WoS, no extid yet</title>
+        <doi>10.1234/csl</doi>
+        <ns2:field>
+            <key>csl</key>
+            <value>{"id":"WOS:002000","type":"article-journal"}</value>
+        </ns2:field>
+    </ns2:article>
+</collection>
