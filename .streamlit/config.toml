@@ -1,1 +1,14 @@
+[server]
+maxUploadSize = 200
+# 200 MB is plenty for any reasonable PSIR export. Streamlit's default is 200 anyway.
 
+[browser]
+gatherUsageStats = false
+
+[theme]
+# Soft, professional palette
+primaryColor = "#1f4e79"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f4f6fa"
+textColor = "#262730"
+font = "sans serif"
