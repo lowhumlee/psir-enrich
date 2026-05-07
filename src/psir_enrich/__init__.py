@@ -1,6 +1,6 @@
 """psir_enrich — Enrich OMEGA-PSIR records with WoS UT and PubMed ID."""
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 from psir_enrich.core import (
     ArticleState,

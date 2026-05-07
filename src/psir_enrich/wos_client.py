@@ -45,7 +45,7 @@ class WosStarterClient:
         self.session.headers.update({
             "X-ApiKey": api_key,
             "Accept": "application/json",
-            "User-Agent": "psir-enrich/0.1.0",
+            "User-Agent": "psir-enrich/0.2.1",
         })
         self.daily_count = 0
         self.errors = 0
@@ -141,10 +141,23 @@ class WosStarterClient:
         return self._ids_from_doc(doc)
 
     def lookup_by_uid(self, uid: str) -> dict:
-        """Fetch a document by its WoS accession number (with or without
-        WOS: prefix). Returns same shape as lookup_by_doi."""
-        bare = re.sub(r"^WOS:", "", uid, flags=re.IGNORECASE)
-        payload = self._request(f"/documents/{bare}")
+        """Fetch a document by its WoS accession number.
+
+        Clarivate's /documents/{uid} endpoint requires the full <DB>:<id>
+        form (e.g. 'WOS:001691554700119'), not the bare accession number.
+        We re-add the prefix if the caller stripped it, then URL-encode
+        the colon so it's not misread as a port separator.
+        """
+        s = (uid or "").strip()
+        if not s:
+            return {"_error": "empty uid"}
+        # Normalise to canonical "WOS:<id>" — accept ISI:, wos:, or bare.
+        s = re.sub(r"^(WOS:|ISI:|wos:|isi:)", "", s, flags=re.IGNORECASE)
+        full_uid = f"WOS:{s}"
+        # urllib.parse.quote with safe='' encodes ':' as %3A
+        from urllib.parse import quote
+        path_uid = quote(full_uid, safe="")
+        payload = self._request(f"/documents/{path_uid}")
         if "_error" in payload:
             return payload
         doc = self._extract_first_doc(payload)
