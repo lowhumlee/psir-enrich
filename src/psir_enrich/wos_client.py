@@ -45,7 +45,7 @@ class WosStarterClient:
         self.session.headers.update({
             "X-ApiKey": api_key,
             "Accept": "application/json",
-            "User-Agent": "psir-enrich/0.3.0",
+            "User-Agent": "psir-enrich/0.3.1",
         })
         self.daily_count = 0
         self.errors = 0

@@ -75,3 +75,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reflect that the file contains the full collection.
 - Added "How to import" instructions panel in the GUI results section.
 - `EnrichmentResult.patch_xml_bytes` renamed to `output_xml_bytes`.
+
+## [0.3.1] — 2026-05-08
+
+### Fixed
+- **Output XML contains only enriched records**: the v0.3.0 output included
+  all articles (enriched or not). Output is now a `<collection>` with only
+  the records that gained new extids — smaller file, faster PSIR import.
+- **UI results survive download button clicks**: downloads previously
+  triggered a full Streamlit rerun, wiping the audit table and download
+  buttons. Results are now stored in `st.session_state` and persist until
+  the user explicitly clicks "New run" in the sidebar.

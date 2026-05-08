@@ -296,33 +296,44 @@ def build_full_output_xml(
     states: list,
     input_label: str = "input.xml",
 ) -> tuple[etree._ElementTree, int]:
-    """Return a deep copy of the input tree with enriched extids applied.
+    """Return a new <collection> containing only the enriched articles.
 
-    Every article is preserved exactly. Only the extid blocks of enriched
-    articles are modified. Returns (tree, n_enriched).
+    Each enriched article is a deep copy of the original with the new extid
+    blocks inserted in-place. Articles that needed no changes are omitted.
+    The root tag and namespace match PSIR's native export format exactly,
+    so the file can be re-imported directly.
+
+    Returns (tree, n_enriched).
     """
     from io import BytesIO
 
-    # Deep-copy the whole tree so we never mutate the caller's data
+    # Deep-copy the whole input tree so we can mutate freely
     buf = BytesIO()
     input_tree.write(buf, xml_declaration=True, encoding="UTF-8")
     buf.seek(0)
     parser = etree.XMLParser(remove_blank_text=False)
-    out_tree = etree.parse(buf, parser)
-    out_root = out_tree.getroot()
+    full_tree = etree.parse(buf, parser)
+    full_root = full_tree.getroot()
 
-    articles = out_root.findall(f"{{{NS_URI}}}article")
+    all_articles = full_root.findall(f"{{{NS_URI}}}article")
 
-    if len(articles) != len(states):
+    if len(all_articles) != len(states):
         raise ValueError(
-            f"Article count mismatch: tree has {len(articles)}, "
+            f"Article count mismatch: tree has {len(all_articles)}, "
             f"states has {len(states)}"
         )
 
+    # Apply enrichment mutations to all articles in the copy
     n_enriched = 0
-    for article, state in zip(articles, states):
+    for article, state in zip(all_articles, states):
         if state.was_enriched():
             _update_extids_on_article(article, state)
             n_enriched += 1
 
-    return out_tree, n_enriched
+    # Build a new <collection> containing only the enriched articles
+    out_root = etree.Element("collection", nsmap=full_root.nsmap)
+    for article, state in zip(all_articles, states):
+        if state.was_enriched():
+            out_root.append(article)
+
+    return etree.ElementTree(out_root), n_enriched

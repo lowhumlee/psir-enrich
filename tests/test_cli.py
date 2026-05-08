@@ -150,8 +150,9 @@ def test_cli_no_api_runs_clean(tmp_path: Path):
     tree = etree.parse(str(out_xml))
     root = tree.getroot()
     assert root.tag == "collection"
+    # Output contains only the 1 enriched article (not both)
     articles = root.findall(f"{{{NS_URI}}}article")
-    assert len(articles) == 2  # both articles included, not just enriched ones
+    assert len(articles) == 1, f"Only enriched articles should be in output, got {len(articles)}"
 
     # The csl-only article should now have a WoSId extid added
     csl_art = next(
