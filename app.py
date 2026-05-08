@@ -66,16 +66,6 @@ with st.sidebar:
     elif env_key:
         st.caption("✓ Loaded from `WOS_API_KEY` env var")
 
-    pmid_uuid = st.text_input(
-        "PubMedID dictionary UUID",
-        value="",
-        help=(
-            "The internal UUID of the 'PubMed ID' dictionary entry in your "
-            "PSIR. Required to write PubMed extids — see the 'Where do I "
-            "find this?' help below the file uploader. Leave blank to "
-            "include WoS only."
-        ),
-    )
 
     plan = st.selectbox(
         "Plan tier",
@@ -164,27 +154,18 @@ with st.expander("🔑 How do I get a Clarivate API key?"):
         """
     )
 
-with st.expander("🆔 Where do I find the PubMedID dictionary UUID?"):
+with st.expander("🆔 PubMedID dictionary UUID — auto-detected"):
     st.markdown(
         """
-        Open any PSIR record that already has a PubMedID extid (any record imported
-        from Scopus or PubMed will work). Export it as XML and look for a block like:
+        **No action needed.** The PubMedID dictionary UUID is automatically read
+        from the input XML itself — any record in your export that already has a
+        PubMedID extid provides the UUID, and it is reused for all new PubMed extids.
 
-        ```xml
-        <extid type="termfield">
-          ...
-          <idtype type="term">
-            <id>WUTxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</id>     ← THIS IS THE UUID
-            ...
-            <systemName>PubMedID</systemName>
-            ...
-          </idtype>
-          <value>12345678</value>
-        </extid>
-        ```
+        The UUID confirmed from your PSIR installation is:
+        `WUT0bfbfdfcb0974f4db3731f2527055a27`
 
-        Copy the UUID inside the inner `<idtype><id>` element. You only need this
-        once — note it down for future runs.
+        If you ever deploy at a different institution, the tool will still extract
+        the correct UUID automatically from the input file — no manual configuration needed.
         """
     )
 
@@ -240,7 +221,6 @@ if run_clicked and uploaded is not None:
             xml_input=xml_bytes,
             api_key=api_key.strip() or None,
             api_base=api_base.strip() or None,
-            pmid_idtype_uuid=pmid_uuid.strip() or None,
             skip_meeting_abstracts=skip_meetings,
             rate_limit=rate_limit,
             owner=owner,
@@ -270,13 +250,18 @@ if run_clicked and uploaded is not None:
             f"`notes` column in the audit table below for details."
         )
 
-    # PMID-without-uuid warning
-    if any(s.new_pmid for s in result.states) and not pmid_uuid.strip():
-        st.warning(
-            "⚠ PubMed IDs were resolved from the API, but no PubMed UUID "
-            "was provided, so they were **NOT** written to the patch XML "
-            "(they are still in the audit CSV). Add the PubMedID UUID in "
-            "the sidebar and re-run to include them."
+    # ---------------- PSIR import instructions ----------------
+    with st.expander("📋 How to import this file into PSIR", expanded=True):
+        st.markdown(
+            """
+            1. In PSIR, go to **Admin → Publications → Import**
+            2. Select the **XML** tab
+            3. Set these options:
+               - **Update record action**: `overwrite`
+               - **Update external identifiers**: ✅ **CHECKED** — this is critical
+               - **Default field update action**: `overwrite`
+            4. Upload the downloaded XML file
+            """
         )
 
     # ---------------- Downloads ----------------
@@ -287,15 +272,13 @@ if run_clicked and uploaded is not None:
     dc1, dc2 = st.columns(2)
     with dc1:
         st.download_button(
-            label=f"⬇ Download patch XML ({result.n_enriched} record(s))",
-            data=result.patch_xml_bytes,
-            file_name=f"{base_name}_patch_{timestamp}.xml",
+            label=f"⬇ Download enriched XML ({result.n_enriched} enriched / {result.n_articles} total)",
+            data=result.output_xml_bytes,
+            file_name=f"{base_name}_enriched_{timestamp}.xml",
             mime="application/xml",
             width="stretch",
-            disabled=(result.n_enriched == 0),
         )
-        if result.n_enriched == 0:
-            st.caption("Nothing was enriched — no patch to download.")
+        st.caption("Full collection XML — import this directly into PSIR.")
     with dc2:
         st.download_button(
             label=f"⬇ Download audit CSV ({len(result.audit_df)} row(s))",
@@ -315,7 +298,7 @@ if run_clicked and uploaded is not None:
         width="stretch",
         hide_index=True,
         column_config={
-            "wrote_to_xml": st.column_config.CheckboxColumn(
+            "enriched": st.column_config.CheckboxColumn(
                 "→ XML", help="True if this record made it into the patch XML"
             ),
             "skipped_pmid": st.column_config.CheckboxColumn(
@@ -332,7 +315,7 @@ if run_clicked and uploaded is not None:
     if result.n_enriched > 0:
         with st.expander("👁 Preview patch XML"):
             st.code(
-                result.patch_xml_bytes.decode("utf-8"),
+                result.output_xml_bytes.decode("utf-8"),
                 language="xml",
                 line_numbers=True,
             )

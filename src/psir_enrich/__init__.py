@@ -1,6 +1,6 @@
 """psir_enrich — Enrich OMEGA-PSIR records with WoS UT and PubMed ID."""
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 from psir_enrich.core import (
     ArticleState,
@@ -11,8 +11,7 @@ from psir_enrich.core import (
     norm_wos_ut,
     norm_pmid,
     is_meeting_abstract,
-    build_extid_element,
-    build_patch_xml,
+    build_full_output_xml,
     EXTID_DEFINITIONS,
     NS_URI,
     NS,
@@ -36,8 +35,7 @@ __all__ = [
     "norm_wos_ut",
     "norm_pmid",
     "is_meeting_abstract",
-    "build_extid_element",
-    "build_patch_xml",
+    "build_full_output_xml",
     "enrich_one",
     "run_enrichment",
     "EXTID_DEFINITIONS",

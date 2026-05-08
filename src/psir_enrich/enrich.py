@@ -1,12 +1,14 @@
 """Reusable enrichment pipeline.
 
-Both the CLI and the Streamlit app call run_enrichment(). Keeping the loop
-here means both interfaces share the same logic and the same test coverage.
+Both the CLI and the Streamlit app call run_enrichment(). The output XML
+is the full input collection with extids added/updated in-place — suitable
+for direct re-import into PSIR's XML import dialog.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from io import BytesIO
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -15,9 +17,8 @@ from lxml import etree
 
 from psir_enrich.core import (
     NS_URI,
-    EXTID_DEFINITIONS,
     ArticleState,
-    build_patch_xml,
+    build_full_output_xml,
     is_meeting_abstract,
     survey_article,
 )
@@ -25,8 +26,6 @@ from psir_enrich.wos_client import WosStarterClient
 
 
 ProgressCallback = Callable[[int, int, ArticleState], None]
-"""Signature: progress_cb(current_index, total, state) -> None.
-Called once per article during enrichment so UIs can show a progress bar."""
 
 
 def enrich_one(
@@ -38,10 +37,9 @@ def enrich_one(
 
     Tier 0: csl-WoS promotion (free, no API).
     Tier 1: Clarivate /documents?q=DO=<doi> (DOI lookup).
-    Tier 2: Clarivate /documents/{uid} (UID lookup) — only if PMID still
-            missing AND we are not skipping meeting abstracts.
+    Tier 2: Clarivate /documents/{uid} (UID lookup, PMID fallback).
     """
-    # Tier 0 — csl-WoS (free)
+    # Tier 0 — csl-WoS
     if state.needs_wos() and state.csl_wos:
         state.new_wos = state.csl_wos
         state.actions.append("csl_wos_id")
@@ -52,7 +50,7 @@ def enrich_one(
         return
 
     if not state.needs_wos() and not state.needs_pmid():
-        return  # fully populated; nothing to do
+        return
 
     # Tier 1 — DOI lookup
     if state.doi and (state.needs_wos() or state.needs_pmid()):
@@ -94,17 +92,11 @@ def enrich_one(
                 state.actions.append("api_uid_lookup_pmid")
 
 
-# --------------------------------------------------------------------------
-# Top-level pipeline
-# --------------------------------------------------------------------------
-
-
 @dataclass
 class EnrichmentResult:
-    """Everything a caller might want after a run."""
-    states: list                # list[ArticleState]
-    patch_xml_bytes: bytes      # the patch XML, encoded UTF-8
-    audit_df: pd.DataFrame      # per-article audit table
+    states: list
+    output_xml_bytes: bytes       # full collection XML, ready for PSIR import
+    audit_df: pd.DataFrame
     n_articles: int
     n_enriched: int
     n_api_calls: int
@@ -116,7 +108,7 @@ def run_enrichment(
     *,
     api_key: Optional[str] = None,
     api_base: Optional[str] = None,
-    pmid_idtype_uuid: Optional[str] = None,
+    pmid_idtype_uuid: Optional[str] = None,   # kept for API compat; now auto-detected
     skip_meeting_abstracts: bool = True,
     rate_limit: float = 0.25,
     owner: str = "system",
@@ -128,23 +120,22 @@ def run_enrichment(
     Parameters
     ----------
     xml_input : path-like, bytes, or file-like
-        The PSIR XML — either a filesystem path, a bytes blob, or any
-        object with a .read() method (e.g. a Streamlit UploadedFile).
+        The PSIR XML export — path, bytes blob, or a Streamlit UploadedFile.
     api_key : str, optional
-        Clarivate WoS Starter API key. If None, runs in csl-only mode.
+        Clarivate WoS Starter API key. If None, runs csl-only.
     api_base : str, optional
         Override Clarivate base URL.
     pmid_idtype_uuid : str, optional
-        UUID of the PubMedID dictionary entry. If None, PMID values appear
-        in the audit but are NOT written to the patch XML.
+        Deprecated — PubMedID UUID is now read from the input XML itself.
+        Kept for backwards compatibility; ignored if the UUID is found in data.
     skip_meeting_abstracts : bool
-        Default True — skip PubMed lookup for meeting abstracts.
+        Skip PubMed lookup for meeting abstracts (default True).
     rate_limit : float
         Min seconds between API calls.
     owner : str
-        Owner attribute for new extid elements.
+        Ignored — kept for API compatibility.
     input_label : str
-        Label used in the patch XML's header comment.
+        Label for progress messages.
     progress_cb : callable, optional
         Called as progress_cb(i, total, state) after each article.
 
@@ -152,29 +143,20 @@ def run_enrichment(
     -------
     EnrichmentResult
     """
-    # Set the PubMed UUID on the global config (legacy from CLI version)
-    # Note: this is module-level state, but the threading model in both CLI
-    # and Streamlit is single-request so it's safe.
-    if pmid_idtype_uuid:
-        EXTID_DEFINITIONS["PubMedID"]["idtype_uuid"] = pmid_idtype_uuid
-    else:
-        EXTID_DEFINITIONS["PubMedID"]["idtype_uuid"] = None
-
-    # Parse input — accept path, bytes, or file-like
+    # Parse input
     parser = etree.XMLParser(remove_blank_text=False)
     if hasattr(xml_input, "read"):
-        tree = etree.parse(xml_input, parser)
+        input_tree = etree.parse(xml_input, parser)
     elif isinstance(xml_input, (bytes, bytearray)):
-        from io import BytesIO
-        tree = etree.parse(BytesIO(xml_input), parser)
+        input_tree = etree.parse(BytesIO(xml_input), parser)
     else:
-        tree = etree.parse(str(xml_input), parser)
+        input_tree = etree.parse(str(xml_input), parser)
 
-    root = tree.getroot()
+    root = input_tree.getroot()
     articles = root.findall(f"{{{NS_URI}}}article")
     states = [survey_article(a) for a in articles]
 
-    # Build API client if key supplied
+    # Build API client
     client: Optional[WosStarterClient] = None
     if api_key:
         client = WosStarterClient(
@@ -190,9 +172,10 @@ def run_enrichment(
         if progress_cb is not None:
             progress_cb(i + 1, total, s)
 
-    # Build patch XML
-    out_tree, n_written = build_patch_xml(states, owner, Path(input_label))
-    from io import BytesIO
+    # Build full output XML
+    out_tree, n_enriched = build_full_output_xml(
+        input_tree, states, input_label
+    )
     buf = BytesIO()
     out_tree.write(
         buf,
@@ -201,7 +184,7 @@ def run_enrichment(
         encoding="UTF-8",
         standalone=True,
     )
-    patch_bytes = buf.getvalue()
+    output_bytes = buf.getvalue()
 
     # Build audit dataframe
     rows = []
@@ -220,19 +203,16 @@ def run_enrichment(
             "actions": " | ".join(s.actions),
             "api_calls": s.api_calls,
             "notes": " | ".join(s.notes),
-            "wrote_to_xml": bool(
-                s.new_wos
-                or (s.new_pmid and EXTID_DEFINITIONS["PubMedID"]["idtype_uuid"])
-            ),
+            "enriched": s.was_enriched(),
         })
     audit_df = pd.DataFrame(rows)
 
     return EnrichmentResult(
         states=states,
-        patch_xml_bytes=patch_bytes,
+        output_xml_bytes=output_bytes,
         audit_df=audit_df,
         n_articles=len(states),
-        n_enriched=n_written,
+        n_enriched=n_enriched,
         n_api_calls=client.daily_count if client else 0,
         n_api_errors=client.errors if client else 0,
     )

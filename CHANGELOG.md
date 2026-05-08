@@ -55,3 +55,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Meeting abstract exclusion: skips PubMed lookups for meeting abstracts.
 - Pluggable per-institution configuration.
 - 44 unit + integration tests.
+
+## [0.3.0] — 2026-05-07
+
+### Fixed (breaking change in output format)
+- **PSIR import failure**: the previous "patch XML" format (`<publications><publication>`)
+  was rejected by PSIR's XML import because it didn't match the exported format.
+  The output is now a **full-fidelity collection XML** — identical structure to
+  the input, with new extid blocks added in-place on enriched articles and all
+  other articles preserved unchanged. Import this directly with:
+  - Tab: XML, Update record action: overwrite
+  - **Update external identifiers: ✓ CHECKED** (critical)
+
+### Changed
+- **PubMedID dictionary UUID is now auto-detected** from the input XML itself.
+  The `--pmid-idtype-uuid` CLI flag and the sidebar UUID input in the GUI have
+  been removed — no manual configuration required.
+- Output filename changed from `*_patch_*.xml` to `*_enriched_*.xml` to better
+  reflect that the file contains the full collection.
+- Added "How to import" instructions panel in the GUI results section.
+- `EnrichmentResult.patch_xml_bytes` renamed to `output_xml_bytes`.

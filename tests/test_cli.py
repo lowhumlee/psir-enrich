@@ -129,7 +129,7 @@ def test_enrich_skips_fully_populated():
 
 
 def test_cli_no_api_runs_clean(tmp_path: Path):
-    """CLI in --no-api mode should produce a valid patch XML and audit CSV."""
+    """CLI in --no-api mode should produce a full-collection XML and audit CSV."""
     sample_xml = Path(__file__).parent / "fixtures" / "mini.xml"
 
     out_xml = tmp_path / "patch.xml"
@@ -145,11 +145,26 @@ def test_cli_no_api_runs_clean(tmp_path: Path):
     assert out_xml.exists()
     assert out_csv.exists()
 
-    # Patch should contain the csl-only record
+    # Output is a full collection — all 2 articles are present
+    NS_URI = "http://ii.pw.edu.pl/lib"
     tree = etree.parse(str(out_xml))
-    pubs = tree.findall("publication")
-    assert len(pubs) == 1
-    assert pubs[0].find("id").text == "UMVcslonly"
+    root = tree.getroot()
+    assert root.tag == "collection"
+    articles = root.findall(f"{{{NS_URI}}}article")
+    assert len(articles) == 2  # both articles included, not just enriched ones
+
+    # The csl-only article should now have a WoSId extid added
+    csl_art = next(
+        a for a in articles
+        if (a.find("id") is not None and a.find("id").text == "UMVcslonly")
+    )
+    extid_vals = {
+        ex.find(".//systemName").text: ex.find("value").text
+        for ex in csl_art.findall("extid")
+        if ex.find(".//systemName") is not None and ex.find("value") is not None
+    }
+    assert "WoSId" in extid_vals
+    assert extid_vals["WoSId"] == "WOS:002000"
 
     # Audit should have all 2 rows
     df = pd.read_csv(out_csv)

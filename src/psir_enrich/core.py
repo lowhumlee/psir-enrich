@@ -2,6 +2,19 @@
 
 This module is API-free: it knows about the PSIR XML format and per-article
 state, but does not call Clarivate or any other external service.
+
+Output strategy (v0.3.0)
+-------------------------
+The output XML is the **complete input collection** with extid blocks
+added or updated in-place on each article that was enriched. Articles that
+needed no enrichment are included unchanged. This is what PSIR's XML import
+requires — it cannot patch from a minimal file.
+
+Import settings to use in PSIR:
+  - Tab: XML
+  - Update record action: overwrite
+  - Update external identifiers: ✓ CHECKED  ← critical
+  - Default field update action: overwrite or Add new values
 """
 
 from __future__ import annotations
@@ -9,16 +22,15 @@ from __future__ import annotations
 import json
 import re
 import uuid as uuidlib
+from copy import deepcopy
 from dataclasses import dataclass, field
-from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 from lxml import etree
 
 # --------------------------------------------------------------------------
-# MU-Varna PSIR 4.6.4 constants — taken verbatim from a real exported XML.
-# Override via env vars or the CLI when deploying at another institution.
+# MU-Varna PSIR 4.6.4 constants — taken verbatim from real exported XML.
 # --------------------------------------------------------------------------
 
 NS_URI = "http://ii.pw.edu.pl/lib"
@@ -26,12 +38,11 @@ NS = {"ns2": NS_URI}
 
 AFFILIATION_OWNER = "UMV"
 LOCAL_ID_PREFIX = "UMV"
+
+# Confirmed from 13sample.xml — the external_id termtype shared by all extids
 EXTERNAL_ID_TERMTYPE_UUID = "WUT6deee7292297435fb414dcd87dd84f0d"
 
-# Each external-identifier dictionary entry has its own UUID + system name.
-# WoS values come from the real exported XML.
-# PubMedID UUID must be filled from local PSIR before PubMed extids can be
-# written — supplied at runtime via --pmid-idtype-uuid.
+# Confirmed from 13sample.xml — real UUIDs from actual extid blocks
 EXTID_DEFINITIONS = {
     "WoSId": {
         "idtype_uuid": "WUT8451786af88c4580b1198f347a0048f5",
@@ -40,31 +51,33 @@ EXTID_DEFINITIONS = {
         "priority": "EI110",
     },
     "PubMedID": {
-        "idtype_uuid": None,  # set at runtime
+        # Confirmed from 13sample.xml article[0] PubMedID extid block
+        "idtype_uuid": "WUT0bfbfdfcb0974f4db3731f2527055a27",
         "name_en": "PubMed ID",
         "name_pl": "Идентификатор PubMed",
-        "priority": "EI120",
+        "priority": "EI130",
     },
 }
 
-# Clarivate document type strings that should never get a PubMed lookup.
-# Compared case-insensitively. Keep as a tuple for cheap iteration.
+# Clarivate document types that should never get a PubMed lookup
 EXCLUDED_DOC_TYPES_FOR_PMID = (
     "meeting abstract",
-    "meeting abstract; book chapter",  # rare combined type
-    "abstract of published item",       # rare WoS type for republished abstracts
+    "meeting abstract; book chapter",
+    "abstract of published item",
 )
 
 
 # --------------------------------------------------------------------------
-# Helpers — UUID + ID normalisation
+# UUID helpers
 # --------------------------------------------------------------------------
 
-
 def gen_local_uuid() -> str:
-    """Generate a PSIR-local UUID with the institution prefix."""
     return LOCAL_ID_PREFIX + uuidlib.uuid4().hex
 
+
+# --------------------------------------------------------------------------
+# ID normalisation
+# --------------------------------------------------------------------------
 
 def norm_doi(value) -> Optional[str]:
     if not value:
@@ -95,18 +108,15 @@ def norm_pmid(value) -> Optional[str]:
 
 
 def is_meeting_abstract(doc_type: Optional[str]) -> bool:
-    """True if the WoS document type indicates a meeting abstract.
-    Case-insensitive substring match against EXCLUDED_DOC_TYPES_FOR_PMID."""
     if not doc_type:
         return False
-    dt_lower = str(doc_type).strip().lower()
-    return any(excl in dt_lower for excl in EXCLUDED_DOC_TYPES_FOR_PMID)
+    dt = str(doc_type).strip().lower()
+    return any(excl in dt for excl in EXCLUDED_DOC_TYPES_FOR_PMID)
 
 
 # --------------------------------------------------------------------------
 # Per-article state
 # --------------------------------------------------------------------------
-
 
 @dataclass
 class ArticleState:
@@ -116,13 +126,10 @@ class ArticleState:
     existing_wos: Optional[str] = None
     existing_pmid: Optional[str] = None
     csl_wos: Optional[str] = None
-    # Outputs of enrichment:
     new_wos: Optional[str] = None
     new_pmid: Optional[str] = None
-    # Discovered metadata from API:
     api_doc_type: Optional[str] = None
-    skip_pmid_lookup: bool = False  # set when known to be meeting abstract
-    # Audit:
+    skip_pmid_lookup: bool = False
     actions: list = field(default_factory=list)
     api_calls: int = 0
     notes: list = field(default_factory=list)
@@ -138,14 +145,16 @@ class ArticleState:
     def has_known_wos(self) -> Optional[str]:
         return self.existing_wos or self.new_wos
 
+    def was_enriched(self) -> bool:
+        return bool(self.new_wos or self.new_pmid)
+
 
 # --------------------------------------------------------------------------
 # XML reading
 # --------------------------------------------------------------------------
 
-
 def parse_existing_extids(article) -> dict:
-    """Return {systemName: value} for all <extid> direct children of an article."""
+    """Return {systemName: value} for all <extid> direct children."""
     found = {}
     for ex in article.findall("extid"):
         sn = ex.find(".//systemName")
@@ -156,8 +165,7 @@ def parse_existing_extids(article) -> dict:
 
 
 def parse_csl_wos(article) -> Optional[str]:
-    """Look at every <ns2:field><key>csl</key><value>...</value></ns2:field>
-    block and pull the WoS id from the JSON if present."""
+    """Extract WoS ID from csl JSON in <ns2:field><key>csl</key>."""
     for f in article.findall("ns2:field", NS):
         k = f.find("key")
         v = f.find("value")
@@ -182,7 +190,6 @@ def survey_article(article) -> ArticleState:
     s.title = (t.text or "").strip() if t is not None else ""
     d = article.find("doi")
     s.doi = norm_doi(d.text) if d is not None and d.text else None
-
     extids = parse_existing_extids(article)
     s.existing_wos = norm_wos_ut(extids.get("WoSId"))
     s.existing_pmid = norm_pmid(extids.get("PubMedID"))
@@ -191,23 +198,15 @@ def survey_article(article) -> ArticleState:
 
 
 # --------------------------------------------------------------------------
-# Patch XML emission
+# XML writing — full collection, extids updated in-place
 # --------------------------------------------------------------------------
 
-
-def build_extid_element(system_name: str,
-                        value: str,
-                        owner: str) -> etree._Element:
-    """Build an <extid type="termfield"> matching MU-Varna's exact structure."""
+def _build_extid_element(system_name: str, value: str) -> etree._Element:
+    """Build a new <extid type="termfield"> element matching PSIR structure."""
     cfg = EXTID_DEFINITIONS[system_name]
-    if cfg["idtype_uuid"] is None:
-        raise ValueError(
-            f"Cannot create extid for '{system_name}': idtype_uuid not configured."
-        )
-
     extid = etree.Element("extid", type="termfield")
     etree.SubElement(extid, "id").text = gen_local_uuid()
-    etree.SubElement(extid, "owner").text = owner
+    etree.SubElement(extid, "owner").text = AFFILIATION_OWNER.lower() + "@mu-varna.bg"
     etree.SubElement(extid, "affiliationowner").text = AFFILIATION_OWNER
 
     idtype = etree.SubElement(extid, "idtype", type="term")
@@ -233,42 +232,97 @@ def build_extid_element(system_name: str,
     return extid
 
 
-def build_patch_xml(states: list,
-                    owner: str,
-                    input_path: Path) -> etree._ElementTree:
-    """Build the patch XML <publications> root with one <publication> per
-    record that gained at least one new extid."""
-    NSMAP = {"ns2": NS_URI}
-    root = etree.Element("publications", nsmap=NSMAP)
+def _update_extids_on_article(article, state: ArticleState) -> None:
+    """Mutate article in-place: add new_wos and/or new_pmid extid elements.
 
-    comment = etree.Comment(
-        f" PSIR enrichment patch — generated "
-        f"{datetime.now().isoformat(timespec='seconds')} "
-        f"from {input_path.name}. Each <publication> carries its existing "
-        f"PSIR id plus only the newly added external identifiers. "
-    )
-    root.append(comment)
+    Strategy:
+    - If an extid with the same systemName already exists, update its
+      <value> in-place (preserves the existing element's id/owner).
+    - If no such extid exists, insert a new element immediately after the
+      last existing extid block (or after <verifier> if there are none).
+    """
+    if not state.new_wos and not state.new_pmid:
+        return
 
-    written = 0
-    for s in states:
-        new_extids = []
-        if s.new_wos:
-            new_extids.append(("WoSId", s.new_wos))
-        if s.new_pmid and EXTID_DEFINITIONS["PubMedID"]["idtype_uuid"]:
-            new_extids.append(("PubMedID", s.new_pmid))
-        if not new_extids:
-            continue
+    # Build a map of systemName -> existing extid element
+    existing_extid_els = {}
+    last_extid_idx = -1
+    children = list(article)
+    for i, child in enumerate(children):
+        if child.tag == "extid":
+            last_extid_idx = i
+            sn = child.find(".//systemName")
+            if sn is not None and sn.text:
+                existing_extid_els[sn.text] = child
 
-        pub = etree.SubElement(root, "publication")
-        etree.SubElement(pub, "id").text = s.psir_id
-        etree.SubElement(pub, "affiliationowner").text = AFFILIATION_OWNER
-        for sysname, value in new_extids:
-            try:
-                pub.append(build_extid_element(sysname, value, owner))
-            except ValueError as e:
-                s.notes.append(str(e))
-                pub.remove(pub[-1])
-                continue
-        written += 1
+    # Find the insertion point: right after the last extid, or after verifier
+    if last_extid_idx >= 0:
+        insert_after = last_extid_idx
+    else:
+        # No extids yet — insert after <verifier> if present, else after <id>
+        anchor_tags = ["verifier", "affiliationowner", "owner", "id"]
+        insert_after = 0
+        for tag in anchor_tags:
+            for i, child in enumerate(children):
+                if child.tag == tag:
+                    insert_after = i
+                    break
 
-    return etree.ElementTree(root), written
+    to_insert = []
+    if state.new_wos:
+        if "WoSId" in existing_extid_els:
+            # Update value in the existing element
+            v = existing_extid_els["WoSId"].find("value")
+            if v is not None:
+                v.text = state.new_wos
+        else:
+            to_insert.append(_build_extid_element("WoSId", state.new_wos))
+
+    if state.new_pmid:
+        if "PubMedID" in existing_extid_els:
+            v = existing_extid_els["PubMedID"].find("value")
+            if v is not None:
+                v.text = state.new_pmid
+        else:
+            to_insert.append(_build_extid_element("PubMedID", state.new_pmid))
+
+    # Insert new elements after the anchor position, preserving order
+    for offset, el in enumerate(to_insert):
+        article.insert(insert_after + 1 + offset, el)
+
+
+def build_full_output_xml(
+    input_tree: etree._ElementTree,
+    states: list,
+    input_label: str = "input.xml",
+) -> tuple[etree._ElementTree, int]:
+    """Return a deep copy of the input tree with enriched extids applied.
+
+    Every article is preserved exactly. Only the extid blocks of enriched
+    articles are modified. Returns (tree, n_enriched).
+    """
+    from io import BytesIO
+
+    # Deep-copy the whole tree so we never mutate the caller's data
+    buf = BytesIO()
+    input_tree.write(buf, xml_declaration=True, encoding="UTF-8")
+    buf.seek(0)
+    parser = etree.XMLParser(remove_blank_text=False)
+    out_tree = etree.parse(buf, parser)
+    out_root = out_tree.getroot()
+
+    articles = out_root.findall(f"{{{NS_URI}}}article")
+
+    if len(articles) != len(states):
+        raise ValueError(
+            f"Article count mismatch: tree has {len(articles)}, "
+            f"states has {len(states)}"
+        )
+
+    n_enriched = 0
+    for article, state in zip(articles, states):
+        if state.was_enriched():
+            _update_extids_on_article(article, state)
+            n_enriched += 1
+
+    return out_tree, n_enriched
