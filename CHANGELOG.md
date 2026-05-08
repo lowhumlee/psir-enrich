@@ -110,3 +110,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   etc.) are still rejected and fall through to the API lookup.
 - `lookup_by_uid()` in the Clarivate client now passes any valid WoS UT
   prefix through verbatim in the URL path, not just `WOS:`.
+
+## [0.3.4] — 2026-05-08
+
+### Fixed
+- **HTTP 400 on CABI/MEDLINE UID lookup**: the Starter API's `/documents/{uid}`
+  endpoint only accepts BCI, BIOABS, BIOSIS, CCC, DIIDW, DRCI and WOS/ISI.
+  Records whose UT prefix is not in that list (CABI, MEDLINE, ZOOREC, PPRN,
+  WOK) now skip the UID lookup entirely and log a clear note. DOI lookup is
+  still attempted for those records when a DOI is available.
+
+## [0.3.5] — 2026-05-08
+
+### Fixed
+- **Duplicate indicators in output XML**: citation counts (Scopus, GS, WoS)
+  and other indicator elements were appearing twice in the output for enriched
+  records. Root cause: lxml's `append()` *moves* elements when called on a
+  node that already belongs to another tree, leaving stale references that
+  caused child elements to be serialised twice. Fixed by deep-copying each
+  enriched article before appending it to the output collection.

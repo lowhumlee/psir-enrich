@@ -76,7 +76,7 @@ def gen_local_uuid() -> str:
 
 
 # All known WoS collection UT prefixes (from Clarivate API documentation).
-# UTs from any of these collections are valid and stored verbatim.
+# UTs from any of these collections are valid and stored verbatim in PSIR.
 _WOS_UT_PREFIXES = frozenset({
     "WOS",      # Web of Science Core Collection
     "ISI",      # Legacy ISI prefix (treated identically to WOS)
@@ -91,6 +91,19 @@ _WOS_UT_PREFIXES = frozenset({
     "PPRN",     # Preprint Citation Index
     "CABI",     # CAB Abstracts (via WoS platform)
     "WOK",      # All-databases umbrella
+})
+
+# Prefixes NOT supported by the Starter API /documents/{uid} endpoint.
+# The API error message states allowed databases are: BCI, BIOABS, BIOSIS,
+# CCC, DIIDW, DRCI — plus WOS/ISI (Core Collection).
+# Records with these prefixes are stored in PSIR as-is but UID lookup
+# is skipped to avoid a 400 error. DOI lookup is still attempted.
+_STARTER_API_UID_UNSUPPORTED = frozenset({
+    "MEDLINE",  # Not in Starter uid endpoint
+    "CABI",     # Not in Starter uid endpoint
+    "ZOOREC",   # Not in Starter uid endpoint
+    "PPRN",     # Not in Starter uid endpoint
+    "WOK",      # All-databases umbrella — not a valid uid prefix
 })
 
 
@@ -382,10 +395,15 @@ def build_full_output_xml(
             _update_extids_on_article(article, state)
             n_enriched += 1
 
-    # Build a new <collection> containing only the enriched articles
+    # Build a new <collection> containing only the enriched articles.
+    # Deep-copy each article individually before appending — lxml moves
+    # elements when append() is called on an element that already belongs
+    # to another tree, which can leave stale references and cause child
+    # elements (like indicators) to appear twice in the output.
+    from copy import deepcopy
     out_root = etree.Element("collection", nsmap=full_root.nsmap)
     for article, state in zip(all_articles, states):
         if state.was_enriched():
-            out_root.append(article)
+            out_root.append(deepcopy(article))
 
     return etree.ElementTree(out_root), n_enriched

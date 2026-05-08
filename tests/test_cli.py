@@ -113,7 +113,29 @@ def test_enrich_uid_fallback_when_no_doi():
     assert not any(call[0] == "doi" for call in fake.calls)
 
 
-def test_enrich_skips_fully_populated():
+def test_enrich_skips_uid_lookup_for_unsupported_prefix():
+    """CABI:, MEDLINE: etc. must not trigger a UID lookup — Starter API
+    returns 400 for those databases in the /documents/{uid} endpoint."""
+    # Record has a CABI UT (already known from csl) but needs PMID
+    s = ArticleState(psir_id="UMV1", doi="10.1/a",
+                     existing_wos="CABI:20260138642")
+    fake = FakeWosClient()  # will fail the test if called for uid lookup
+    cli_mod.enrich_one(s, fake)
+    # DOI lookup may be attempted (fine), but uid lookup must NOT be called
+    uid_calls = [c for c in fake.calls if c[0] == "uid"]
+    assert uid_calls == [], \
+        f"UID lookup must be skipped for CABI: prefix, got calls: {uid_calls}"
+    assert any("skipped" in n for n in s.notes), \
+        f"Expected a skip note, got: {s.notes}"
+
+
+def test_enrich_skips_uid_lookup_for_medline_prefix():
+    """Same behaviour for MEDLINE: prefix."""
+    s = ArticleState(psir_id="UMV2", existing_wos="MEDLINE:32832713")
+    fake = FakeWosClient()
+    cli_mod.enrich_one(s, fake)
+    uid_calls = [c for c in fake.calls if c[0] == "uid"]
+    assert uid_calls == []
     s = ArticleState(
         psir_id="UMV1", doi="10.1/done",
         existing_wos="WOS:00444", existing_pmid="666",
@@ -126,6 +148,71 @@ def test_enrich_skips_fully_populated():
 
 
 # --- end-to-end CLI test (via mocking WosStarterClient) ------------------
+
+
+def test_no_indicator_duplication_in_output():
+    """Indicator elements must appear exactly once in the output XML.
+
+    Regression test for the lxml append() move-semantics bug — calling
+    out_root.append(article) on an element already belonging to another tree
+    caused child elements (ns2:indicator etc.) to appear twice in the output.
+    Uses the real ns2: namespace and structure from actual PSIR exports.
+    """
+    NS_URI = "http://ii.pw.edu.pl/lib"
+    xml = (
+        f'<?xml version="1.0" encoding="UTF-8"?>'
+        f'<collection xmlns:ns2="{NS_URI}">'
+        f'<ns2:article type="article">'
+        f'<id>UMVtest001</id>'
+        f'<title>Test with indicators</title>'
+        f'<doi>10.1234/test</doi>'
+        f'<ns2:indicator type="indicator">'
+        f'<id>UMVind001</id>'
+        f'<name type="term"><systemName>citationsScopus</systemName></name>'
+        f'<ns2:indicatordata type="indicatordata"><id>UMVind001d</id><value>0</value></ns2:indicatordata>'
+        f'</ns2:indicator>'
+        f'<ns2:indicator type="indicator">'
+        f'<id>UMVind002</id>'
+        f'<name type="term"><systemName>citationsGS</systemName></name>'
+        f'<ns2:indicatordata type="indicatordata"><id>UMVind002d</id><value>1</value></ns2:indicatordata>'
+        f'</ns2:indicator>'
+        f'<ns2:indicator type="indicator">'
+        f'<id>UMVind003</id>'
+        f'<name type="term"><systemName>citationsWoS</systemName></name>'
+        f'<ns2:indicatordata type="indicatordata"><id>UMVind003d</id><value>2</value></ns2:indicatordata>'
+        f'</ns2:indicator>'
+        f'<ns2:field><key>csl</key>'
+        f'<value>{{"id":"WOS:001234567890001","type":"article-journal"}}</value>'
+        f'</ns2:field>'
+        f'</ns2:article>'
+        f'</collection>'
+    )
+
+    from psir_enrich.enrich import run_enrichment
+    result = run_enrichment(
+        xml_input=xml.encode("utf-8"),
+        api_key=None,
+        input_label="test.xml",
+    )
+
+    assert result.n_enriched == 1
+    out_root = etree.fromstring(result.output_xml_bytes)
+    articles = out_root.findall(f"{{{NS_URI}}}article")
+    assert len(articles) == 1
+
+    indicators = articles[0].findall(f"{{{NS_URI}}}indicator")
+    assert len(indicators) == 3, \
+        f"Expected 3 indicators, got {len(indicators)} — duplication detected"
+
+    ind_ids = [ind.findtext("id") for ind in indicators]
+    assert len(ind_ids) == len(set(ind_ids)), \
+        f"Duplicate indicator ids: {ind_ids}"
+
+    values = sorted(
+        ind.find(f"{{{NS_URI}}}indicatordata").findtext("value")
+        for ind in indicators
+    )
+    assert values == ["0", "1", "2"], f"Indicator values corrupted: {values}"
 
 
 def test_cli_no_api_runs_clean(tmp_path: Path):
@@ -145,16 +232,14 @@ def test_cli_no_api_runs_clean(tmp_path: Path):
     assert out_xml.exists()
     assert out_csv.exists()
 
-    # Output is a full collection — all 2 articles are present
     NS_URI = "http://ii.pw.edu.pl/lib"
     tree = etree.parse(str(out_xml))
     root = tree.getroot()
     assert root.tag == "collection"
-    # Output contains only the 1 enriched article (not both)
     articles = root.findall(f"{{{NS_URI}}}article")
-    assert len(articles) == 1, f"Only enriched articles should be in output, got {len(articles)}"
+    assert len(articles) == 1, \
+        f"Only enriched articles should be in output, got {len(articles)}"
 
-    # The csl-only article should now have a WoSId extid added
     csl_art = next(
         a for a in articles
         if (a.find("id") is not None and a.find("id").text == "UMVcslonly")
@@ -167,6 +252,5 @@ def test_cli_no_api_runs_clean(tmp_path: Path):
     assert "WoSId" in extid_vals
     assert extid_vals["WoSId"] == "WOS:002000"
 
-    # Audit should have all 2 rows
     df = pd.read_csv(out_csv)
     assert len(df) == 2
