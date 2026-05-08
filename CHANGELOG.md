@@ -86,3 +86,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   triggered a full Streamlit rerun, wiping the audit table and download
   buttons. Results are now stored in `st.session_state` and persist until
   the user explicitly clicks "New run" in the sidebar.
+
+## [0.3.2] — 2026-05-08
+
+### Fixed
+- **Zotero/csl keys no longer treated as WoS IDs**: `norm_wos_ut()` now
+  rejects any value that doesn't start with `WOS:` or `ISI:` prefix, or
+  isn't a purely numeric bare accession (≥8 digits). Values like
+  `milkov2026posturographic` or `yaneva_diagnostic_2026` — Zotero-style
+  csl id fields — are now silently skipped rather than being emitted as
+  `WOS:milkov2026posturographic`. Those records fall through to the API
+  lookup instead.
+
+## [0.3.3] — 2026-05-08
+
+### Fixed
+- **Non-WOS collection UTs now stored verbatim**: `norm_wos_ut()` now
+  accepts the full set of WoS collection prefixes (MEDLINE, CABI, BCI,
+  BIOABS, BIOSIS, CCC, DIIDW, DRCI, ZOOREC, PPRN, WOK) and passes them
+  through unchanged — e.g. `CABI:20250175695` stays `CABI:20250175695`,
+  `MEDLINE:32832713` stays `MEDLINE:32832713`. Only the legacy `ISI:` prefix
+  is normalised (to `WOS:`). Non-WoS identifiers (Zotero keys, Scopus EIDs,
+  etc.) are still rejected and fall through to the API lookup.
+- `lookup_by_uid()` in the Clarivate client now passes any valid WoS UT
+  prefix through verbatim in the URL path, not just `WOS:`.

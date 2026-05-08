@@ -18,8 +18,7 @@ def client():
 
 
 def test_lookup_by_uid_keeps_wos_prefix(client):
-    """The /documents/{uid} path must contain the full 'WOS:...' form.
-    Clarivate rejects bare accession numbers with HTTP 400."""
+    """The /documents/{uid} path must contain the full URL-encoded UT."""
     with patch.object(client.session, "get") as mock_get:
         mock_get.return_value = MagicMock(
             status_code=200,
@@ -27,41 +26,50 @@ def test_lookup_by_uid_keeps_wos_prefix(client):
         )
         client.lookup_by_uid("WOS:001234")
 
-    # Inspect the URL that was actually requested
     called_url = mock_get.call_args[0][0]
-    # The colon must be URL-encoded as %3A so it isn't read as a port sep
     assert "WOS%3A001234" in called_url, \
         f"Expected URL-encoded 'WOS:' in path, got: {called_url}"
-    # And the bare form must NOT appear as a path segment
-    assert "/documents/001234" not in called_url, \
-        f"Bare accession in path will return HTTP 400, got: {called_url}"
+    assert "/documents/001234" not in called_url
 
 
-def test_lookup_by_uid_re_adds_prefix_when_stripped(client):
-    """Caller passes bare '001234' — we should re-add WOS:."""
+def test_lookup_by_uid_preserves_medline_prefix(client):
+    """MEDLINE: prefix must be passed verbatim — not rewritten to WOS:."""
+    with patch.object(client.session, "get") as mock_get:
+        mock_get.return_value = MagicMock(
+            status_code=200,
+            json=lambda: {"uid": "MEDLINE:32832713", "identifiers": {}},
+        )
+        client.lookup_by_uid("MEDLINE:32832713")
+
+    called_url = mock_get.call_args[0][0]
+    assert "MEDLINE%3A32832713" in called_url, \
+        f"Expected URL-encoded 'MEDLINE:' in path, got: {called_url}"
+
+
+def test_lookup_by_uid_preserves_cabi_prefix(client):
+    """CABI: prefix must be passed verbatim."""
+    with patch.object(client.session, "get") as mock_get:
+        mock_get.return_value = MagicMock(
+            status_code=200,
+            json=lambda: {"uid": "CABI:20250175695", "identifiers": {}},
+        )
+        client.lookup_by_uid("CABI:20250175695")
+
+    called_url = mock_get.call_args[0][0]
+    assert "CABI%3A20250175695" in called_url
+
+
+def test_lookup_by_uid_re_adds_wos_prefix_for_bare_numeric(client):
+    """Bare numeric string gets WOS: prefix added."""
     with patch.object(client.session, "get") as mock_get:
         mock_get.return_value = MagicMock(
             status_code=200,
             json=lambda: {"uid": "WOS:001234", "identifiers": {}},
         )
-        client.lookup_by_uid("001234")
+        client.lookup_by_uid("001234567890123")
 
     called_url = mock_get.call_args[0][0]
-    assert "WOS%3A001234" in called_url
-
-
-def test_lookup_by_uid_normalises_isi_prefix(client):
-    """ISI: is the legacy prefix — we should normalise to WOS:."""
-    with patch.object(client.session, "get") as mock_get:
-        mock_get.return_value = MagicMock(
-            status_code=200,
-            json=lambda: {"uid": "WOS:001234", "identifiers": {}},
-        )
-        client.lookup_by_uid("ISI:001234")
-
-    called_url = mock_get.call_args[0][0]
-    assert "WOS%3A001234" in called_url
-    assert "ISI" not in called_url
+    assert "WOS%3A001234567890123" in called_url
 
 
 def test_lookup_by_uid_handles_empty(client):

@@ -75,6 +75,68 @@ def gen_local_uuid() -> str:
     return LOCAL_ID_PREFIX + uuidlib.uuid4().hex
 
 
+# All known WoS collection UT prefixes (from Clarivate API documentation).
+# UTs from any of these collections are valid and stored verbatim.
+_WOS_UT_PREFIXES = frozenset({
+    "WOS",      # Web of Science Core Collection
+    "ISI",      # Legacy ISI prefix (treated identically to WOS)
+    "MEDLINE",  # MEDLINE / NLM
+    "BCI",      # BIOSIS Citation Index
+    "BIOABS",   # Biological Abstracts
+    "BIOSIS",   # BIOSIS Previews
+    "CCC",      # Current Contents Connect
+    "DIIDW",    # Derwent Innovations Index
+    "DRCI",     # Data Citation Index
+    "ZOOREC",   # Zoological Records
+    "PPRN",     # Preprint Citation Index
+    "CABI",     # CAB Abstracts (via WoS platform)
+    "WOK",      # All-databases umbrella
+})
+
+
+def norm_wos_ut(value) -> Optional[str]:
+    """Normalise a WoS UT to its canonical stored form.
+
+    Accepts any UT whose prefix is a known WoS collection code and returns
+    it verbatim (uppercasing only the prefix for consistency).  Also accepts
+    a bare numeric string (≥8 digits) and promotes it to WOS:<digits>.
+
+    Rejects Zotero-style csl keys, Scopus EIDs, DOIs used as csl ids, and
+    any other non-WoS identifier — returns None for those so the caller
+    falls through to the API lookup instead.
+
+    Examples:
+        "WOS:001711258800001"  → "WOS:001711258800001"
+        "MEDLINE:32832713"     → "MEDLINE:32832713"
+        "CABI:20250175695"     → "CABI:20250175695"
+        "ISI:001234567"        → "WOS:001234567"  (ISI normalised to WOS)
+        "milkov2026posturographic" → None
+        "yaneva_diagnostic_2026"   → None
+    """
+    if not value:
+        return None
+    s = str(value).strip()
+    if not s:
+        return None
+
+    if ":" in s:
+        prefix, _, accession = s.partition(":")
+        prefix_upper = prefix.strip().upper()
+        accession = accession.strip()
+        if prefix_upper not in _WOS_UT_PREFIXES or not accession:
+            return None
+        # Normalise the legacy ISI prefix to WOS
+        if prefix_upper == "ISI":
+            prefix_upper = "WOS"
+        return f"{prefix_upper}:{accession}"
+
+    # No colon — accept only bare numeric accession numbers (≥8 digits)
+    if re.match(r"^\d{8,}$", s):
+        return f"WOS:{s}"
+
+    return None
+
+
 # --------------------------------------------------------------------------
 # ID normalisation
 # --------------------------------------------------------------------------
@@ -85,16 +147,6 @@ def norm_doi(value) -> Optional[str]:
     s = str(value).strip().lower()
     s = re.sub(r"^https?://(dx\.)?doi\.org/", "", s)
     return s if s.startswith("10.") else None
-
-
-def norm_wos_ut(value) -> Optional[str]:
-    if not value:
-        return None
-    s = str(value).strip()
-    if not s:
-        return None
-    s = re.sub(r"^(WOS:|ISI:|WoS:|wos:)", "", s, flags=re.IGNORECASE)
-    return f"WOS:{s}" if s else None
 
 
 def norm_pmid(value) -> Optional[str]:

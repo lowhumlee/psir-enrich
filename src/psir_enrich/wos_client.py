@@ -45,7 +45,7 @@ class WosStarterClient:
         self.session.headers.update({
             "X-ApiKey": api_key,
             "Accept": "application/json",
-            "User-Agent": "psir-enrich/0.3.1",
+            "User-Agent": "psir-enrich/0.3.3",
         })
         self.daily_count = 0
         self.errors = 0
@@ -141,22 +141,24 @@ class WosStarterClient:
         return self._ids_from_doc(doc)
 
     def lookup_by_uid(self, uid: str) -> dict:
-        """Fetch a document by its WoS accession number.
+        """Fetch a document by its WoS UT (any collection prefix).
 
         Clarivate's /documents/{uid} endpoint requires the full <DB>:<id>
-        form (e.g. 'WOS:001691554700119'), not the bare accession number.
-        We re-add the prefix if the caller stripped it, then URL-encode
-        the colon so it's not misread as a port separator.
+        form, URL-encoded. Works for any valid WoS UT prefix — WOS:, MEDLINE:,
+        CABI:, BCI:, ZOOREC:, etc. — not just the Core Collection.
         """
         s = (uid or "").strip()
         if not s:
             return {"_error": "empty uid"}
-        # Normalise to canonical "WOS:<id>" — accept ISI:, wos:, or bare.
-        s = re.sub(r"^(WOS:|ISI:|wos:|isi:)", "", s, flags=re.IGNORECASE)
-        full_uid = f"WOS:{s}"
-        # urllib.parse.quote with safe='' encodes ':' as %3A
+        # Ensure the prefix is present — bare numeric strings get WOS:
+        if ":" not in s:
+            if re.match(r"^\d{8,}$", s):
+                s = f"WOS:{s}"
+            else:
+                return {"_error": f"unrecognised UT format: {s!r}"}
+        # URL-encode the colon so it isn't misread as a port separator
         from urllib.parse import quote
-        path_uid = quote(full_uid, safe="")
+        path_uid = quote(s, safe="")
         payload = self._request(f"/documents/{path_uid}")
         if "_error" in payload:
             return payload

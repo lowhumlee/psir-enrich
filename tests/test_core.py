@@ -36,12 +36,32 @@ def test_norm_doi(inp, exp):
 
 
 @pytest.mark.parametrize("inp,exp", [
-    ("WOS:001234567", "WOS:001234567"),
-    ("001234567", "WOS:001234567"),
-    ("ISI:001234567", "WOS:001234567"),
-    ("wos:001234567", "WOS:001234567"),
+    # WoS Core Collection — canonical
+    ("WOS:001711258800001", "WOS:001711258800001"),
+    # Other WoS collection prefixes — stored verbatim
+    ("MEDLINE:32832713",    "MEDLINE:32832713"),
+    ("CABI:20250175695",    "CABI:20250175695"),
+    ("BCI:20250175695",     "BCI:20250175695"),
+    ("ZOOREC:ZOOR16200000001", "ZOOREC:ZOOR16200000001"),
+    # Legacy ISI prefix — normalised to WOS:
+    ("ISI:001234567",       "WOS:001234567"),
+    # Case variants of prefix — uppercased
+    ("wos:001234567",       "WOS:001234567"),
+    ("medline:32832713",    "MEDLINE:32832713"),
+    # Bare numeric accession — promoted to WOS:
+    ("001234567890123",     "WOS:001234567890123"),
+    # Empty / None
     ("", None),
     (None, None),
+    # Zotero-style csl keys — rejected
+    ("milkov2026posturographic", None),
+    ("yaneva_diagnostic_2026",   None),
+    # Non-WoS prefixed identifiers — rejected
+    ("SCOPUS:2-s2.0-12345", None),
+    ("PMC:1234567",         None),
+    # Too short / no prefix
+    ("abc",                 None),
+    ("1234567",             None),   # only 7 digits
 ])
 def test_norm_wos_ut(inp, exp):
     assert norm_wos_ut(inp) == exp
