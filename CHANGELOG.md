@@ -129,3 +129,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   node that already belongs to another tree, leaving stale references that
   caused child elements to be serialised twice. Fixed by deep-copying each
   enriched article before appending it to the output collection.
+
+## [0.4.0] — 2026-05-12
+
+### Added
+- **WoS Expanded API client** (`wos_expanded_client.py`): full-record
+  enrichment via `GET /id/{uid}?optionView=FR`. Requires a separate
+  `WOS_EXPANDED_API_KEY` (institutional subscription).
+- **Obligatory metadata fill** — `abstractEN`, `keywordsEN`, `collation`,
+  `articleNo`, `vol`, `no` are back-filled from the Expanded record when
+  absent in the PSIR record. Existing values are never overwritten.
+- **WoS subject classification** — `wos_categories` (ascatype=traditional,
+  e.g. "Food Science & Technology") and `wos_research_areas`
+  (ascatype=extended, e.g. "General & Internal Medicine") stored as
+  separate `<ns2:field>` elements. These are different vocabularies and
+  must not be conflated.
+- **WoS editions** (`wos_editions`): SCI / SSCI / ESCI / AHCI stored
+  as pipe-separated `<ns2:field>`.
+- **KeyWords Plus** (`wos_keywords_plus`): algorithmically derived
+  keywords from WoS, distinct from author keywords.
+- **Early access date** (`wos_early_access_date`).
+- **Structured funding** (`wos_grant_agencies`, `wos_grant_ids`): parsed
+  from WoS grant blocks, stored separately from the existing manual
+  `<userfield key="Funding">`.
+- `EnrichmentResult` gains `n_expanded_calls` and `n_expanded_errors`.
+- 40 new tests in `tests/test_expanded.py`.
+
+### Fixed
+- MEDLINE / BCI / BIOABS / BIOSIS / CCC / DIIDW / DRCI / ZOOREC / PPRN
+  prefixes are now correctly eligible for Expanded `/id` lookup.
+  Previously they were incorrectly inheriting the Starter API's more
+  restrictive exclusion list. Only `CABI` and `WOK` remain unsupported
+  by the Expanded `/id` endpoint.

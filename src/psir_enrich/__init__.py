@@ -1,6 +1,6 @@
 """psir_enrich — Enrich OMEGA-PSIR records with WoS UT and PubMed ID."""
 
-__version__ = "0.3.5"
+__version__ = "0.4.0"
 
 from psir_enrich.core import (
     ArticleState,
@@ -16,8 +16,10 @@ from psir_enrich.core import (
     NS_URI,
     NS,
 )
+from psir_enrich.wos_expanded_client import WosExpandedClient
 from psir_enrich.enrich import (
     enrich_one,
+    enrich_one_expanded,
     run_enrichment,
     EnrichmentResult,
 )
@@ -27,6 +29,8 @@ __all__ = [
     "__version__",
     "ArticleState",
     "WosStarterClient",
+    "WosExpandedClient",
+    "enrich_one_expanded",
     "EnrichmentResult",
     "survey_article",
     "parse_csl_wos",
