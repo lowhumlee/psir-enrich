@@ -9,7 +9,7 @@ A web-based GUI (Streamlit) for everyday use, plus a command-line interface for 
 ## Quick demo
 
 1. Upload your PSIR XML export.
-2. Paste your Clarivate API key and your PubMedID dictionary UUID.
+2. Paste your Clarivate API key.
 3. Click **Run enrichment**.
 4. Download the patch XML (ready to re-import into PSIR) and the audit CSV.
 
@@ -25,7 +25,7 @@ For each `<ns2:article>` in your input XML, the tool:
 2. **Promotes csl-WoS** — when the `csl` JSON metadata already has a `WOS:` ID but no proper extid block, it's promoted for free.
 3. **Looks up by DOI** — calls Clarivate `/documents?q=DO=<doi>&db=WOS` for any record still missing identifiers.
 4. **Falls back to UID lookup** — for records with a known WoS UT but missing PMID, calls `/documents/{uid}`.
-5. **Excludes meeting abstracts** from PubMed lookups by default — they're not in PubMed, so the call would waste API quota.
+5. **Excludes meeting abstracts** from PubMed lookups by default.
 6. **Outputs a patch XML** with only the changed records, plus an audit CSV showing every decision.
 
 ---
@@ -125,44 +125,6 @@ Run `psir-enrich --help` for all options.
 5. Copy the API key from the application page.
 
 For everyday institutional use, the **Subscriber** plan (5,000 requests/day) is the right tier. The **Free** plan (50/day) is enough for testing.
-
----
-
-## How do I find the PubMedID dictionary UUID?
-
-This is needed once per PSIR installation, and only if you want PubMed IDs written to the patch (WoS-only enrichment doesn't need it).
-
-Open any PSIR record that already has a PubMedID extid (any record imported from Scopus or PubMed). Export it as XML and look for:
-
-```xml
-<extid type="termfield">
-  ...
-  <idtype type="term">
-    <id>WUTxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</id>     ← THIS is the UUID
-    ...
-    <systemName>PubMedID</systemName>
-    ...
-  </idtype>
-  <value>12345678</value>
-</extid>
-```
-
-Copy the UUID inside the inner `<idtype><id>`. Note it down — same value is reused for every run.
-
----
-
-## Configuration for non–MU-Varna deployments
-
-The defaults are baked for MU-Varna's PSIR (`affiliationowner=UMV`, specific dictionary UUIDs). To deploy at another institution, edit `src/psir_enrich/core.py`:
-
-| Constant | What it controls |
-|---|---|
-| `AFFILIATION_OWNER` | The 2–4 letter institution code |
-| `LOCAL_ID_PREFIX` | The prefix for new locally-generated UUIDs |
-| `EXTERNAL_ID_TERMTYPE_UUID` | UUID of the `external_id` termtype |
-| `EXTID_DEFINITIONS["WoSId"]["idtype_uuid"]` | UUID of the WoS Identifier dictionary entry |
-
-Each can be discovered by exporting a PSIR record that already has the relevant extid and inspecting its XML.
 
 ---
 
