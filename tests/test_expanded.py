@@ -22,10 +22,9 @@ from lxml import etree
 import sys
 sys.path.insert(0, str(Path(__file__).parent))
 
-# We import the updated modules directly (not through the installed package)
-import core as core
-import enrich as enrich_mod
-import wos_expanded_client as wec_mod
+from psir_enrich import core
+from psir_enrich import enrich as enrich_mod
+from psir_enrich import wos_expanded_client as wec_mod
 
 NS_URI = "http://ii.pw.edu.pl/lib"
 NS = {"ns2": NS_URI}
