@@ -92,6 +92,18 @@ EXCLUDED_DOC_TYPES_FOR_PMID = (
 def gen_local_uuid() -> str:
     return LOCAL_ID_PREFIX + uuidlib.uuid4().hex
 
+def _article_owner(article) -> str:
+    owner = article.find("owner")
+    if owner is not None and owner.text:
+        return owner.text.strip()
+    return AFFILIATION_OWNER.lower() + "@mu-varna.bg"
+
+
+def _article_affiliation_owner(article) -> str:
+    aff = article.find("affiliationowner")
+    if aff is not None and aff.text:
+        return aff.text.strip()
+    return AFFILIATION_OWNER
 
 # --------------------------------------------------------------------------
 # ID normalisation
