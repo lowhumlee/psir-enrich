@@ -23,8 +23,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent))
 
 # We import the updated modules directly (not through the installed package)
-import core_updated as core
-import enrich_updated as enrich_mod
+import core as core
+import enrich as enrich_mod
 import wos_expanded_client as wec_mod
 
 NS_URI = "http://ii.pw.edu.pl/lib"
