@@ -523,14 +523,7 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
             " | ".join(state.new_research_areas),
         )
 
-    # --- WoS editions ---
-    if state.new_wos_editions:
-        _upsert_ns2_field(
-            article,
-            "wos_editions",
-            " | ".join(state.new_wos_editions),
-        )
-
+    
     # --- KeyWords Plus ---
     if state.new_keywords_plus:
         _upsert_ns2_field(
@@ -539,14 +532,7 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
             " | ".join(state.new_keywords_plus),
         )
 
-    # --- Early access date ---
-    if state.new_early_access_date:
-        _upsert_ns2_field(
-            article,
-            "wos_early_access_date",
-            state.new_early_access_date,
-        )
-
+    
     # --- Funding (structured) — stored separately from existing Funding userfield ---
     if state.new_fund_agencies:
         _upsert_ns2_field(
