@@ -118,7 +118,7 @@ def main(argv: Optional[list] = None) -> int:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(result.output_xml_bytes)
     print(f"\nOutput XML : {args.output}  ({result.n_enriched} article(s) enriched)")
-    print(f"           → all {result.n_articles} articles included (PSIR needs full collection)")
+    print(f"           -> all {result.n_articles} articles included (PSIR needs full collection)")
 
     result.audit_df.to_csv(args.report, index=False, encoding="utf-8-sig")
     print(f"Audit CSV  : {args.report}")
