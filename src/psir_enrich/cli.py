@@ -9,7 +9,7 @@ blocks added in-place — ready for PSIR's XML import dialog.
 Import settings in PSIR:
   Tab: XML
   Update record action: overwrite
-  Update external identifiers: ✓ CHECKED
+  Update external identifiers: CHECKED
   Default field update action: overwrite (or Add new values)
 """
 
@@ -129,7 +129,7 @@ def main(argv: Optional[list] = None) -> int:
     print("\nPSIR import settings:")
     print("  Tab: XML")
     print("  Update record action: overwrite")
-    print("  Update external identifiers: CHECKED  ← important")
+    print("  Update external identifiers: CHECKED <- important")
     print("  Default field update action: overwrite")
     return 0
 
