@@ -210,11 +210,8 @@ class ArticleState:
     # WoS categories (free fields)
     new_wos_categories: Optional[list] = None       # traditional ascatype
     new_research_areas: Optional[list] = None        # extended ascatype
-    new_wos_editions: Optional[list] = None
     new_keywords_plus: Optional[list] = None
-    new_early_access_date: Optional[str] = None
-    new_early_access_year: Optional[str] = None
-
+  
     # Funding (structured)
     new_fund_agencies: Optional[list] = None
     new_fund_grant_ids: Optional[list] = None
@@ -250,9 +247,7 @@ class ArticleState:
             or self.new_issue
             or self.new_wos_categories
             or self.new_research_areas
-            or self.new_wos_editions
             or self.new_keywords_plus
-            or self.new_early_access_date
             or self.new_fund_agencies
         )
 
@@ -467,27 +462,33 @@ def _update_journalissue_field(article, tag: str, value: str) -> None:
         etree.SubElement(ji, tag).text = value
 
 
-def _build_ns2_field(key: str, value: str) -> etree._Element:
-    """Build an <ns2:field type="field"> element for free metadata."""
-    f = etree.Element(f"{{{NS_URI}}}field", type="field")
+def _build_userfield(article, key: str, value: str) -> etree._Element:
+    """Build a <userfield type="field"> element."""
+
+    f = etree.Element("userfield", type="field")
+
     etree.SubElement(f, "id").text = gen_local_uuid()
-    etree.SubElement(f, "owner").text = AFFILIATION_OWNER.lower() + "@mu-varna.bg"
-    etree.SubElement(f, "affiliationowner").text = AFFILIATION_OWNER
+    etree.SubElement(f, "owner").text = _article_owner(article)
+    etree.SubElement(f, "affiliationowner").text = _article_affiliation_owner(article)
     etree.SubElement(f, "key").text = key
     etree.SubElement(f, "value").text = value
+
     return f
 
+def _upsert_userfield(article, key: str, value: str) -> None:
+    """Update existing userfield or append a new one."""
 
-def _upsert_ns2_field(article, key: str, value: str) -> None:
-    """Update an existing <ns2:field key=...> or append a new one."""
-    for f in article.findall(f"{{{NS_URI}}}field"):
+    for f in article.findall("userfield"):
         k = f.find("key")
+
         if k is not None and k.text == key:
             v = f.find("value")
+
             if v is not None:
                 v.text = value
             return
-    article.append(_build_ns2_field(key, value))
+
+    article.append(_build_userfield(article, key, value))
 
 
 def inject_expanded_metadata(article, state: ArticleState) -> None:
@@ -521,7 +522,7 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
 
     # --- WoS subject categories (traditional) ---
     if state.new_wos_categories:
-        _upsert_ns2_field(
+        _upsert_userfield(
             article,
             "wos_categories",
             " | ".join(state.new_wos_categories),
@@ -529,7 +530,7 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
 
     # --- Research areas (extended ascatype) ---
     if state.new_research_areas:
-        _upsert_ns2_field(
+        _upsert_userfield(
             article,
             "wos_research_areas",
             " | ".join(state.new_research_areas),
@@ -538,7 +539,7 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
     
     # --- KeyWords Plus ---
     if state.new_keywords_plus:
-        _upsert_ns2_field(
+        _upsert_userfield(
             article,
             "wos_keywords_plus",
             " | ".join(state.new_keywords_plus),
@@ -547,13 +548,13 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
     
     # --- Funding (structured) — stored separately from existing Funding userfield ---
     if state.new_fund_agencies:
-        _upsert_ns2_field(
+        _upsert_userfield(
             article,
             "wos_grant_agencies",
             " | ".join(state.new_fund_agencies),
         )
     if state.new_fund_grant_ids:
-        _upsert_ns2_field(
+        _upsert_userfield(
             article,
             "wos_grant_ids",
             " | ".join(state.new_fund_grant_ids),
@@ -565,7 +566,7 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
             for f in article.findall("userfield")
         )
         if not has_funding_userfield:
-            _upsert_ns2_field(article, "wos_fund_text", state.new_fund_text)
+            _upsert_userfield(article, "wos_fund_text", state.new_fund_text)
 
 
 # --------------------------------------------------------------------------
