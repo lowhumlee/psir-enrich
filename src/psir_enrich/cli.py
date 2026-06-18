@@ -129,7 +129,7 @@ def main(argv: Optional[list] = None) -> int:
     print("\nPSIR import settings:")
     print("  Tab: XML")
     print("  Update record action: overwrite")
-    print("  Update external identifiers: ✓ CHECKED  ← important")
+    print("  Update external identifiers: CHECKED  ← important")
     print("  Default field update action: overwrite")
     return 0
 
