@@ -144,9 +144,7 @@ def enrich_one_expanded(
     Fields enriched unconditionally (always updated from WoS):
       • wos_categories    — ascatype=traditional subjects
       • wos_research_areas— ascatype=extended subjects
-      • wos_editions      — SCI/SSCI/ESCI/AHCI list
       • wos_keywords_plus — KeyWords Plus
-      • wos_early_access_date
       • wos_grant_agencies, wos_grant_ids  (structured funding)
     """
     if expanded_client is None:
@@ -374,9 +372,7 @@ def run_enrichment(
             # Expanded tier — categories
             "wos_categories":       " | ".join(s.new_wos_categories or []),
             "research_areas":       " | ".join(s.new_research_areas or []),
-            "wos_editions":         " | ".join(s.new_wos_editions or []),
             "kw_plus_count":        len(s.new_keywords_plus or []),
-            "early_access_date":    s.new_early_access_date or "",
             # Funding
             "grant_agencies":       " | ".join(s.new_fund_agencies or []),
             "grant_ids":            " | ".join(s.new_fund_grant_ids or []),
