@@ -206,8 +206,7 @@ def enrich_one_expanded(
         state.actions.append("expanded_issue")
 
     # ---- Early access date (always take if present) ----------------------
-    if pi.get("early_access_date"):
-        state.new_early_access_date = pi["early_access_date"]
+    
 
     # ---- WoS categories / research areas (always update) ----------------
     cat = expanded_client.extract_category_info(rec)
@@ -221,10 +220,7 @@ def enrich_one_expanded(
         state.new_research_areas = cat["subheadings"]
 
     # ---- WoS editions (always update) -----------------------------------
-    editions = expanded_client.extract_wos_editions(rec)
-    if editions:
-        state.new_wos_editions = editions
-        state.actions.append("expanded_editions")
+
 
     # ---- KeyWords Plus (always update) ----------------------------------
     kp = expanded_client.extract_keywords_plus(rec)
