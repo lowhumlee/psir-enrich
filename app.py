@@ -93,8 +93,8 @@ with st.sidebar:
         help=(
             "Institutional WoS Expanded API key. Enables metadata fill: "
             "abstract, keywords, pages/collation, volume, issue, "
-            "WoS categories, research areas, WoS editions, "
-            "KeyWords Plus, early access date, and structured funding. "
+            "WoS categories, research areas, "
+            "KeyWords Plus and structured funding. "
             "This is a separate subscription from the Starter key above — "
             "leave blank if you only have the Starter key."
         ),
