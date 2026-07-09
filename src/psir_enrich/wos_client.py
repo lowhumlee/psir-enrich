@@ -126,19 +126,47 @@ class WosStarterClient:
 
     # -- Public API ------------------------------------------------------
 
-    def lookup_by_doi(self, doi: str) -> dict:
-        """Search for a document by DOI. Returns dict with keys:
-        uid, doi, pmid, doc_type — or _error."""
+def lookup_by_doi(self, doi: str) -> dict:
+    """Search for a document by DOI.
+
+    Lookup order:
+      1. WoS Core Collection
+      2. MEDLINE / PubMed via WoS Starter, if available
+
+    Returns dict with keys:
+      uid, doi, pmid, doc_type, source_db — or _error.
+    """
+    clean_doi = norm_doi(doi)
+    if not clean_doi:
+        return {"_error": "invalid DOI"}
+
+    errors = []
+
+    for db in ("WOS", "MEDLINE"):
         payload = self._request(
             "/documents",
-            params={"q": f"DO={doi}", "db": "WOS", "limit": 1},
+            params={"q": f"DO={clean_doi}", "db": db, "limit": 1},
         )
+
         if "_error" in payload:
-            return payload
+            errors.append(f"{db}: {payload['_error']}")
+            continue
+
         doc = self._extract_first_doc(payload)
         if not doc:
-            return {"_error": "no hits"}
-        return self._ids_from_doc(doc)
+            errors.append(f"{db}: no hits")
+            continue
+
+        out = self._ids_from_doc(doc)
+        out["source_db"] = db
+
+        # If Clarivate MEDLINE returns PMID but no UID, keep the PMID.
+        if out.get("pmid") or out.get("uid"):
+            return out
+
+        errors.append(f"{db}: hit but no usable identifiers")
+
+    return {"_error": " | ".join(errors) if errors else "no hits"}
 
     def lookup_by_uid(self, uid: str) -> dict:
         """Fetch a document by its WoS UT (any collection prefix).
