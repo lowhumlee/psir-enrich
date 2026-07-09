@@ -332,58 +332,101 @@ class WosExpandedClient:
             return [str(e.get("value", "")).strip() for e in (ed or []) if e.get("value")]
         except (KeyError, TypeError):
             return []
-
+    
     @staticmethod
     def extract_funding(rec: dict) -> dict:
         """Return structured funding data.
 
         Returns dict:
-          fund_text      : str
+          fund_text      : str | None
           agencies       : list[str]
           grant_ids      : list[str]
         """
         out: dict = {"fund_text": None, "agencies": [], "grant_ids": []}
+
         try:
-            fa = rec["static_data"]["fullrecord_metadata"]["fund_ack"]
-        except (KeyError, TypeError):
+            fa = rec["static_data"]["fullrecord_metadata"].get("fund_ack")
+        except (KeyError, AttributeError, TypeError):
             return out
 
-        # Raw funding text
-        p = (fa.get("fund_text") or {}).get("p")
-        if p:
-            out["fund_text"] = str(p).strip()
+        # WoS Expanded may return fund_ack as None, empty string, list,
+        # or another unexpected shape. Only dict is usable here.
+        if not isinstance(fa, dict):
+            return out
 
-        # Structured grants
-        grants = fa.get("grants", {}).get("grant")
+        # ---- Raw funding text ------------------------------------------
+        fund_text = fa.get("fund_text")
+        p = None
+
+        if isinstance(fund_text, dict):
+            p = fund_text.get("p")
+        elif isinstance(fund_text, (str, list)):
+            p = fund_text
+
+        if isinstance(p, list):
+            text = " ".join(str(x).strip() for x in p if x)
+            out["fund_text"] = text or None
+        elif p:
+            out["fund_text"] = str(p).strip() or None
+
+        # ---- Structured grants -----------------------------------------
+        grants_block = fa.get("grants")
+        if not isinstance(grants_block, dict):
+            return out
+
+        grants = grants_block.get("grant")
         if grants is None:
             return out
+
         if isinstance(grants, dict):
             grants = [grants]
+        elif not isinstance(grants, list):
+            return out
+
         for g in grants:
+            if not isinstance(g, dict):
+                continue
+
             agency = g.get("grant_agency")
             if agency:
                 out["agencies"].append(str(agency).strip())
-            # grant_agency_names is a list of {pref, content}
-            for an in (g.get("grant_agency_names") or []):
+
+            # grant_agency_names may be list, dict, None, or malformed
+            agency_names = g.get("grant_agency_names") or []
+            if isinstance(agency_names, dict):
+                agency_names = [agency_names]
+            elif not isinstance(agency_names, list):
+                agency_names = []
+
+            for an in agency_names:
                 if isinstance(an, dict) and an.get("pref") == "Y":
                     name = an.get("content", "")
-                    if name and name not in out["agencies"]:
+                    if name:
                         out["agencies"].append(str(name).strip())
-            # grant_ids
-            gids = g.get("grant_ids", {})
+
+            # grant_ids may be dict, string, list, None, or malformed
+            gids = g.get("grant_ids") or {}
+            ids = []
+
             if isinstance(gids, dict):
                 ids = gids.get("grant_id", [])
-                if isinstance(ids, str):
-                    ids = [ids]
-                for gid in ids:
-                    if gid:
-                        out["grant_ids"].append(str(gid).strip())
+            elif isinstance(gids, (str, int, float)):
+                ids = [gids]
+
+            if isinstance(ids, (str, int, float)):
+                ids = [ids]
+            elif not isinstance(ids, list):
+                ids = []
+
+            for gid in ids:
+                if gid:
+                    out["grant_ids"].append(str(gid).strip())
 
         # Deduplicate, preserve order
-        out["agencies"]   = list(dict.fromkeys(out["agencies"]))
-        out["grant_ids"]  = list(dict.fromkeys(out["grant_ids"]))
-        return out
+        out["agencies"] = list(dict.fromkeys(x for x in out["agencies"] if x))
+        out["grant_ids"] = list(dict.fromkeys(x for x in out["grant_ids"] if x))
 
+        return out
     @staticmethod
     def extract_reprint_seq(rec: dict) -> Optional[int]:
         """Return the 1-based sequence number of the reprint (corresponding) author."""
