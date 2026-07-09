@@ -85,18 +85,55 @@ def test_lookup_by_doi_uses_query_param(client):
             status_code=200,
             json=lambda: {"hits": []},
         )
-        client.lookup_by_doi("10.1234/test")
 
-    # The DOI must be in params, not in the URL path
-    call = mock_get.call_args
-    params = call.kwargs.get("params") or {}
-    assert params.get("q") == "DO=10.1234/test"
-    assert params.get("db") == "WOS"
-    # Path should be the documents collection, not a specific document
-    called_url = call[0][0]
-    assert called_url.endswith("/documents")
+        with patch.object(client, "_lookup_pubmed_by_doi") as mock_pubmed:
+            mock_pubmed.return_value = {"_error": "PubMed: no hits"}
+            client.lookup_by_doi("10.1234/test")
 
+    # First Clarivate call must still be WOS.
+    first_call = mock_get.call_args_list[0]
+    first_params = first_call.kwargs.get("params") or {}
 
+    assert first_params.get("q") == "DO=10.1234/test"
+    assert first_params.get("db") == "WOS"
+
+    first_url = first_call[0][0]
+    assert first_url.endswith("/documents")
+
+    # Second Clarivate call is now the intended MEDLINE fallback.
+    second_call = mock_get.call_args_list[1]
+    second_params = second_call.kwargs.get("params") or {}
+
+    assert second_params.get("q") == "DO=10.1234/test"
+    assert second_params.get("db") == "MEDLINE"
+
+    second_url = second_call[0][0]
+    assert second_url.endswith("/documents")
+
+def test_lookup_by_doi_pubmed_fallback_sets_medline_uid(client):
+    """If Clarivate has no DOI hit, PubMed fallback should set PMID and MEDLINE UID."""
+    with patch.object(client.session, "get") as mock_get:
+        mock_get.return_value = MagicMock(
+            status_code=200,
+            json=lambda: {"hits": []},
+        )
+
+        with patch("psir_enrich.wos_client.requests.get") as mock_pubmed_get:
+            mock_pubmed_get.return_value = MagicMock(
+                status_code=200,
+                json=lambda: {
+                    "esearchresult": {
+                        "idlist": ["42392011"]
+                    }
+                },
+            )
+
+            result = client.lookup_by_doi("10.1016/j.vaccine.2026.128839")
+
+    assert result["pmid"] == "42392011"
+    assert result["uid"] == "MEDLINE:42392011"
+    assert result["source_db"] == "NCBI_PUBMED"
+    
 def test_lookup_by_uid_400_error_surfaces(client):
     """The exact error from your Streamlit log should be propagated cleanly."""
     error_body = (
