@@ -164,7 +164,42 @@ def test_parse_csl_wos():
     art = root[0]
     assert parse_csl_wos(art) == "WOS:001234567"
 
+def test_parse_csl_wos_from_note_wos():
+    """CSL note may contain Web of Science ID instead of CSL id."""
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns:ns2="{NS_URI}">
+  <ns2:article type="article">
+    <id>UMVcsl_note_wos</id>
+    <title>CSL note WoS</title>
+    <ns2:field>
+      <key>csl</key>
+      <value>{{"id":"krasteva_salivary_2012","type":"article-journal","note":"Web of Science ID: WOS:000308718600143"}}</value>
+    </ns2:field>
+  </ns2:article>
+</collection>
+"""
+    art = etree.fromstring(xml.encode())[0]
 
+    assert parse_csl_wos(art) == "WOS:000308718600143"
+
+
+def test_parse_csl_wos_from_note_cabi():
+    """CSL note may contain a non-Core WoS database prefix such as CABI."""
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns:ns2="{NS_URI}">
+  <ns2:article type="article">
+    <id>UMVcsl_note_cabi</id>
+    <title>CSL note CABI</title>
+    <ns2:field>
+      <key>csl</key>
+      <value>{{"id":"kolarov_maxillofacial_2017","type":"article-journal","note":"Web of Science ID: CABI:20183028270"}}</value>
+    </ns2:field>
+  </ns2:article>
+</collection>
+"""
+    art = etree.fromstring(xml.encode())[0]
+
+    assert parse_csl_wos(art) == "CABI:20183028270"
 def test_survey_article_full():
     root = etree.fromstring(SAMPLE_ARTICLE.encode())
     art = root[0]
