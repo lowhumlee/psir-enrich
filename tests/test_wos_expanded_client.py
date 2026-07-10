@@ -70,3 +70,44 @@ def test_extract_funding_extracts_valid_structured_funding():
         "Example Preferred Agency",
     ]
     assert result["grant_ids"] == ["A123", "B456"]
+def test_extract_pub_info_uses_supplement_as_issue_fallback():
+    rec = {
+        "static_data": {
+            "summary": {
+                "pub_info": {
+                    "vol": "18",
+                    "supplement": "1",
+                    "page": {
+                        "begin": "34",
+                        "end": "34"
+                    }
+                }
+            }
+        }
+    }
+
+    result = WosExpandedClient.extract_pub_info(rec)
+
+    assert result["vol"] == "18"
+    assert result["issue"] == "1"
+    assert result["supplement"] == "1"
+    assert result["page_begin"] == "34"
+    assert result["page_end"] == "34"
+    def test_extract_pub_info_prefers_issue_over_supplement():
+    rec = {
+        "static_data": {
+            "summary": {
+                "pub_info": {
+                    "vol": "18",
+                    "issue": "2",
+                    "supplement": "1"
+                }
+            }
+        }
+    }
+
+    result = WosExpandedClient.extract_pub_info(rec)
+
+    assert result["vol"] == "18"
+    assert result["issue"] == "2"
+    assert result["supplement"] == "1"
