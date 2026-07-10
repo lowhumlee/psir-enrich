@@ -251,8 +251,20 @@ class WosExpandedClient:
         def _s(v) -> Optional[str]:
             return str(v).strip() if v not in (None, "", "null") else None
 
-        out["vol"]               = _s(pi.get("vol"))
-        out["issue"]             = _s(pi.get("issue"))
+        out["vol"] = _s(pi.get("vol"))
+
+        # WoS may store issue-like information either as issue or supplement.
+        # PSIR has only <no>, so use issue first, then supplement as fallback.
+        issue = _s(pi.get("issue"))
+        supplement = (
+            _s(pi.get("supplement"))
+            or _s(pi.get("supp"))
+            or _s(pi.get("special_issue"))
+        )
+
+        out["issue"] = issue or supplement
+        out["supplement"] = supplement
+
         out["early_access_date"] = _s(pi.get("early_access_date"))
         out["early_access_year"] = _s(pi.get("early_access_year"))
 
