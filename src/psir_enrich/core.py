@@ -275,20 +275,58 @@ def parse_existing_extids(article) -> dict:
     return found
 
 
+def _extract_wos_ut_from_text(text: str) -> Optional[str]:
+    """Extract a WoS-style UT from free text.
+
+    Handles examples such as:
+      Web of Science ID: WOS:000308718600143
+      Web of Science ID: CABI:20183028270
+    """
+    if not isinstance(text, str):
+        return None
+
+    # First try the whole string. This handles plain "WOS:..." or "CABI:...".
+    direct = norm_wos_ut(text)
+    if direct:
+        return direct
+
+    # Then search inside notes/free text.
+    m = re.search(
+        r"\b(?:Web\s+of\s+Science\s+ID|WoS\s+ID|UT)\s*:\s*([A-Za-z]+:[A-Za-z0-9_.-]+)",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if not m:
+        return None
+
+    return norm_wos_ut(m.group(1))
+
+
 def parse_csl_wos(article) -> Optional[str]:
-    """Extract WoS ID from csl JSON in <ns2:field><key>csl</key>."""
+    """Extract publication WoS ID from CSL JSON.
+
+    Checks both:
+      - CSL id, when it directly contains a UT
+      - CSL note/annote, when it contains text like
+        "Web of Science ID: WOS:..." or "Web of Science ID: CABI:..."
+    """
     for f in article.findall(f"{{{NS_URI}}}field", NS):
         k = f.find("key")
         v = f.find("value")
+
         if k is None or k.text != "csl" or v is None or not v.text:
             continue
+
         try:
             d = json.loads(v.text)
         except json.JSONDecodeError:
             continue
-        cid = d.get("id", "")
-        if isinstance(cid, str) and cid.upper().startswith("WOS:"):
-            return norm_wos_ut(cid)
+
+        for key in ("id", "note", "annote"):
+            found = _extract_wos_ut_from_text(d.get(key, ""))
+            if found:
+                return found
+
     return None
 
 
