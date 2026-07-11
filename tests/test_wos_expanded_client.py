@@ -115,3 +115,22 @@ def test_extract_pub_info_prefers_issue_over_supplement():
     assert result["vol"] == "18"
     assert result["issue"] == "2"
     assert result["supplement"] == "1"
+def test_extract_pub_info_combines_supplement_and_special_issue():
+    rec = {
+        "static_data": {
+            "summary": {
+                "pub_info": {
+                    "vol": "18",
+                    "supplement": "1",
+                    "special_issue": "SI"
+                }
+            }
+        }
+    }
+
+    result = WosExpandedClient.extract_pub_info(rec)
+
+    assert result["vol"] == "18"
+    assert result["issue"] == "Suppl 1, SI"
+    assert result["supplement"] == "Suppl 1"
+    assert result["special_issue"] == "SI"
