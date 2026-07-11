@@ -1,6 +1,6 @@
 """Clarivate WoS Expanded API client.
 
-Wraps the two operations we need:
+Wraps the two operations we need: 
   GET /id/{uid}?databaseId=WOS&optionView=FR   — full record by UT
   GET /id/{uid}?databaseId=MEDLINE&optionView=FR — same for MEDLINE/BCI/etc.
 
