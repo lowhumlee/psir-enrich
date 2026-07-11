@@ -15,6 +15,7 @@ from psir_enrich.core import (
     norm_wos_ut,
     parse_csl_wos,
     parse_existing_extids,
+    inject_expanded_metadata,
     survey_article,
 )
 
@@ -256,3 +257,40 @@ def test_survey_article_csl_only():
     assert s.existing_wos is None
     assert s.csl_wos == "WOS:001abc"
     assert s.needs_wos() is True
+def test_inject_expanded_metadata_writes_wos_fund_text_even_if_funding_exists():
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns:ns2="{NS_URI}">
+  <ns2:article type="article">
+    <id>UMVfunding</id>
+    <title>Funding overwrite test</title>
+    <userfield type="field">
+      <id>UMVoldfunding</id>
+      <owner>sglinkov@mu-varna.bg</owner>
+      <affiliationowner>UMV</affiliationowner>
+      <key>Funding</key>
+      <value>Old generic funding text</value>
+    </userfield>
+    <userfield type="field">
+      <id>UMVoldwosfunding</id>
+      <owner>sglinkov@mu-varna.bg</owner>
+      <affiliationowner>UMV</affiliationowner>
+      <key>wos_fund_text</key>
+      <value>Old WoS funding text</value>
+    </userfield>
+  </ns2:article>
+</collection>
+"""
+    art = etree.fromstring(xml.encode())[0]
+
+    state = ArticleState()
+    state.new_fund_text = "New WoS funding text"
+
+    inject_expanded_metadata(art, state)
+
+    values = {
+        f.findtext("key"): f.findtext("value")
+        for f in art.findall("userfield")
+    }
+
+    assert values["Funding"] == "Old generic funding text"
+    assert values["wos_fund_text"] == "New WoS funding text"
