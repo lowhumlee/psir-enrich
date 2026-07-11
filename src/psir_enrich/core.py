@@ -597,15 +597,10 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
             "wos_grant_ids",
             " | ".join(state.new_fund_grant_ids),
         )
-    # Raw WoS funding text only if the existing Funding userfield is absent
+    # Raw WoS funding text: always write / overwrite wos_fund_text.
+    # Do not skip just because a generic Funding userfield already exists.
     if state.new_fund_text:
-        has_funding_userfield = any(
-            f.findtext("key") == "Funding"
-            for f in article.findall("userfield")
-        )
-        if not has_funding_userfield:
-            _upsert_userfield(article, "wos_fund_text", state.new_fund_text)
-
+        _upsert_userfield(article, "wos_fund_text", state.new_fund_text)
 
 # --------------------------------------------------------------------------
 # XML output — full collection
