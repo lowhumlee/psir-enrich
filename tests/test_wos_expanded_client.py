@@ -104,7 +104,8 @@ def test_extract_pub_info_prefers_issue_over_supplement():
                 "pub_info": {
                     "vol": "18",
                     "issue": "2",
-                    "supplement": "1"
+                    "supplement": "1",
+                    "special_issue": "SI"
                 }
             }
         }
@@ -114,7 +115,9 @@ def test_extract_pub_info_prefers_issue_over_supplement():
 
     assert result["vol"] == "18"
     assert result["issue"] == "2"
-    assert result["supplement"] == "1"
+    assert result["supplement"] == "Suppl 1"
+    assert result["special_issue"] == "SI"
+    
 def test_extract_pub_info_combines_supplement_and_special_issue():
     rec = {
         "static_data": {
