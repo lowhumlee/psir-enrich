@@ -1,163 +1,177 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project are documented here.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format broadly follows Keep a Changelog, and the project uses semantic versioning when formal releases are tagged. The package version is currently `0.4.0`; the top section describes changes already present on `main` after that release.
 
-## [0.2.1] — 2026-05-07
+---
 
-### Fixed
-- **UID lookup HTTP 400 error**: `lookup_by_uid()` was stripping the
-  `WOS:` prefix from the URL path, but Clarivate's `/documents/{uid}`
-  endpoint requires the full `<DB>:<id>` form. The colon is now URL-
-  encoded as `%3A` so it isn't misread as a port separator. (Caught by
-  user testing on Streamlit Cloud — thanks!)
-- **Streamlit 1.57 deprecation warning**: replaced
-  `use_container_width=True` with `width="stretch"` everywhere. Bumps
-  the minimum Streamlit version to 1.45.
+## [Unreleased] — current `main`
 
 ### Added
-- 6 regression tests in `tests/test_wos_client.py` pinning the URL
-  construction so the 400 bug can't recur silently.
 
-## [0.2.0] — 2026-05-07
-
-### Added
-- **Streamlit web GUI** (`app.py`) — upload XML, configure in the sidebar,
-  download patch + audit. The recommended interface for everyday use.
-- Streamlit Community Cloud deployment support via `requirements.txt`.
-- `.streamlit/config.toml` with sensible defaults; secrets template.
-- `DEPLOY.md` with full step-by-step deployment guide for GitHub +
-  Streamlit Community Cloud + self-hosting via nginx.
+- **NCBI PubMed DOI fallback** after Clarivate Starter DOI lookup fails. PubMed-only DOI records can now receive:
+  - `PubMedID = <PMID>`
+  - `WoSId = MEDLINE:<PMID>`
+- Starter DOI lookup now tries `db=WOS` first and then `db=MEDLINE` before falling back to NCBI PubMed.
+- CSL WoS extraction now reads publication WoS IDs from CSL `note` / `annote`, not only CSL `id`. This supports values such as:
+  - `Web of Science ID: WOS:000308718600143`
+  - `Web of Science ID: CABI:20183028270`
+- Expanded publication issue fallback now maps supplement and special issue metadata into PSIR `<no>` when a regular issue is absent:
+  - `supplement = 1` → `Suppl 1`
+  - `supplement = 1`, `special_issue = SI` → `Suppl 1, SI`
+- Added tests for:
+  - CSL note WoS extraction
+  - PubMed fallback producing `MEDLINE:<PMID>`
+  - robust funding extraction
+  - supplement/special issue handling
+  - `wos_fund_text` overwrite behavior
 
 ### Changed
-- The enrichment pipeline was refactored out of `cli.py` into a new
-  shared module `enrich.py`. Both the CLI and the Streamlit app now call
-  the same `run_enrichment()` function, so they stay in sync forever.
-- README rewritten to lead with the GUI; CLI documented as the
-  alternate path for automation.
 
-### Internal
-- Tests updated to import from `psir_enrich.enrich` instead of
-  `psir_enrich.cli`. All 44 tests still pass.
-- CI now also smoke-tests that `app.py` is importable.
-
-## [0.1.0] — 2026-05-07
-
-### Added
-- Initial public release.
-- Reads OMEGA-PSIR 4.6.4 native XML exports.
-- csl-WoS promotion (Tier 0): extracts WoS IDs already present in csl JSON.
-- Clarivate WoS Starter API client (DOI lookup + UID lookup).
-- Patch XML output for surgical re-import.
-- Audit CSV with full per-record decision trail.
-- Meeting abstract exclusion: skips PubMed lookups for meeting abstracts.
-- Pluggable per-institution configuration.
-- 44 unit + integration tests.
-
-## [0.3.0] — 2026-05-07
-
-### Fixed (breaking change in output format)
-- **PSIR import failure**: the previous "patch XML" format (`<publications><publication>`)
-  was rejected by PSIR's XML import because it didn't match the exported format.
-  The output is now a **full-fidelity collection XML** — identical structure to
-  the input, with new extid blocks added in-place on enriched articles and all
-  other articles preserved unchanged. Import this directly with:
-  - Tab: XML, Update record action: overwrite
-  - **Update external identifiers: ✓ CHECKED** (critical)
-
-### Changed
-- **PubMedID dictionary UUID is now auto-detected** from the input XML itself.
-  The `--pmid-idtype-uuid` CLI flag and the sidebar UUID input in the GUI have
-  been removed — no manual configuration required.
-- Output filename changed from `*_patch_*.xml` to `*_enriched_*.xml` to better
-  reflect that the file contains the full collection.
-- Added "How to import" instructions panel in the GUI results section.
-- `EnrichmentResult.patch_xml_bytes` renamed to `output_xml_bytes`.
-
-## [0.3.1] — 2026-05-08
+- Raw WoS funding text is now always written or overwritten in `wos_fund_text` when available. The generic PSIR `Funding` userfield is preserved and no longer suppresses `wos_fund_text`.
+- Documentation now distinguishes:
+  - generic PSIR `Funding`
+  - WoS raw funding text: `wos_fund_text`
+  - structured WoS agencies: `wos_grant_agencies`
+  - structured WoS grant IDs: `wos_grant_ids`
+- README and deployment guidance now describe the actual secrets:
+  - `WOS_API_KEY`
+  - `WOS_EXPANDED_API_KEY`
+  - `NCBI_EMAIL`
 
 ### Fixed
-- **Output XML contains only enriched records**: the v0.3.0 output included
-  all articles (enriched or not). Output is now a `<collection>` with only
-  the records that gained new extids — smaller file, faster PSIR import.
-- **UI results survive download button clicks**: downloads previously
-  triggered a full Streamlit rerun, wiping the audit table and download
-  buttons. Results are now stored in `st.session_state` and persist until
-  the user explicitly clicks "New run" in the sidebar.
 
-## [0.3.2] — 2026-05-08
+- Expanded funding extraction no longer crashes when `fund_ack` is `None` or malformed.
+- Clarified that `CABI` IDs may be stored as WoS IDs but are not eligible for Expanded `/id` lookup.
+- Updated test count and standard CI command to reflect the active test suite:
+  - `python -m pytest tests/ -v --ignore=tests/test_expanded.py`
 
-### Fixed
-- **Zotero/csl keys no longer treated as WoS IDs**: `norm_wos_ut()` now
-  rejects any value that doesn't start with `WOS:` or `ISI:` prefix, or
-  isn't a purely numeric bare accession (≥8 digits). Values like
-  `milkov2026posturographic` or `yaneva_diagnostic_2026` — Zotero-style
-  csl id fields — are now silently skipped rather than being emitted as
-  `WOS:milkov2026posturographic`. Those records fall through to the API
-  lookup instead.
-
-## [0.3.3] — 2026-05-08
-
-### Fixed
-- **Non-WOS collection UTs now stored verbatim**: `norm_wos_ut()` now
-  accepts the full set of WoS collection prefixes (MEDLINE, CABI, BCI,
-  BIOABS, BIOSIS, CCC, DIIDW, DRCI, ZOOREC, PPRN, WOK) and passes them
-  through unchanged — e.g. `CABI:20250175695` stays `CABI:20250175695`,
-  `MEDLINE:32832713` stays `MEDLINE:32832713`. Only the legacy `ISI:` prefix
-  is normalised (to `WOS:`). Non-WoS identifiers (Zotero keys, Scopus EIDs,
-  etc.) are still rejected and fall through to the API lookup.
-- `lookup_by_uid()` in the Clarivate client now passes any valid WoS UT
-  prefix through verbatim in the URL path, not just `WOS:`.
-
-## [0.3.4] — 2026-05-08
-
-### Fixed
-- **HTTP 400 on CABI/MEDLINE UID lookup**: the Starter API's `/documents/{uid}`
-  endpoint only accepts BCI, BIOABS, BIOSIS, CCC, DIIDW, DRCI and WOS/ISI.
-  Records whose UT prefix is not in that list (CABI, MEDLINE, ZOOREC, PPRN,
-  WOK) now skip the UID lookup entirely and log a clear note. DOI lookup is
-  still attempted for those records when a DOI is available.
-
-## [0.3.5] — 2026-05-08
-
-### Fixed
-- **Duplicate indicators in output XML**: citation counts (Scopus, GS, WoS)
-  and other indicator elements were appearing twice in the output for enriched
-  records. Root cause: lxml's `append()` *moves* elements when called on a
-  node that already belongs to another tree, leaving stale references that
-  caused child elements to be serialised twice. Fixed by deep-copying each
-  enriched article before appending it to the output collection.
+---
 
 ## [0.4.0] — 2026-05-12
 
 ### Added
-- **WoS Expanded API client** (`wos_expanded_client.py`): full-record
-  enrichment via `GET /id/{uid}?optionView=FR`. Requires a separate
-  `WOS_EXPANDED_API_KEY` (institutional subscription).
-- **Obligatory metadata fill** — `abstractEN`, `keywordsEN`, `collation`,
-  `articleNo`, `vol`, `no` are back-filled from the Expanded record when
-  absent in the PSIR record. Existing values are never overwritten.
-- **WoS subject classification** — `wos_categories` (ascatype=traditional,
-  e.g. "Food Science & Technology") and `wos_research_areas`
-  (ascatype=extended, e.g. "General & Internal Medicine") stored as
-  separate `<ns2:field>` elements. These are different vocabularies and
-  must not be conflated.
-- **WoS editions** (`wos_editions`): SCI / SSCI / ESCI / AHCI stored
-  as pipe-separated `<ns2:field>`.
-- **KeyWords Plus** (`wos_keywords_plus`): algorithmically derived
-  keywords from WoS, distinct from author keywords.
-- **Early access date** (`wos_early_access_date`).
-- **Structured funding** (`wos_grant_agencies`, `wos_grant_ids`): parsed
-  from WoS grant blocks, stored separately from the existing manual
-  `<userfield key="Funding">`.
-- `EnrichmentResult` gains `n_expanded_calls` and `n_expanded_errors`.
-- 40 new tests in `tests/test_expanded.py`.
+
+- **WoS Expanded API client** (`wos_expanded_client.py`) for full-record enrichment through `GET /id/{uid}?optionView=FR`.
+- Optional `WOS_EXPANDED_API_KEY` support.
+- Metadata fill from Expanded records:
+  - `abstractEN`
+  - `keywordsEN`
+  - `collation`
+  - journal issue `vol`
+  - journal issue `no`
+- WoS subject classification fields:
+  - `wos_categories`
+  - `wos_research_areas`
+- KeyWords Plus field:
+  - `wos_keywords_plus`
+- Structured funding fields:
+  - `wos_grant_agencies`
+  - `wos_grant_ids`
+- `EnrichmentResult` counters for Starter and Expanded calls/errors.
 
 ### Fixed
-- MEDLINE / BCI / BIOABS / BIOSIS / CCC / DIIDW / DRCI / ZOOREC / PPRN
-  prefixes are now correctly eligible for Expanded `/id` lookup.
-  Previously they were incorrectly inheriting the Starter API's more
-  restrictive exclusion list. Only `CABI` and `WOK` remain unsupported
-  by the Expanded `/id` endpoint.
+
+- MEDLINE / BCI / BIOABS / BIOSIS / CCC / DIIDW / DRCI / ZOOREC / PPRN prefixes are eligible for Expanded `/id` lookup where supported. `CABI` and `WOK` remain unsupported by Expanded `/id`.
+
+---
+
+## [0.3.5] — 2026-05-08
+
+### Fixed
+
+- **Duplicate indicators in output XML**: citation counts and other indicator elements could appear twice in enriched output. Fixed by deep-copying enriched articles before appending them to the output collection.
+
+---
+
+## [0.3.4] — 2026-05-08
+
+### Fixed
+
+- **HTTP 400 on unsupported Starter UID lookup**: records with prefixes unsupported by Starter `/documents/{uid}` now skip UID lookup and log a clear audit note. DOI lookup remains available.
+
+---
+
+## [0.3.3] — 2026-05-08
+
+### Fixed
+
+- `norm_wos_ut()` accepts known WoS collection prefixes such as `MEDLINE`, `CABI`, `BCI`, `BIOABS`, `BIOSIS`, `CCC`, `DIIDW`, `DRCI`, `ZOOREC`, `PPRN`, and `WOK`.
+- Legacy `ISI:` is normalized to `WOS:`.
+- Non-WoS identifiers such as Zotero keys and Scopus IDs are rejected.
+
+---
+
+## [0.3.2] — 2026-05-08
+
+### Fixed
+
+- Zotero/CSL keys are no longer treated as WoS IDs. Values such as `milkov2026posturographic` are rejected and fall through to API lookup.
+
+---
+
+## [0.3.1] — 2026-05-08
+
+### Fixed
+
+- Output XML now contains only enriched records, not the entire original collection.
+- Streamlit results persist after download button clicks using `st.session_state`.
+
+---
+
+## [0.3.0] — 2026-05-07
+
+### Fixed
+
+- Replaced the older custom patch format with a PSIR-compatible `<collection>` XML output.
+
+### Changed
+
+- PubMedID dictionary UUID is auto-detected from input XML.
+- Output filename changed from patch-style naming to enriched XML naming.
+- GUI added import instructions.
+- `EnrichmentResult.patch_xml_bytes` renamed to `output_xml_bytes`.
+
+---
+
+## [0.2.1] — 2026-05-07
+
+### Fixed
+
+- UID lookup URL construction now preserves and URL-encodes the full `<DB>:<id>` identifier.
+- Replaced deprecated Streamlit `use_container_width=True` usage where applicable.
+
+### Added
+
+- Regression tests for Starter client URL construction.
+
+---
+
+## [0.2.0] — 2026-05-07
+
+### Added
+
+- Streamlit web GUI.
+- Streamlit Community Cloud deployment support.
+- `.streamlit/config.toml` and secrets template.
+- Deployment guide.
+
+### Changed
+
+- Shared enrichment pipeline extracted into `enrich.py`.
+
+---
+
+## [0.1.0] — 2026-05-07
+
+### Added
+
+- Initial public release.
+- Reads OMEGA-PSIR XML exports.
+- CSL WoS promotion.
+- Clarivate WoS Starter API client.
+- Enriched XML output.
+- Audit CSV.
+- Meeting abstract PMID exclusion.
+- Unit/integration tests.
