@@ -1,160 +1,205 @@
 # psir-enrich
 
-**Enrich [OMEGA-PSIR](https://omega-psir.atlassian.net/) publication records with Web of Science Identifiers and PubMed IDs via the [Clarivate WoS Starter API](https://developer.clarivate.com/apis/wos-starter).**
+**Enrich OMEGA-PSIR publication XML records with Web of Science identifiers, PubMed IDs, and selected WoS Expanded metadata.**
 
-A web-based GUI (Streamlit) for everyday use, plus a command-line interface for automation and batch jobs. Built and tested for the OMEGA-PSIR 4.6.4 installation at the Medical University of Varna, but the institution-specific dictionary UUIDs are configurable.
-
----
-
-## Quick demo
-
-1. Upload your PSIR XML export.
-2. Paste your Clarivate API key.
-3. Click **Run enrichment**.
-4. Download the patch XML (ready to re-import into PSIR) and the audit CSV.
-
-That's it.
+`psir-enrich` provides a Streamlit GUI for routine use and a CLI for batch work. It was built for the OMEGA-PSIR 4.6.4 installation at the Medical University of Varna, with MU-Varna dictionary UUIDs currently embedded in the XML writer.
 
 ---
 
-## What it does
+## Current capabilities
 
-For each `<ns2:article>` in your input XML, the tool:
+For each `<ns2:article>` in a PSIR XML export, the tool builds an audit trail and, when needed, writes an output `<collection>` containing only the enriched records.
 
-1. **Surveys** existing `<extid>` blocks — if both `WoSId` and `PubMedID` are already there, the record is skipped (zero API calls).
-2. **Promotes csl-WoS** — when the `csl` JSON metadata already has a `WOS:` ID but no proper extid block, it's promoted for free.
-3. **Looks up by DOI** — calls Clarivate `/documents?q=DO=<doi>&db=WOS` for any record still missing identifiers.
-4. **Falls back to UID lookup** — for records with a known WoS UT but missing PMID, calls `/documents/{uid}`.
-5. **Excludes meeting abstracts** from PubMed lookups by default.
-6. **Outputs a patch XML** with only the changed records, plus an audit CSV showing every decision.
+### Identifier enrichment
+
+1. Reads direct article-level `<extid>` blocks for `WoSId` and `PubMedID`.
+2. Promotes publication WoS IDs already present in CSL JSON:
+   - `id`: `WOS:...`, `CABI:...`, `MEDLINE:...`, etc.
+   - `note` / `annote`: text such as `Web of Science ID: WOS:...` or `Web of Science ID: CABI:...`.
+3. Searches DOI through Clarivate Starter API:
+   - first `db=WOS`
+   - then `db=MEDLINE`, when available through the plan/API response.
+4. Falls back to NCBI PubMed ESearch when Clarivate does not resolve the DOI but PubMed does. In that case it stores:
+   - `PubMedID = <PMID>`
+   - `WoSId = MEDLINE:<PMID>`
+5. For records with a known supported WoS UT but missing PMID, tries Starter UID lookup.
+6. Skips PubMed lookup for meeting abstracts by default, but still stores available WoS identifiers.
+
+### Expanded metadata enrichment
+
+When a WoS Expanded API key is provided, records with an eligible UT are fetched through Expanded `/id/{uid}?optionView=FR`.
+
+The tool fills these fields only when missing in PSIR:
+
+- `abstractEN`
+- `keywordsEN`
+- `collation`
+- journal issue `vol`
+- journal issue `no`
+
+For issue number, WoS `issue` is preferred. If there is no regular issue, supplement/special issue values are mapped to PSIR `<no>`, for example:
+
+- `supplement = 1` → `Suppl 1`
+- `supplement = 1`, `special_issue = SI` → `Suppl 1, SI`
+
+The tool writes or updates these WoS-derived userfields:
+
+- `wos_categories`
+- `wos_research_areas`
+- `wos_keywords_plus`
+- `wos_grant_agencies`
+- `wos_grant_ids`
+- `wos_fund_text`
+
+`wos_fund_text` is always written or overwritten from WoS funding text when available. The generic PSIR `Funding` userfield is left untouched.
+
+### Output files
+
+Each run produces:
+
+- enriched XML containing only changed records
+- audit CSV containing all input records and the action/skip reason for each one
 
 ---
 
-## Run the GUI locally
+## Quick GUI use
 
-### Prerequisites
-- Python 3.9 or newer
-- A Clarivate WoS Starter API key ([how to get one](#how-do-i-get-a-clarivate-api-key))
+1. Upload a PSIR XML export.
+2. Paste a Clarivate Starter API key, or leave it blank for CSL-only enrichment.
+3. Optionally paste a WoS Expanded API key for metadata enrichment.
+4. Click **Run enrichment**.
+5. Download the enriched XML and audit CSV.
 
-### Install + launch
+---
+
+## Run locally
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USER/psir-enrich.git
+git clone https://github.com/lowhumlee/psir-enrich.git
 cd psir-enrich
-pip install -e .
+python -m pip install -e .
 streamlit run app.py
 ```
 
-Your default browser opens at `http://localhost:8501`. Paste your API key in the sidebar, upload an XML, click **Run**.
+Open `http://localhost:8501` if the browser does not open automatically.
 
-### Storing the API key locally
+### API keys
 
-If you don't want to paste the key every time, copy the secrets template:
+You can paste keys in the sidebar, or use environment variables:
 
 ```bash
-cp .streamlit/secrets.toml.example .streamlit/secrets.toml
-# edit and put your real key inside
+export WOS_API_KEY="your-starter-key"
+export WOS_EXPANDED_API_KEY="your-expanded-key"      # optional
+export NCBI_EMAIL="you@example.org"                  # optional but recommended for PubMed fallback
 ```
 
-`secrets.toml` is git-ignored — it will never be committed.
+For Streamlit secrets, use:
 
-Alternatively, set the `WOS_API_KEY` environment variable before launching Streamlit and the app will pick it up automatically.
+```toml
+WOS_API_KEY = "your-starter-key"
+WOS_EXPANDED_API_KEY = "your-expanded-key"
+NCBI_EMAIL = "you@example.org"
+```
+
+The PubMed fallback does not require an NCBI API key for low-volume use.
 
 ---
 
 ## Deploy to Streamlit Community Cloud
 
-[Streamlit Community Cloud](https://share.streamlit.io/) hosts public Streamlit apps for free. Five-minute setup:
+1. Push the repository to GitHub.
+2. Go to Streamlit Community Cloud.
+3. Create a new app using:
+   - repository: `lowhumlee/psir-enrich`
+   - branch: `main`
+   - main file path: `app.py`
+4. Add secrets before deploying:
 
-1. Push this repo to your GitHub account (see [DEPLOY.md](DEPLOY.md) for the full guide).
-2. Go to [share.streamlit.io](https://share.streamlit.io/), sign in with GitHub.
-3. Click **New app** → pick your repo + branch → set "Main file path" to `app.py`.
-4. Before clicking Deploy, click **Advanced settings** → **Secrets** and paste:
-   ```toml
-   WOS_API_KEY = "your-clarivate-key"
-   ```
-5. Click **Deploy**. Public URL is yours in ~2 minutes.
-
-To restrict access (recommended given the API key is institution-bound), enable [Authentication](https://docs.streamlit.io/deploy/streamlit-community-cloud/share-your-app/share-your-app-with-viewers-outside-your-workspace) on the app's dashboard or deploy on internal infrastructure instead — see "Self-host" below.
-
-### Self-host on your own server
-
-```bash
-# On a server with Python 3.9+
-git clone https://github.com/YOUR_GITHUB_USER/psir-enrich.git
-cd psir-enrich
-pip install -e .
-
-# Run with a process manager (systemd, supervisor, etc.) - simplest:
-streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+```toml
+WOS_API_KEY = "your-starter-key"
+WOS_EXPANDED_API_KEY = "your-expanded-key"
+NCBI_EMAIL = "you@example.org"
 ```
 
-Put it behind a reverse proxy (nginx, Caddy) with HTTPS for production use.
+Only `WOS_API_KEY` is required for Starter enrichment. `WOS_EXPANDED_API_KEY` enables Expanded metadata enrichment. `NCBI_EMAIL` is optional but recommended for the PubMed DOI fallback.
+
+See [DEPLOY.md](DEPLOY.md) for the fuller deployment and maintenance guide.
 
 ---
 
-## Use the CLI instead
-
-For automation, scripting, or running on machines without a display, use the `psir-enrich` command:
+## CLI
 
 ```bash
-pip install -e .  # or pip install git+https://github.com/YOUR_GITHUB_USER/psir-enrich.git
+# install locally
+python -m pip install -e .
 
-# Dry run (csl-only, no API):
-psir-enrich -i my_export.xml -o patch.xml --no-api
+# csl-only run, no API calls
+psir-enrich --input my_export.xml --output enriched.xml --no-api
 
-# Real run:
-export WOS_API_KEY="your-key"
-psir-enrich \
-    --input  my_export.xml \
-    --output patch.xml \
-    --pmid-idtype-uuid "WUTxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-    --plan subscriber
+# Starter run
+export WOS_API_KEY="your-starter-key"
+psir-enrich --input my_export.xml --output enriched.xml --plan subscriber
 ```
 
-Run `psir-enrich --help` for all options.
+Run:
+
+```bash
+psir-enrich --help
+```
+
+for the current CLI options.
 
 ---
 
-## How do I get a Clarivate API key?
+## Import into PSIR
 
-1. Go to the [Clarivate Developer Portal](https://developer.clarivate.com/).
-2. Sign in with your Web of Science institutional credentials.
-3. Register a new application (any name).
-4. Subscribe it to **Web of Science Starter API**.
-5. Copy the API key from the application page.
+Use the XML import tab and import the enriched XML as an update file.
 
-For everyday institutional use, the **Subscriber** plan (5,000 requests/day) is the right tier. The **Free** plan (50/day) is enough for testing.
+Recommended import settings:
+
+- Tab: XML
+- Update record action: overwrite
+- Update external identifiers: checked
+- Default field update action: overwrite
+
+Check the audit CSV before import when the run contains API errors or unexpected skip notes.
 
 ---
 
 ## Project structure
 
-```
+```text
 psir-enrich/
-├── app.py                       # Streamlit GUI — the main user-facing entry
-├── pyproject.toml               # Package metadata + dependencies
-├── requirements.txt             # For Streamlit Community Cloud deployment
+├── app.py                         # Streamlit GUI
+├── DEPLOY.md                      # Deployment guide
+├── CHANGELOG.md                   # Release notes
 ├── README.md
-├── DEPLOY.md                    # GitHub + Streamlit Cloud deployment guide
-├── CHANGELOG.md
-├── LICENSE
-├── .streamlit/
-│   ├── config.toml              # Streamlit defaults (theme, upload limits)
-│   └── secrets.toml.example     # Template — copy to secrets.toml and edit
-├── .github/workflows/ci.yml     # CI: tests on push/PR, all OS × Py versions
+├── requirements.txt               # Streamlit Cloud install file
+├── pyproject.toml                 # Package metadata
 ├── src/psir_enrich/
-│   ├── __init__.py              # Public API
-│   ├── core.py                  # XML parsing, state, ID normalisation
-│   ├── wos_client.py            # Clarivate WoS Starter API client
-│   ├── enrich.py                # Shared enrichment pipeline (used by GUI + CLI)
-│   └── cli.py                   # Command-line entry point
+│   ├── core.py                    # PSIR XML parsing/writing and state model
+│   ├── enrich.py                  # Shared enrichment pipeline
+│   ├── wos_client.py              # Starter API + PubMed fallback client
+│   ├── wos_expanded_client.py     # Expanded API client and extractors
+│   └── cli.py                     # CLI entry point
 └── tests/
-    ├── test_core.py             # Pure logic tests
-    ├── test_cli.py              # Pipeline integration tests (mocked API)
-    └── fixtures/
-        └── mini.xml
+    ├── test_core.py
+    ├── test_cli.py
+    ├── test_wos_client.py
+    ├── test_wos_expanded_client.py
+    └── test_expanded.py           # legacy/extended Expanded tests, ignored by the standard CI command
 ```
+
+---
+
+## Development
+
+```bash
+python -m pip install -e ".[dev]"
+python -m pytest tests/ -v --ignore=tests/test_expanded.py
+```
+
+The standard test command currently runs 73 tests covering XML parsing, CSL note extraction, Starter lookup construction, PubMed fallback, Expanded extraction helpers, funding handling, and CLI behavior. API calls are mocked in tests.
 
 ---
 
@@ -162,26 +207,13 @@ psir-enrich/
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| "401 Unauthorized" in error log | Wrong API key | Check the key in the sidebar |
-| "404 Not found" on every call | Wrong base URL | Reset to default in sidebar Advanced |
-| "429 Rate limited" | Too fast for plan | Increase rate-limit in sidebar Advanced or pick a lower plan |
-| Patch XML has WoS but no PMID extids | PubMedID UUID was empty | Fill it in the sidebar and re-run |
-| All API calls return "no hits" | DOIs not in WoS | Spot-check a DOI on webofscience.com |
-| Streamlit fails to start: "ImportError: lxml" | Missing platform wheel | `pip install lxml --upgrade` |
-| Streamlit Cloud deploy fails | `requirements.txt` issue | Check the deploy logs; ensure `-e .` is at the top |
-
----
-
-## Development
-
-```bash
-git clone https://github.com/YOUR_GITHUB_USER/psir-enrich.git
-cd psir-enrich
-pip install -e ".[dev]"
-pytest tests/ -v
-```
-
-44 unit + integration tests covering normalisation, XML parsing, the enrichment ladder, and the CLI. The tests use a mocked WoS client so no real API calls are made.
+| `401 Unauthorized` | Wrong Starter or Expanded API key | Recheck the relevant key in the sidebar/secrets |
+| DOI is PubMed-only and not in WoS Core | Starter `db=WOS` returns no hit | The NCBI PubMed fallback should fill `PubMedID` and `MEDLINE:<PMID>` |
+| `CABI:` ID is found but Expanded is skipped | CABI is not supported by the Expanded `/id` endpoint | This is expected; the ID is still written |
+| No `no` issue field from an abstract/supplement | WoS used supplement/special issue metadata | Current code maps this to `Suppl ...` / `SI` |
+| Funding text not changing | Look for `wos_fund_text`, not generic `Funding` | Generic `Funding` is preserved; `wos_fund_text` is overwritten |
+| Streamlit app keeps old behavior after commit | App did not redeploy or failed to pull files | Reboot/redeploy app and inspect Streamlit Cloud logs |
+| Streamlit deploy fails during import | Dependency/install problem | Check that `requirements.txt` starts with `-e .` |
 
 ---
 
