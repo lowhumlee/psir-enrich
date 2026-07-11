@@ -253,21 +253,80 @@ class WosExpandedClient:
 
         out["vol"] = _s(pi.get("vol"))
 
-        # WoS may store issue-like information either as issue or supplement.
-        # PSIR has only <no>, so use issue first, then supplement as fallback.
+        # WoS may store issue-like information as:
+        #   issue
+        #   supplement
+        #   special_issue
+        #
+        # PSIR has only <no>, so:
+        #   issue wins if present
+        #   otherwise use supplement / special issue as fallback
+        #
+        # Examples:
+        #   supplement = "1"                     -> "Suppl 1"
+        #   supplement = "1", special_issue="SI" -> "Suppl 1, SI"
+        #   special_issue = "SI"                 -> "SI"
         issue = _s(pi.get("issue"))
-        supplement = (
+
+        raw_supplement = (
             _s(pi.get("supplement"))
             or _s(pi.get("supp"))
-            or _s(pi.get("special_issue"))
         )
 
-        out["issue"] = issue or supplement
+        raw_special_issue = (
+            _s(pi.get("special_issue"))
+            or _s(pi.get("specialIssue"))
+            or _s(pi.get("specialissue"))
+        )
+
+        def _format_supplement(value) -> Optional[str]:
+            s = _s(value)
+            if not s:
+                return None
+
+            low = s.lower().strip()
+
+            if low.startswith("suppl"):
+                rest = s[5:].lstrip(". ").strip()
+                return f"Suppl {rest}".strip()
+
+            if low.startswith("supplement"):
+                rest = s[10:].lstrip(". ").strip()
+                return f"Suppl {rest}".strip()
+
+            return f"Suppl {s}"
+
+        def _format_special_issue(value) -> Optional[str]:
+            s = _s(value)
+            if not s:
+                return None
+
+            low = s.lower().strip()
+
+            # WoS may expose special issue as SI, yes/true, or similar.
+            if low in {"si", "special issue", "special_issue", "y", "yes", "true", "1"}:
+                return "SI"
+
+            # If WoS gives a more specific label, preserve it.
+            return s
+
+        supplement = _format_supplement(raw_supplement)
+        special_issue = _format_special_issue(raw_special_issue)
+
+        fallback_issue_parts = []
+        if supplement:
+            fallback_issue_parts.append(supplement)
+        if special_issue:
+            fallback_issue_parts.append(special_issue)
+
+        fallback_issue = ", ".join(fallback_issue_parts) if fallback_issue_parts else None
+
+        out["issue"] = issue or fallback_issue
         out["supplement"] = supplement
+        out["special_issue"] = special_issue
 
         out["early_access_date"] = _s(pi.get("early_access_date"))
         out["early_access_year"] = _s(pi.get("early_access_year"))
-
         page = pi.get("page") or {}
         if isinstance(page, dict):
             out["page_begin"] = _s(page.get("begin"))
