@@ -470,13 +470,13 @@ else:
     )
 
     # --- XML preview ---
-    if result.n_enriched > 0:
-        with st.expander("👁 Preview patch XML"):
-            st.code(
-                result.output_xml_bytes.decode("utf-8"),
-                language="xml",
-                line_numbers=True,
-            )
+    #if result.n_enriched > 0:
+    #    with st.expander("👁 Preview patch XML"):
+    #        st.code(
+    #            result.output_xml_bytes.decode("utf-8"),
+    #            language="xml",
+    #            line_numbers=True,
+    #        )
 
 # --------------------------------------------------------------------------
 # Footer
