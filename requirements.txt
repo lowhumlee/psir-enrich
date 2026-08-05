@@ -1,11 +1,11 @@
 # Streamlit Community Cloud deployment requirements.
 # The first line installs THIS repo as a package, so `import psir_enrich`
 # works inside app.py without any sys.path hacks.
-
 -e .
+streamlit==1.45.1
 
 # Pinned external dependencies (also declared in pyproject.toml for parity).
-lxml>=4.9
-pandas>=2.0
-requests>=2.31
-streamlit>=1.45
+# lxml>=4.9
+# pandas>=2.0
+# requests>=2.31
+# streamlit>=1.45
