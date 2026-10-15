@@ -2,7 +2,7 @@
 
 **Enrich OMEGA-PSIR publication XML records with Web of Science identifiers, PubMed IDs, and selected WoS Expanded metadata.**
 
-`psir-enrich` provides a Streamlit GUI for routine use and a CLI for batch work. It was built for the OMEGA-PSIR 4.6.4 installation at the Medical University of Varna, with MU-Varna dictionary UUIDs currently embedded in the XML writer.
+`psir-enrich` provides a Streamlit GUI for routine use and a CLI for batch work. It was built for the OMEGA-PSIR 4.6.4 installation at the Medical University of Varna, with MU-Varna dictionary UUIDs and XML conventions baked into the import/export logic.
 
 ---
 
@@ -34,8 +34,11 @@ The tool fills these fields only when missing in PSIR:
 - `abstractEN`
 - `keywordsEN`
 - `collation`
+- `articleNo` (when no page range is available and no article number already exists in the source XML)
 - journal issue `vol`
 - journal issue `no`
+
+For page locations, WoS `page.begin` / `page.end` are mapped to PSIR `<collation>`. If the record has no pages, the tool uses the WoS article number (`pub_info.page` / article number field) as `<articleNo>` when the input XML lacks both a page range and an existing article number.
 
 For issue number, WoS `issue` is preferred. If there is no regular issue, supplement/special issue values are mapped to PSIR `<no>`, for example:
 
@@ -199,7 +202,7 @@ python -m pip install -e ".[dev]"
 python -m pytest tests/ -v --ignore=tests/test_expanded.py
 ```
 
-The standard test command currently runs 73 tests covering XML parsing, CSL note extraction, Starter lookup construction, PubMed fallback, Expanded extraction helpers, funding handling, and CLI behavior. API calls are mocked in tests.
+The standard test command currently runs 73 tests covering XML parsing, CSL note extraction, Starter lookup construction, PubMed fallback, Expanded extraction helpers, funding handling, and CLI behavior.
 
 ---
 
@@ -211,6 +214,7 @@ The standard test command currently runs 73 tests covering XML parsing, CSL note
 | DOI is PubMed-only and not in WoS Core | Starter `db=WOS` returns no hit | The NCBI PubMed fallback should fill `PubMedID` and `MEDLINE:<PMID>` |
 | `CABI:` ID is found but Expanded is skipped | CABI is not supported by the Expanded `/id` endpoint | This is expected; the ID is still written |
 | No `no` issue field from an abstract/supplement | WoS used supplement/special issue metadata | Current code maps this to `Suppl ...` / `SI` |
+| Pages are missing and no article number is being added | Expanded record had no page range and the input lacked `articleNo` | Code now falls back to WoS article number when available |
 | Funding text not changing | Look for `wos_fund_text`, not generic `Funding` | Generic `Funding` is preserved; `wos_fund_text` is overwritten |
 | Streamlit app keeps old behavior after commit | App did not redeploy or failed to pull files | Reboot/redeploy app and inspect Streamlit Cloud logs |
 | Streamlit deploy fails during import | Dependency/install problem | Check that `requirements.txt` starts with `-e .` |
