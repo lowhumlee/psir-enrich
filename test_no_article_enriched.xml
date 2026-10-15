@@ -1,0 +1,2357 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<collection xmlns:ns2="http://ii.pw.edu.pl/lib"><ns2:article type="article">
+        <metaData>
+            <lastModifiedBy>sglinkov@mu-varna.bg</lastModifiedBy>
+            <lastModified>2026-10-12T21:53:30.670+02:00</lastModified>
+            <created>2026-09-29T15:10:35.944+02:00</created>
+        </metaData>
+        <meta_datestamp>1791834810670</meta_datestamp>
+        <ns2:journalissue type="journalissue">
+            <id>UMV776517c8113e42ddae9958e85d583232</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <ns2:journalseries type="journalseries">
+                <id>UMV22485358952e432ba555dd3d54e377a7</id>
+                <recordStatus>verified</recordStatus>
+                <profileverificationresult>undefined</profileverificationresult>
+                <extid type="termfield">
+                    <id>UMVfb48ff2061b24b6fac3cebc2a405b309</id>
+                    <owner>sglinkov@mu-varna.bg</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT771bbaed0dbb4938914003469751d09f</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>SHERPA_ID</systemName>
+                        <namePL>Идентификатор Sherpa</namePL>
+                        <nameEN>SherpaID</nameEN>
+                        <priority>EI130</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>UMV22485358952e432ba555dd3d54e377a7</value>
+                </extid>
+                <shortName>NeuroSci</shortName>
+                <fullName>NeuroSci</fullName>
+                <fullNameEN>NeuroSci</fullNameEN>
+                <eissn>2673-4087</eissn>
+                <publisher>MDPI </publisher>
+                <ns2:language type="language">
+                    <id>WEITI-bc90626b-ed19-490f-b9c3-daf0bffd1760</id>
+                    <owner>admin</owner>
+                    <affiliationowner>IN</affiliationowner>
+                    <code>en</code>
+                    <iso2>eng</iso2>
+                    <namePL>Английски</namePL>
+                    <nameEN>English</nameEN>
+                    <ns2:field type="field">
+                        <id>WUT7011e8e4e6f74b38a2ca632b6de071e5</id>
+                        <owner>PbnIntegrator</owner>
+                        <affiliationowner>IN</affiliationowner>
+                        <key>pbn_639-2</key>
+                        <value>eng</value>
+                    </ns2:field>
+                    <ns2:field type="field">
+                        <id>WUT73e8cec6538944e383d6282838e2f964</id>
+                        <owner>PbnIntegrator</owner>
+                        <affiliationowner>IN</affiliationowner>
+                        <key>pbn_639-1</key>
+                        <value>en</value>
+                    </ns2:field>
+                    <ns2:field type="field">
+                        <id>WUT65f08cfa99d14cd9bf5f0d65185ce27d</id>
+                        <owner>PbnIntegrator</owner>
+                        <affiliationowner>IN</affiliationowner>
+                        <key>pbn_pl</key>
+                        <value>angielski</value>
+                    </ns2:field>
+                    <ns2:field type="field">
+                        <id>WUT108a680882134cf18b2f743d829026b5</id>
+                        <owner>PbnIntegrator</owner>
+                        <affiliationowner>IN</affiliationowner>
+                        <key>pbn_en</key>
+                        <value>English</value>
+                    </ns2:field>
+                    <ns2:field type="field">
+                        <id>WUT8cbc478cf51c4345a7a1d27ef40339c7</id>
+                        <owner>PbnIntegrator</owner>
+                        <affiliationowner>IN</affiliationowner>
+                        <key>pbn_de</key>
+                        <value>Englisch</value>
+                    </ns2:field>
+                    <ns2:field type="field">
+                        <id>WUT7cba2fb293374920b434cde356f0ec3a</id>
+                        <owner>PbnIntegrator</owner>
+                        <affiliationowner>IN</affiliationowner>
+                        <key>pbn_fr</key>
+                        <value>anglais</value>
+                    </ns2:field>
+                </ns2:language>
+                <foreign>true</foreign>
+                <frequency>quarterly</frequency>
+                <score>0</score>
+                <impactFactor>0.0</impactFactor>
+                <nameOfLists>A</nameOfLists>
+                <type>journalseries</type>
+                <journalStatus>Active</journalStatus>
+            </ns2:journalseries>
+            <vol>7</vol>
+            <no>3</no>
+            <issueDate>2026</issueDate>
+            <evaluationYear xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+        </ns2:journalissue>
+        <id>UMV59931b5560e147438860c9f34fd8e0bb</id>
+        <recordStatus>partial</recordStatus>
+        <owner>sglinkov@mu-varna.bg</owner>
+        <affiliationowner>UMV</affiliationowner>
+        <extid type="termfield">
+            <id>UMV4bcdc07831fa46dea212a48371f66757</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <idtype type="term">
+                <id>WUT8451786af88c4580b1198f347a0048f5</id>
+                <owner>system</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>external_id</code>
+                    <name>External id</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>WoSId</systemName>
+                <namePL>Идентификатор WoS</namePL>
+                <nameEN>WoS Identifier</nameEN>
+                <priority>EI110</priority>
+                <notActive>false</notActive>
+            </idtype>
+            <value>WOS:001803095000001</value>
+        </extid>
+        <inPress>false</inPress>
+        <noEvaluation>false</noEvaluation>
+        <meetsPlanSRequirements>false</meetsPlanSRequirements>
+        <score>0</score>
+        <rulesetName>Scopus SNIP (with ASJC) v2, ScopusCiteScore, IFWoS</rulesetName>
+        <ns2:indicator type="indicator">
+            <id>UMVe6388aceff5f48abb193daac5a2913e2</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <name type="term">
+                <id>WUTe0f43d022c60406e898cc3ac4720359d</id>
+                <owner>system</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUTde3a681a169d462f8f2ff0aecda362c1</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>citations</code>
+                    <name>Citations</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>citationsWoS</systemName>
+                <namePL>цитати WoS</namePL>
+                <nameEN>WoS citations</nameEN>
+                <priority>CI110</priority>
+                <notActive>false</notActive>
+            </name>
+            <ns2:indicatordata type="indicatordata">
+                <id>UMVbec393c706014458ba7a948d6824fe2e</id>
+                <owner>sglinkov@mu-varna.bg</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <year xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                <value>0</value>
+                <evaluationDate>2026-10-03T20:04:29+0200</evaluationDate>
+            </ns2:indicatordata>
+        </ns2:indicator>
+        <ns2:indicator type="indicator">
+            <name type="term">
+                <id>WUT33b2c6308a6f43a9885274ce25bac3e3</id>
+                <owner>system</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT3da0fee0db7e4a2aa0c5e3e4672f51e4</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>impactFactor</code>
+                    <name>Impact Factor</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>IFWoS</systemName>
+                <namePL>Impact Factor WoS</namePL>
+                <nameEN>WoS Impact Factor</nameEN>
+                <priority>IF210</priority>
+                <notActive>false</notActive>
+            </name>
+            <ns2:indicatordata type="indicatordata">
+                <id>UMVda7081a53cce435f884ccd245665ec9a</id>
+                <owner>sglinkov@mu-varna.bg</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <year>2025</year>
+                <value>1.9</value>
+                <svalue>2</svalue>
+                <evaluationDate>2026-10-12T21:53:30+0200</evaluationDate>
+            </ns2:indicatordata>
+        </ns2:indicator>
+        <ns2:indicator type="indicator">
+            <name type="term">
+                <id>UOG9757df2ea8c24f8daa092573d0eb28dd</id>
+                <owner>dbazan</owner>
+                <affiliationowner>UG</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT3da0fee0db7e4a2aa0c5e3e4672f51e4</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>impactFactor</code>
+                    <name>Impact Factor</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>JIFQuartile</systemName>
+                <namePL>JIF Quartile</namePL>
+                <nameEN>JIF Quartile</nameEN>
+                <priority>IF213</priority>
+                <notActive>false</notActive>
+            </name>
+            <ns2:indicatordata type="indicatordata">
+                <id>UMVfe53c3ae390d417ba732d3f3a052e294</id>
+                <owner>sglinkov@mu-varna.bg</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <year>2025</year>
+                <value>3</value>
+                <evaluationDate>2026-10-12T21:53:30+0200</evaluationDate>
+            </ns2:indicatordata>
+        </ns2:indicator>
+        <ns2:author type="author">
+            <id>UMVc53e5bd4fa514a2192fa7e50415fd8a5</id>
+            <recordStatus>verified</recordStatus>
+            <active>true</active>
+            <status>PRACOWNIK</status>
+            <officialAcademicDegree type="term">
+                <id>WUTc21c1628c4ec42c8b6b053a2d5ff6c69</id>
+                <owner>wstruk</owner>
+                <affiliationowner>PW</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT4e7b6f866b8d489888bd3347c5a97bb3</id>
+                    <owner>wstruk</owner>
+                    <affiliationowner>PW</affiliationowner>
+                    <code>academicDegree</code>
+                    <name>Stopień/tytuł</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>dr</systemName>
+                <namePL>Доктор</namePL>
+                <nameEN>PhD</nameEN>
+                <accronymPL>Док.</accronymPL>
+                <accronymEN>PhD</accronymEN>
+                <priority>D51</priority>
+                <notActive>false</notActive>
+            </officialAcademicDegree>
+            <belonging2N>false</belonging2N>
+            <name>Мария Миткова</name>
+            <surname>Иванова</surname>
+            <nameTransliteration>Mariya Mitkova</nameTransliteration>
+            <surnameTransliteration>Ivanova</surnameTransliteration>
+            <email>m.m.ivanova@mu-varna.bg</email>
+            <ns2:affiliation type="affiliation">
+                <id>MUV03040</id>
+                <recordStatus>completed</recordStatus>
+                <namePL>Катедра по организация и икономика на фармацията</namePL>
+                <nameEN>Department of Organization and Economics of Pharmacy</nameEN>
+                <accronymPL>ОРГИКФАРМ</accronymPL>
+                <accronymEN>ORGECOPHARM</accronymEN>
+                <ns2:affiliation type="affiliation">
+                    <id>MUV03000</id>
+                    <recordStatus>completed</recordStatus>
+                    <namePL>Факултет по фармация</namePL>
+                    <nameEN>Faculty of Pharmacy</nameEN>
+                    <accronymPL>ФФ</accronymPL>
+                    <accronymEN>FPHARM</accronymEN>
+                    <ns2:affiliation type="affiliation">
+                        <id>MUV00000</id>
+                        <recordStatus>verified</recordStatus>
+                        <namePL>Медицински университет „Проф. д-р Параскев Стоянов“ – Варна</namePL>
+                        <nameEN>Medical University - Varna</nameEN>
+                        <accronymPL>UMV</accronymPL>
+                        <presentedAccronymPL>МУВ</presentedAccronymPL>
+                        <accronymEN>MUV</accronymEN>
+                        <ns2:affiliationprofile type="affiliationprofile">
+                            <extid type="termfield">
+<id>UMVb1cc9069220848408477bbc093d89134</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>MUV</affiliationowner>
+<idtype type="term">
+    <id>WUTfe712e9e17404de29f343752164c96a7</id>
+    <owner>system</owner>
+    <affiliationowner>UMV</affiliationowner>
+    <ns2:termtype type="termtype">
+        <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+        <owner>system</owner>
+        <affiliationowner>UMV</affiliationowner>
+        <code>external_id</code>
+        <name>External id</name>
+        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+    </ns2:termtype>
+    <systemName>ScopusId</systemName>
+    <namePL>Идентификатор Scopus</namePL>
+    <nameEN>Scopus Identifier</nameEN>
+    <priority>EI120</priority>
+    <notActive>false</notActive>
+</idtype>
+<value>60005828</value>
+                            </extid>
+                            <certifyingUnit>true</certifyingUnit>
+                        </ns2:affiliationprofile>
+                        <notActive>false</notActive>
+                        <dontPropagateInactivity>false</dontPropagateInactivity>
+                    </ns2:affiliation>
+                    <ns2:affiliationprofile type="affiliationprofile">
+                        <extid type="termfield">
+                            <id>UMVcd09447ad0484042b8a7dcd9c9455fb3</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>MUV</affiliationowner>
+                            <idtype type="term">
+<id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>UMV</affiliationowner>
+<ns2:termtype type="termtype">
+    <id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+    <owner>wstruk</owner>
+    <affiliationowner>PW</affiliationowner>
+    <code>unit_id</code>
+    <name>Unit id</name>
+    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+</ns2:termtype>
+<systemName>MUVid</systemName>
+<namePL>MUV ID</namePL>
+<nameEN>MUV ID</nameEN>
+<notActive>false</notActive>
+                            </idtype>
+                            <value>FAC03</value>
+                        </extid>
+                        <certifyingUnit>false</certifyingUnit>
+                    </ns2:affiliationprofile>
+                    <notActive>false</notActive>
+                    <dontPropagateInactivity>false</dontPropagateInactivity>
+                </ns2:affiliation>
+                <ns2:affiliationprofile type="affiliationprofile">
+                    <extid type="termfield">
+                        <id>UMVdf30b4079c9140de8996ecb4b9a7024f</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>MUV</affiliationowner>
+                        <idtype type="term">
+                            <id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <ns2:termtype type="termtype">
+<id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+<owner>wstruk</owner>
+<affiliationowner>PW</affiliationowner>
+<code>unit_id</code>
+<name>Unit id</name>
+<nonRepeatableByDefault>false</nonRepeatableByDefault>
+                            </ns2:termtype>
+                            <systemName>MUVid</systemName>
+                            <namePL>MUV ID</namePL>
+                            <nameEN>MUV ID</nameEN>
+                            <notActive>false</notActive>
+                        </idtype>
+                        <value>DPT036</value>
+                    </extid>
+                    <certifyingUnit>true</certifyingUnit>
+                </ns2:affiliationprofile>
+                <notActive>false</notActive>
+                <dontPropagateInactivity>false</dontPropagateInactivity>
+            </ns2:affiliation>
+            <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+            <ns2:team type="team">
+                <id>UMVf96d7bf80d5842b7a2e26415dc6fafbb</id>
+                <recordStatus>completed</recordStatus>
+                <leader type="author">
+                    <recordStatus>completed</recordStatus>
+                    <active>false</active>
+                    <status>ZEWNETRZNY</status>
+                    <belonging2N>false</belonging2N>
+                    <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+                    <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+                    <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                    <ns2:authorprofile type="authorprofile">
+                        <hindex>0</hindex>
+                        <rankingScore>0.0</rankingScore>
+                        <noEvaluation>false</noEvaluation>
+                        <sex>0</sex>
+                        <supervisionOffer type="supervisionoffer">
+                            <active>false</active>
+                        </supervisionOffer>
+                    </ns2:authorprofile>
+                    <profilepreferences type="authorprofilepreferences"/>
+                    <ns2:authormirprofile type="authormirprofile"/>
+                </leader>
+                <type type="term">
+                    <notActive>false</notActive>
+                </type>
+                <cooperationLevel type="term">
+                    <notActive>false</notActive>
+                </cooperationLevel>
+                <showProfile>true</showProfile>
+                <notActive>false</notActive>
+                <classified xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                <international>false</international>
+            </ns2:team>
+            <mainDiscipline type="discipline">
+                <id>UMVc8c0f0a247a74157b115bfc5915bfa41</id>
+                <owner>sages-kmyczka</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <disciplineType>DOMAIN</disciplineType>
+                <namePL>7.3. Фармация</namePL>
+                <nameEN>7.3. Pharmacy</nameEN>
+                <discipline type="discipline">
+                    <id>UMV5267051dcd564e5e8a4a2dc0ba0f46a0</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <disciplineType>AREA</disciplineType>
+                    <namePL>7. Здравеопазване и спорт</namePL>
+                    <nameEN>7. Health Care and Sport</nameEN>
+                </discipline>
+            </mainDiscipline>
+            <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+            <staffGroup type="term">
+                <id>WUT4b86b29bf9b9448ab558a479107a1d58</id>
+                <owner>system</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>staffGroup</code>
+                    <name>Employment group</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>researchteachingStaff</systemName>
+                <namePL>изследователски и преподавателски персонал</namePL>
+                <nameEN>Research-teaching staff</nameEN>
+                <ns2:term type="term">
+                    <id>WUT9c1a64ba0377485eb3aac7a30234260b</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <ns2:termtype type="termtype">
+                        <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <code>staffGroup</code>
+                        <name>Employment group</name>
+                        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                    </ns2:termtype>
+                    <systemName>academicStaff</systemName>
+                    <namePL>Академичен персонал</namePL>
+                    <nameEN>Academic staff</nameEN>
+                    <priority>G01</priority>
+                    <notActive>false</notActive>
+                </ns2:term>
+                <priority>G13</priority>
+                <notActive>false</notActive>
+            </staffGroup>
+            <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+            <ns2:authorprofile type="authorprofile">
+                <extid type="termfield">
+                    <id>UMVa0ec607c22274d28971c69a8156eaa1a</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>UMVb22b949fda4840b098875e541bf3d46b</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>HR_MUVid</systemName>
+                        <namePL>Идентификатор MUV HR</namePL>
+                        <nameEN>MUV HR Identifier</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>608</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMVd1ceaf90bc9643308f906ed87df4b221</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT06219a5f59ef46d2855a42bc83fabf8f</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>scholar</systemName>
+                        <namePL>Google Наука</namePL>
+                        <nameEN>Google Scholar</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>G8ahAAIAAAAJ</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMV780555d8899f494bae823f99ef584d9f</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT8451786af88c4580b1198f347a0048f5</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>WoSId</systemName>
+                        <namePL>Идентификатор WoS</namePL>
+                        <nameEN>WoS Identifier</nameEN>
+                        <priority>EI110</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>GLU-9461-2022</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMVcbc8f3cbf207478c8e84af352ad34cec</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT0fd794746a704f42a40229c86b4a8543</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>ORCID</systemName>
+                        <namePL>Личен идентификатор ORCID</namePL>
+                        <nameEN>ORCID</nameEN>
+                        <accronymEN>ORCID</accronymEN>
+                        <priority>U130</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>0000-0002-6766-056X </value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMV4dd8d010026147f4abc2c7835531ddbf</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUTfe712e9e17404de29f343752164c96a7</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>ScopusId</systemName>
+                        <namePL>Идентификатор Scopus</namePL>
+                        <nameEN>Scopus Identifier</nameEN>
+                        <priority>EI120</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>58645096600</value>
+                </extid>
+                <hindex>5</hindex>
+                <rankingScore>2.0</rankingScore>
+                <noEvaluation>false</noEvaluation>
+                <sex>0</sex>
+                <supervisionOffer type="supervisionoffer">
+                    <active>false</active>
+                </supervisionOffer>
+            </ns2:authorprofile>
+            <profilepreferences type="authorprofilepreferences"/>
+            <ns2:authormirprofile type="authormirprofile"/>
+        </ns2:author>
+        <ns2:author type="author">
+            <id>UMV52fa2d72ffbf429f92be3ab4a3dd2615</id>
+            <recordStatus>verified</recordStatus>
+            <active>true</active>
+            <status>PRACOWNIK</status>
+            <belonging2N>false</belonging2N>
+            <name>Лилия Пейчева</name>
+            <surname>Панайотова-Овчарова</surname>
+            <nameTransliteration>Liliya Peycheva</nameTransliteration>
+            <surnameTransliteration>Panayotova-Ovcharova</surnameTransliteration>
+            <email>l.panayotova@mu-varna.bg</email>
+            <ns2:affiliation type="affiliation">
+                <id>MUV04080</id>
+                <recordStatus>completed</recordStatus>
+                <namePL>Катедра по физиотерапия, рехабилитация и морелечение</namePL>
+                <nameEN>Department of Physiotherapy, Rehabilitation and Thalassotherapy</nameEN>
+                <accronymPL>ФИЗТЕР</accronymPL>
+                <accronymEN>PHYSTHER</accronymEN>
+                <ns2:affiliation type="affiliation">
+                    <id>MUV04000</id>
+                    <recordStatus>completed</recordStatus>
+                    <namePL>Факултет по обществено здравеопазване</namePL>
+                    <nameEN>Faculty of Public Health</nameEN>
+                    <accronymPL>ФОЗ</accronymPL>
+                    <accronymEN>FPUB</accronymEN>
+                    <ns2:affiliation type="affiliation">
+                        <id>MUV00000</id>
+                        <recordStatus>verified</recordStatus>
+                        <namePL>Медицински университет „Проф. д-р Параскев Стоянов“ – Варна</namePL>
+                        <nameEN>Medical University - Varna</nameEN>
+                        <accronymPL>UMV</accronymPL>
+                        <presentedAccronymPL>МУВ</presentedAccronymPL>
+                        <accronymEN>MUV</accronymEN>
+                        <ns2:affiliationprofile type="affiliationprofile">
+                            <extid type="termfield">
+<id>UMVb1cc9069220848408477bbc093d89134</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>MUV</affiliationowner>
+<idtype type="term">
+    <id>WUTfe712e9e17404de29f343752164c96a7</id>
+    <owner>system</owner>
+    <affiliationowner>UMV</affiliationowner>
+    <ns2:termtype type="termtype">
+        <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+        <owner>system</owner>
+        <affiliationowner>UMV</affiliationowner>
+        <code>external_id</code>
+        <name>External id</name>
+        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+    </ns2:termtype>
+    <systemName>ScopusId</systemName>
+    <namePL>Идентификатор Scopus</namePL>
+    <nameEN>Scopus Identifier</nameEN>
+    <priority>EI120</priority>
+    <notActive>false</notActive>
+</idtype>
+<value>60005828</value>
+                            </extid>
+                            <certifyingUnit>true</certifyingUnit>
+                        </ns2:affiliationprofile>
+                        <notActive>false</notActive>
+                        <dontPropagateInactivity>false</dontPropagateInactivity>
+                    </ns2:affiliation>
+                    <ns2:affiliationprofile type="affiliationprofile">
+                        <extid type="termfield">
+                            <id>UMVbfedb8c76b0046bfad9684f766504010</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>MUV</affiliationowner>
+                            <idtype type="term">
+<id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>UMV</affiliationowner>
+<ns2:termtype type="termtype">
+    <id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+    <owner>wstruk</owner>
+    <affiliationowner>PW</affiliationowner>
+    <code>unit_id</code>
+    <name>Unit id</name>
+    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+</ns2:termtype>
+<systemName>MUVid</systemName>
+<namePL>MUV ID</namePL>
+<nameEN>MUV ID</nameEN>
+<notActive>false</notActive>
+                            </idtype>
+                            <value>FAC04</value>
+                        </extid>
+                        <certifyingUnit>false</certifyingUnit>
+                    </ns2:affiliationprofile>
+                    <notActive>false</notActive>
+                    <dontPropagateInactivity>false</dontPropagateInactivity>
+                </ns2:affiliation>
+                <ns2:affiliationprofile type="affiliationprofile">
+                    <extid type="termfield">
+                        <id>UMV50fcdca73d884efc9e1039d39821911f</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>MUV</affiliationowner>
+                        <idtype type="term">
+                            <id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <ns2:termtype type="termtype">
+<id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+<owner>wstruk</owner>
+<affiliationowner>PW</affiliationowner>
+<code>unit_id</code>
+<name>Unit id</name>
+<nonRepeatableByDefault>false</nonRepeatableByDefault>
+                            </ns2:termtype>
+                            <systemName>MUVid</systemName>
+                            <namePL>MUV ID</namePL>
+                            <nameEN>MUV ID</nameEN>
+                            <notActive>false</notActive>
+                        </idtype>
+                        <value>DPT047</value>
+                    </extid>
+                    <certifyingUnit>true</certifyingUnit>
+                </ns2:affiliationprofile>
+                <notActive>false</notActive>
+                <dontPropagateInactivity>false</dontPropagateInactivity>
+            </ns2:affiliation>
+            <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+            <ns2:team type="team">
+                <id>UMVad51976b95eb41e6ba0b099e3d7cbb2a</id>
+                <recordStatus>completed</recordStatus>
+                <leader type="author">
+                    <recordStatus>completed</recordStatus>
+                    <active>false</active>
+                    <status>ZEWNETRZNY</status>
+                    <belonging2N>false</belonging2N>
+                    <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+                    <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+                    <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                    <ns2:authorprofile type="authorprofile">
+                        <hindex>0</hindex>
+                        <rankingScore>0.0</rankingScore>
+                        <noEvaluation>false</noEvaluation>
+                        <sex>0</sex>
+                        <supervisionOffer type="supervisionoffer">
+                            <active>false</active>
+                        </supervisionOffer>
+                    </ns2:authorprofile>
+                    <profilepreferences type="authorprofilepreferences"/>
+                    <ns2:authormirprofile type="authormirprofile"/>
+                </leader>
+                <type type="term">
+                    <notActive>false</notActive>
+                </type>
+                <cooperationLevel type="term">
+                    <notActive>false</notActive>
+                </cooperationLevel>
+                <showProfile>true</showProfile>
+                <notActive>false</notActive>
+                <classified xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                <international>false</international>
+            </ns2:team>
+            <ns2:team type="team">
+                <id>UMVf96d7bf80d5842b7a2e26415dc6fafbb</id>
+                <recordStatus>completed</recordStatus>
+                <leader type="author">
+                    <recordStatus>completed</recordStatus>
+                    <active>false</active>
+                    <status>ZEWNETRZNY</status>
+                    <belonging2N>false</belonging2N>
+                    <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+                    <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+                    <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                    <ns2:authorprofile type="authorprofile">
+                        <hindex>0</hindex>
+                        <rankingScore>0.0</rankingScore>
+                        <noEvaluation>false</noEvaluation>
+                        <sex>0</sex>
+                        <supervisionOffer type="supervisionoffer">
+                            <active>false</active>
+                        </supervisionOffer>
+                    </ns2:authorprofile>
+                    <profilepreferences type="authorprofilepreferences"/>
+                    <ns2:authormirprofile type="authormirprofile"/>
+                </leader>
+                <type type="term">
+                    <notActive>false</notActive>
+                </type>
+                <cooperationLevel type="term">
+                    <notActive>false</notActive>
+                </cooperationLevel>
+                <showProfile>true</showProfile>
+                <notActive>false</notActive>
+                <classified xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                <international>false</international>
+            </ns2:team>
+            <mainDiscipline type="discipline">
+                <id>UMVe1ec586d1ea640eb97769eb51d6cd549</id>
+                <owner>sages-kmyczka</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <disciplineType>DOMAIN</disciplineType>
+                <namePL>7.1. Медицина</namePL>
+                <nameEN>7.1. Medicine</nameEN>
+                <discipline type="discipline">
+                    <id>UMV5267051dcd564e5e8a4a2dc0ba0f46a0</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <disciplineType>AREA</disciplineType>
+                    <namePL>7. Здравеопазване и спорт</namePL>
+                    <nameEN>7. Health Care and Sport</nameEN>
+                </discipline>
+            </mainDiscipline>
+            <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+            <staffGroup type="term">
+                <id>WUT4b86b29bf9b9448ab558a479107a1d58</id>
+                <owner>system</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>staffGroup</code>
+                    <name>Employment group</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>researchteachingStaff</systemName>
+                <namePL>изследователски и преподавателски персонал</namePL>
+                <nameEN>Research-teaching staff</nameEN>
+                <ns2:term type="term">
+                    <id>WUT9c1a64ba0377485eb3aac7a30234260b</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <ns2:termtype type="termtype">
+                        <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <code>staffGroup</code>
+                        <name>Employment group</name>
+                        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                    </ns2:termtype>
+                    <systemName>academicStaff</systemName>
+                    <namePL>Академичен персонал</namePL>
+                    <nameEN>Academic staff</nameEN>
+                    <priority>G01</priority>
+                    <notActive>false</notActive>
+                </ns2:term>
+                <priority>G13</priority>
+                <notActive>false</notActive>
+            </staffGroup>
+            <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+            <ns2:authorprofile type="authorprofile">
+                <extid type="termfield">
+                    <id>UMVcf43ea7267b746afbee67ebdb8c46cb1</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>UMVb22b949fda4840b098875e541bf3d46b</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>HR_MUVid</systemName>
+                        <namePL>Идентификатор MUV HR</namePL>
+                        <nameEN>MUV HR Identifier</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>670</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMVdfc9c727d2564b2c9593f5f0674adacf</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT06219a5f59ef46d2855a42bc83fabf8f</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>scholar</systemName>
+                        <namePL>Google Наука</namePL>
+                        <nameEN>Google Scholar</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>cBKYNp0AAAAJ</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMVee02e1d3c0094287a24cbdba6fadea08</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT0fd794746a704f42a40229c86b4a8543</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>ORCID</systemName>
+                        <namePL>Личен идентификатор ORCID</namePL>
+                        <nameEN>ORCID</nameEN>
+                        <accronymEN>ORCID</accronymEN>
+                        <priority>U130</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>0000-0002-6139-1784</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMV667b99fc613d40cd83b10e1efa5d2cd7</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT8451786af88c4580b1198f347a0048f5</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>WoSId</systemName>
+                        <namePL>Идентификатор WoS</namePL>
+                        <nameEN>WoS Identifier</nameEN>
+                        <priority>EI110</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>LNQ-7499-2024</value>
+                </extid>
+                <hindex>2</hindex>
+                <rankingScore>0.0</rankingScore>
+                <noEvaluation>false</noEvaluation>
+                <sex>0</sex>
+                <supervisionOffer type="supervisionoffer">
+                    <active>false</active>
+                </supervisionOffer>
+            </ns2:authorprofile>
+            <profilepreferences type="authorprofilepreferences"/>
+            <ns2:authormirprofile type="authormirprofile"/>
+        </ns2:author>
+        <ns2:author type="author">
+            <id>UMV2aa6338f904f45698d225504803a24de</id>
+            <recordStatus>verified</recordStatus>
+            <active>true</active>
+            <status>PRACOWNIK</status>
+            <officialAcademicDegree type="term">
+                <id>WUTc21c1628c4ec42c8b6b053a2d5ff6c69</id>
+                <owner>wstruk</owner>
+                <affiliationowner>PW</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT4e7b6f866b8d489888bd3347c5a97bb3</id>
+                    <owner>wstruk</owner>
+                    <affiliationowner>PW</affiliationowner>
+                    <code>academicDegree</code>
+                    <name>Stopień/tytuł</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>dr</systemName>
+                <namePL>Доктор</namePL>
+                <nameEN>PhD</nameEN>
+                <accronymPL>Док.</accronymPL>
+                <accronymEN>PhD</accronymEN>
+                <priority>D51</priority>
+                <notActive>false</notActive>
+            </officialAcademicDegree>
+            <belonging2N>false</belonging2N>
+            <name>Детелина Дамянова</name>
+            <surname>Недялкова-Петкова</surname>
+            <nameTransliteration>Detelina Damyanova</nameTransliteration>
+            <surnameTransliteration>Nedyalkova-Petkova</surnameTransliteration>
+            <email>detelina.petkova@mu-varna.bg</email>
+            <ns2:affiliation type="affiliation">
+                <id>MUV04080</id>
+                <recordStatus>completed</recordStatus>
+                <namePL>Катедра по физиотерапия, рехабилитация и морелечение</namePL>
+                <nameEN>Department of Physiotherapy, Rehabilitation and Thalassotherapy</nameEN>
+                <accronymPL>ФИЗТЕР</accronymPL>
+                <accronymEN>PHYSTHER</accronymEN>
+                <ns2:affiliation type="affiliation">
+                    <id>MUV04000</id>
+                    <recordStatus>completed</recordStatus>
+                    <namePL>Факултет по обществено здравеопазване</namePL>
+                    <nameEN>Faculty of Public Health</nameEN>
+                    <accronymPL>ФОЗ</accronymPL>
+                    <accronymEN>FPUB</accronymEN>
+                    <ns2:affiliation type="affiliation">
+                        <id>MUV00000</id>
+                        <recordStatus>verified</recordStatus>
+                        <namePL>Медицински университет „Проф. д-р Параскев Стоянов“ – Варна</namePL>
+                        <nameEN>Medical University - Varna</nameEN>
+                        <accronymPL>UMV</accronymPL>
+                        <presentedAccronymPL>МУВ</presentedAccronymPL>
+                        <accronymEN>MUV</accronymEN>
+                        <ns2:affiliationprofile type="affiliationprofile">
+                            <extid type="termfield">
+<id>UMVb1cc9069220848408477bbc093d89134</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>MUV</affiliationowner>
+<idtype type="term">
+    <id>WUTfe712e9e17404de29f343752164c96a7</id>
+    <owner>system</owner>
+    <affiliationowner>UMV</affiliationowner>
+    <ns2:termtype type="termtype">
+        <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+        <owner>system</owner>
+        <affiliationowner>UMV</affiliationowner>
+        <code>external_id</code>
+        <name>External id</name>
+        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+    </ns2:termtype>
+    <systemName>ScopusId</systemName>
+    <namePL>Идентификатор Scopus</namePL>
+    <nameEN>Scopus Identifier</nameEN>
+    <priority>EI120</priority>
+    <notActive>false</notActive>
+</idtype>
+<value>60005828</value>
+                            </extid>
+                            <certifyingUnit>true</certifyingUnit>
+                        </ns2:affiliationprofile>
+                        <notActive>false</notActive>
+                        <dontPropagateInactivity>false</dontPropagateInactivity>
+                    </ns2:affiliation>
+                    <ns2:affiliationprofile type="affiliationprofile">
+                        <extid type="termfield">
+                            <id>UMVbfedb8c76b0046bfad9684f766504010</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>MUV</affiliationowner>
+                            <idtype type="term">
+<id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>UMV</affiliationowner>
+<ns2:termtype type="termtype">
+    <id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+    <owner>wstruk</owner>
+    <affiliationowner>PW</affiliationowner>
+    <code>unit_id</code>
+    <name>Unit id</name>
+    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+</ns2:termtype>
+<systemName>MUVid</systemName>
+<namePL>MUV ID</namePL>
+<nameEN>MUV ID</nameEN>
+<notActive>false</notActive>
+                            </idtype>
+                            <value>FAC04</value>
+                        </extid>
+                        <certifyingUnit>false</certifyingUnit>
+                    </ns2:affiliationprofile>
+                    <notActive>false</notActive>
+                    <dontPropagateInactivity>false</dontPropagateInactivity>
+                </ns2:affiliation>
+                <ns2:affiliationprofile type="affiliationprofile">
+                    <extid type="termfield">
+                        <id>UMV50fcdca73d884efc9e1039d39821911f</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>MUV</affiliationowner>
+                        <idtype type="term">
+                            <id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <ns2:termtype type="termtype">
+<id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+<owner>wstruk</owner>
+<affiliationowner>PW</affiliationowner>
+<code>unit_id</code>
+<name>Unit id</name>
+<nonRepeatableByDefault>false</nonRepeatableByDefault>
+                            </ns2:termtype>
+                            <systemName>MUVid</systemName>
+                            <namePL>MUV ID</namePL>
+                            <nameEN>MUV ID</nameEN>
+                            <notActive>false</notActive>
+                        </idtype>
+                        <value>DPT047</value>
+                    </extid>
+                    <certifyingUnit>true</certifyingUnit>
+                </ns2:affiliationprofile>
+                <notActive>false</notActive>
+                <dontPropagateInactivity>false</dontPropagateInactivity>
+            </ns2:affiliation>
+            <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+            <ns2:team type="team">
+                <id>UMVad51976b95eb41e6ba0b099e3d7cbb2a</id>
+                <recordStatus>completed</recordStatus>
+                <leader type="author">
+                    <recordStatus>completed</recordStatus>
+                    <active>false</active>
+                    <status>ZEWNETRZNY</status>
+                    <belonging2N>false</belonging2N>
+                    <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+                    <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+                    <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                    <ns2:authorprofile type="authorprofile">
+                        <hindex>0</hindex>
+                        <rankingScore>0.0</rankingScore>
+                        <noEvaluation>false</noEvaluation>
+                        <sex>0</sex>
+                        <supervisionOffer type="supervisionoffer">
+                            <active>false</active>
+                        </supervisionOffer>
+                    </ns2:authorprofile>
+                    <profilepreferences type="authorprofilepreferences"/>
+                    <ns2:authormirprofile type="authormirprofile"/>
+                </leader>
+                <type type="term">
+                    <notActive>false</notActive>
+                </type>
+                <cooperationLevel type="term">
+                    <notActive>false</notActive>
+                </cooperationLevel>
+                <showProfile>true</showProfile>
+                <notActive>false</notActive>
+                <classified xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                <international>false</international>
+            </ns2:team>
+            <mainDiscipline type="discipline">
+                <id>UMVe1ec586d1ea640eb97769eb51d6cd549</id>
+                <owner>sages-kmyczka</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <disciplineType>DOMAIN</disciplineType>
+                <namePL>7.1. Медицина</namePL>
+                <nameEN>7.1. Medicine</nameEN>
+                <discipline type="discipline">
+                    <id>UMV5267051dcd564e5e8a4a2dc0ba0f46a0</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <disciplineType>AREA</disciplineType>
+                    <namePL>7. Здравеопазване и спорт</namePL>
+                    <nameEN>7. Health Care and Sport</nameEN>
+                </discipline>
+            </mainDiscipline>
+            <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+            <staffGroup type="term">
+                <id>WUT4b86b29bf9b9448ab558a479107a1d58</id>
+                <owner>system</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>staffGroup</code>
+                    <name>Employment group</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>researchteachingStaff</systemName>
+                <namePL>изследователски и преподавателски персонал</namePL>
+                <nameEN>Research-teaching staff</nameEN>
+                <ns2:term type="term">
+                    <id>WUT9c1a64ba0377485eb3aac7a30234260b</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <ns2:termtype type="termtype">
+                        <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <code>staffGroup</code>
+                        <name>Employment group</name>
+                        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                    </ns2:termtype>
+                    <systemName>academicStaff</systemName>
+                    <namePL>Академичен персонал</namePL>
+                    <nameEN>Academic staff</nameEN>
+                    <priority>G01</priority>
+                    <notActive>false</notActive>
+                </ns2:term>
+                <priority>G13</priority>
+                <notActive>false</notActive>
+            </staffGroup>
+            <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+            <ns2:authorprofile type="authorprofile">
+                <extid type="termfield">
+                    <id>UMV8c5ec71398fc4d75b1fdb2615e81eef5</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>UMVb22b949fda4840b098875e541bf3d46b</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>HR_MUVid</systemName>
+                        <namePL>Идентификатор MUV HR</namePL>
+                        <nameEN>MUV HR Identifier</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>672</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMVa5ce5f7ceae14f429aedc6e00eca65f2</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT06219a5f59ef46d2855a42bc83fabf8f</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>scholar</systemName>
+                        <namePL>Google Наука</namePL>
+                        <nameEN>Google Scholar</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>m9ysx2gAAAAJ</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMV5cc9e3b3203040178a32c8c0cbbf3ebf</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT0fd794746a704f42a40229c86b4a8543</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>ORCID</systemName>
+                        <namePL>Личен идентификатор ORCID</namePL>
+                        <nameEN>ORCID</nameEN>
+                        <accronymEN>ORCID</accronymEN>
+                        <priority>U130</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>0009-0001-6060-7600</value>
+                </extid>
+                <hindex>1</hindex>
+                <rankingScore>0.0</rankingScore>
+                <noEvaluation>false</noEvaluation>
+                <sex>0</sex>
+                <supervisionOffer type="supervisionoffer">
+                    <active>false</active>
+                </supervisionOffer>
+            </ns2:authorprofile>
+            <profilepreferences type="authorprofilepreferences"/>
+            <ns2:authormirprofile type="authormirprofile"/>
+        </ns2:author>
+        <ns2:author type="author">
+            <id>UMV6289e0846f854137bb826bb7f2c029ab</id>
+            <recordStatus>verified</recordStatus>
+            <active>true</active>
+            <status>BYLY-DOKTORANT</status>
+            <officialAcademicDegree type="term">
+                <id>WUTc21c1628c4ec42c8b6b053a2d5ff6c69</id>
+                <owner>wstruk</owner>
+                <affiliationowner>PW</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT4e7b6f866b8d489888bd3347c5a97bb3</id>
+                    <owner>wstruk</owner>
+                    <affiliationowner>PW</affiliationowner>
+                    <code>academicDegree</code>
+                    <name>Stopień/tytuł</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>dr</systemName>
+                <namePL>Доктор</namePL>
+                <nameEN>PhD</nameEN>
+                <accronymPL>Док.</accronymPL>
+                <accronymEN>PhD</accronymEN>
+                <priority>D51</priority>
+                <notActive>false</notActive>
+            </officialAcademicDegree>
+            <belonging2N>false</belonging2N>
+            <name>Петър Валентинов </name>
+            <surname>Петков</surname>
+            <nameTransliteration>Petar Valentinov</nameTransliteration>
+            <surnameTransliteration>Petkov</surnameTransliteration>
+            <ns2:affiliation type="affiliation">
+                <id>MUV01190</id>
+                <recordStatus>verified</recordStatus>
+                <namePL>Катедра по ортопедия и травматология</namePL>
+                <nameEN>Department of Orthopaedics and Traumatology</nameEN>
+                <accronymPL>ОРТОП</accronymPL>
+                <accronymEN>ORTHOP</accronymEN>
+                <ns2:affiliation type="affiliation">
+                    <id>MUV01000</id>
+                    <recordStatus>completed</recordStatus>
+                    <namePL>Факултет по медицина</namePL>
+                    <nameEN>Faculty of Medicine</nameEN>
+                    <accronymPL>ФМ</accronymPL>
+                    <accronymEN>FM</accronymEN>
+                    <ns2:affiliation type="affiliation">
+                        <id>MUV00000</id>
+                        <recordStatus>verified</recordStatus>
+                        <namePL>Медицински университет „Проф. д-р Параскев Стоянов“ – Варна</namePL>
+                        <nameEN>Medical University - Varna</nameEN>
+                        <accronymPL>UMV</accronymPL>
+                        <presentedAccronymPL>МУВ</presentedAccronymPL>
+                        <accronymEN>MUV</accronymEN>
+                        <ns2:affiliationprofile type="affiliationprofile">
+                            <extid type="termfield">
+<id>UMVb1cc9069220848408477bbc093d89134</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>MUV</affiliationowner>
+<idtype type="term">
+    <id>WUTfe712e9e17404de29f343752164c96a7</id>
+    <owner>system</owner>
+    <affiliationowner>UMV</affiliationowner>
+    <ns2:termtype type="termtype">
+        <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+        <owner>system</owner>
+        <affiliationowner>UMV</affiliationowner>
+        <code>external_id</code>
+        <name>External id</name>
+        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+    </ns2:termtype>
+    <systemName>ScopusId</systemName>
+    <namePL>Идентификатор Scopus</namePL>
+    <nameEN>Scopus Identifier</nameEN>
+    <priority>EI120</priority>
+    <notActive>false</notActive>
+</idtype>
+<value>60005828</value>
+                            </extid>
+                            <certifyingUnit>true</certifyingUnit>
+                        </ns2:affiliationprofile>
+                        <notActive>false</notActive>
+                        <dontPropagateInactivity>false</dontPropagateInactivity>
+                    </ns2:affiliation>
+                    <ns2:affiliationprofile type="affiliationprofile">
+                        <extid type="termfield">
+                            <id>UMVdca93b9e856c4a449d2368b18f93c200</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>MUV</affiliationowner>
+                            <idtype type="term">
+<id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>UMV</affiliationowner>
+<ns2:termtype type="termtype">
+    <id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+    <owner>wstruk</owner>
+    <affiliationowner>PW</affiliationowner>
+    <code>unit_id</code>
+    <name>Unit id</name>
+    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+</ns2:termtype>
+<systemName>MUVid</systemName>
+<namePL>MUV ID</namePL>
+<nameEN>MUV ID</nameEN>
+<notActive>false</notActive>
+                            </idtype>
+                            <value>FAC01</value>
+                        </extid>
+                        <certifyingUnit>false</certifyingUnit>
+                    </ns2:affiliationprofile>
+                    <notActive>false</notActive>
+                    <dontPropagateInactivity>false</dontPropagateInactivity>
+                </ns2:affiliation>
+                <ns2:affiliationprofile type="affiliationprofile">
+                    <extid type="termfield">
+                        <id>UMVf8f64781b8754432bed73a1ce84e626e</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>MUV</affiliationowner>
+                        <idtype type="term">
+                            <id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <ns2:termtype type="termtype">
+<id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+<owner>wstruk</owner>
+<affiliationowner>PW</affiliationowner>
+<code>unit_id</code>
+<name>Unit id</name>
+<nonRepeatableByDefault>false</nonRepeatableByDefault>
+                            </ns2:termtype>
+                            <systemName>MUVid</systemName>
+                            <namePL>MUV ID</namePL>
+                            <nameEN>MUV ID</nameEN>
+                            <notActive>false</notActive>
+                        </idtype>
+                        <value>DPT018</value>
+                    </extid>
+                    <certifyingUnit>true</certifyingUnit>
+                </ns2:affiliationprofile>
+                <notActive>false</notActive>
+                <dontPropagateInactivity>false</dontPropagateInactivity>
+            </ns2:affiliation>
+            <externalAuthorAffiliation type="corporateauthor">
+                <id>UMV335c178f4ec346959ef0803610d3a130</id>
+                <recordStatus>verified</recordStatus>
+                <fullName>Maichin Dom Medical Complex, Varna</fullName>
+                <fullNameEN>Maichin Dom Medical Complex, Varna</fullNameEN>
+                <category>health</category>
+                <country type="validationtable">
+                    <id>WUT382181</id>
+                    <owner>wstruk</owner>
+                    <affiliationowner>PW</affiliationowner>
+                    <validationType>COUNTRY</validationType>
+                    <namePL>България</namePL>
+                    <nameEN>Bulgaria</nameEN>
+                    <ns2:validationprofile type="validationprofile">
+                        <intNumber>0</intNumber>
+                    </ns2:validationprofile>
+                </country>
+                <ns2:corporateauthorprofile type="corporateauthorprofile">
+                    <extid type="termfield">
+                        <id>UMV6b4534c8a96f462b8d27363c5dd559f9</id>
+                        <owner>sglinkov@mu-varna.bg</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <idtype type="term">
+                            <id>WUTfe712e9e17404de29f343752164c96a7</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <ns2:termtype type="termtype">
+<id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+<owner>system</owner>
+<affiliationowner>UMV</affiliationowner>
+<code>external_id</code>
+<name>External id</name>
+<nonRepeatableByDefault>false</nonRepeatableByDefault>
+                            </ns2:termtype>
+                            <systemName>ScopusId</systemName>
+                            <namePL>Идентификатор Scopus</namePL>
+                            <nameEN>Scopus Identifier</nameEN>
+                            <priority>EI120</priority>
+                            <notActive>false</notActive>
+                        </idtype>
+                        <value>60086349</value>
+                    </extid>
+                    <ns2:statisticsdata type="statisticsdata">
+                        <numberOfPublications xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                        <numberOfPatents xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                        <numberOfProjects xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                        <numberOfFinancedProjects xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                        <numberOfWorks xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                        <rankingScore xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                    </ns2:statisticsdata>
+                </ns2:corporateauthorprofile>
+                <evaluationOK>false</evaluationOK>
+            </externalAuthorAffiliation>
+            <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+            <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+            <staffGroup type="term">
+                <id>WUT1a07de92213744369dba2a8609a75840</id>
+                <owner>system</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>staffGroup</code>
+                    <name>Employment group</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>researchStaff</systemName>
+                <namePL>изследователски работници</namePL>
+                <nameEN>Research staff</nameEN>
+                <ns2:term type="term">
+                    <id>WUT9c1a64ba0377485eb3aac7a30234260b</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <ns2:termtype type="termtype">
+                        <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <code>staffGroup</code>
+                        <name>Employment group</name>
+                        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                    </ns2:termtype>
+                    <systemName>academicStaff</systemName>
+                    <namePL>Академичен персонал</namePL>
+                    <nameEN>Academic staff</nameEN>
+                    <priority>G01</priority>
+                    <notActive>false</notActive>
+                </ns2:term>
+                <priority>G12</priority>
+                <notActive>false</notActive>
+            </staffGroup>
+            <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+            <ns2:authorprofile type="authorprofile">
+                <extid type="termfield">
+                    <id>UMV7b944f40e8a64ef691dfb61385c1bfb5</id>
+                    <owner>sglinkov@mu-varna.bg</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT8451786af88c4580b1198f347a0048f5</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>WoSId</systemName>
+                        <namePL>Идентификатор WoS</namePL>
+                        <nameEN>WoS Identifier</nameEN>
+                        <priority>EI110</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>NBX-1568-2025</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMVb77268b3767d4fa3b11e1dc5e862f368</id>
+                    <owner>sglinkov@mu-varna.bg</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT0fd794746a704f42a40229c86b4a8543</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>ORCID</systemName>
+                        <namePL>Личен идентификатор ORCID</namePL>
+                        <nameEN>ORCID</nameEN>
+                        <accronymEN>ORCID</accronymEN>
+                        <priority>U130</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>0000-0003-0168-8647</value>
+                </extid>
+                <hindex>0</hindex>
+                <rankingScore>0.0</rankingScore>
+                <noEvaluation>false</noEvaluation>
+                <sex>0</sex>
+                <supervisionOffer type="supervisionoffer">
+                    <active>false</active>
+                </supervisionOffer>
+            </ns2:authorprofile>
+            <profilepreferences type="authorprofilepreferences"/>
+            <ns2:authormirprofile type="authormirprofile"/>
+        </ns2:author>
+        <ns2:author type="author">
+            <id>UMV3397cdc924a4494da5700364c387b1ab</id>
+            <recordStatus>verified</recordStatus>
+            <active>true</active>
+            <status>PRACOWNIK</status>
+            <belonging2N>false</belonging2N>
+            <name>Георги Величков</name>
+            <surname> Бошев </surname>
+            <nameTransliteration>Georgi Velichkov </nameTransliteration>
+            <surnameTransliteration>Boshev</surnameTransliteration>
+            <email>georgi.boshev@mu-varna.bg</email>
+            <ns2:affiliation type="affiliation">
+                <id>MUV01152</id>
+                <recordStatus>completed</recordStatus>
+                <namePL>УС неврохирургия</namePL>
+                <nameEN>ES Neurosurgery</nameEN>
+                <accronymPL>НЕВРХИР</accronymPL>
+                <accronymEN>NEUROSURG</accronymEN>
+                <ns2:affiliation type="affiliation">
+                    <id>MUV01150</id>
+                    <recordStatus>completed</recordStatus>
+                    <namePL>Катедра по неврохирургия и УНГ болести</namePL>
+                    <nameEN>Department of Neurosurgery and ENT</nameEN>
+                    <accronymPL>НЕВРХИРУНГ</accronymPL>
+                    <accronymEN>NEURSURGENT</accronymEN>
+                    <ns2:affiliation type="affiliation">
+                        <id>MUV01000</id>
+                        <recordStatus>completed</recordStatus>
+                        <namePL>Факултет по медицина</namePL>
+                        <nameEN>Faculty of Medicine</nameEN>
+                        <accronymPL>ФМ</accronymPL>
+                        <accronymEN>FM</accronymEN>
+                        <ns2:affiliation type="affiliation">
+                            <id>MUV00000</id>
+                            <recordStatus>verified</recordStatus>
+                            <namePL>Медицински университет „Проф. д-р Параскев Стоянов“ – Варна</namePL>
+                            <nameEN>Medical University - Varna</nameEN>
+                            <accronymPL>UMV</accronymPL>
+                            <presentedAccronymPL>МУВ</presentedAccronymPL>
+                            <accronymEN>MUV</accronymEN>
+                            <ns2:affiliationprofile type="affiliationprofile">
+<extid type="termfield">
+    <id>UMVb1cc9069220848408477bbc093d89134</id>
+    <owner>sages-kmyczka</owner>
+    <affiliationowner>MUV</affiliationowner>
+    <idtype type="term">
+        <id>WUTfe712e9e17404de29f343752164c96a7</id>
+        <owner>system</owner>
+        <affiliationowner>UMV</affiliationowner>
+        <ns2:termtype type="termtype">
+            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+            <owner>system</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <code>external_id</code>
+            <name>External id</name>
+            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+        </ns2:termtype>
+        <systemName>ScopusId</systemName>
+        <namePL>Идентификатор Scopus</namePL>
+        <nameEN>Scopus Identifier</nameEN>
+        <priority>EI120</priority>
+        <notActive>false</notActive>
+    </idtype>
+    <value>60005828</value>
+</extid>
+<certifyingUnit>true</certifyingUnit>
+                            </ns2:affiliationprofile>
+                            <notActive>false</notActive>
+                            <dontPropagateInactivity>false</dontPropagateInactivity>
+                        </ns2:affiliation>
+                        <ns2:affiliationprofile type="affiliationprofile">
+                            <extid type="termfield">
+<id>UMVdca93b9e856c4a449d2368b18f93c200</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>MUV</affiliationowner>
+<idtype type="term">
+    <id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+    <owner>sages-kmyczka</owner>
+    <affiliationowner>UMV</affiliationowner>
+    <ns2:termtype type="termtype">
+        <id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+        <owner>wstruk</owner>
+        <affiliationowner>PW</affiliationowner>
+        <code>unit_id</code>
+        <name>Unit id</name>
+        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+    </ns2:termtype>
+    <systemName>MUVid</systemName>
+    <namePL>MUV ID</namePL>
+    <nameEN>MUV ID</nameEN>
+    <notActive>false</notActive>
+</idtype>
+<value>FAC01</value>
+                            </extid>
+                            <certifyingUnit>false</certifyingUnit>
+                        </ns2:affiliationprofile>
+                        <notActive>false</notActive>
+                        <dontPropagateInactivity>false</dontPropagateInactivity>
+                    </ns2:affiliation>
+                    <ns2:affiliationprofile type="affiliationprofile">
+                        <extid type="termfield">
+                            <id>UMVba42e32729b34f27ad639df9cdc1e0d8</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>MUV</affiliationowner>
+                            <idtype type="term">
+<id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>UMV</affiliationowner>
+<ns2:termtype type="termtype">
+    <id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+    <owner>wstruk</owner>
+    <affiliationowner>PW</affiliationowner>
+    <code>unit_id</code>
+    <name>Unit id</name>
+    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+</ns2:termtype>
+<systemName>MUVid</systemName>
+<namePL>MUV ID</namePL>
+<nameEN>MUV ID</nameEN>
+<notActive>false</notActive>
+                            </idtype>
+                            <value>DPT057</value>
+                        </extid>
+                        <certifyingUnit>true</certifyingUnit>
+                    </ns2:affiliationprofile>
+                    <notActive>false</notActive>
+                    <dontPropagateInactivity>false</dontPropagateInactivity>
+                </ns2:affiliation>
+                <ns2:affiliationprofile type="affiliationprofile">
+                    <extid type="termfield">
+                        <id>UMV6de99183c24d4178911e020f81cd31df</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>MUV</affiliationowner>
+                        <idtype type="term">
+                            <id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <ns2:termtype type="termtype">
+<id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+<owner>wstruk</owner>
+<affiliationowner>PW</affiliationowner>
+<code>unit_id</code>
+<name>Unit id</name>
+<nonRepeatableByDefault>false</nonRepeatableByDefault>
+                            </ns2:termtype>
+                            <systemName>MUVid</systemName>
+                            <namePL>MUV ID</namePL>
+                            <nameEN>MUV ID</nameEN>
+                            <notActive>false</notActive>
+                        </idtype>
+                        <value>ES011</value>
+                    </extid>
+                    <certifyingUnit>true</certifyingUnit>
+                </ns2:affiliationprofile>
+                <notActive>false</notActive>
+                <dontPropagateInactivity>false</dontPropagateInactivity>
+            </ns2:affiliation>
+            <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+            <ns2:team type="team">
+                <id>UMVf96d7bf80d5842b7a2e26415dc6fafbb</id>
+                <recordStatus>completed</recordStatus>
+                <leader type="author">
+                    <recordStatus>completed</recordStatus>
+                    <active>false</active>
+                    <status>ZEWNETRZNY</status>
+                    <belonging2N>false</belonging2N>
+                    <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+                    <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+                    <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                    <ns2:authorprofile type="authorprofile">
+                        <hindex>0</hindex>
+                        <rankingScore>0.0</rankingScore>
+                        <noEvaluation>false</noEvaluation>
+                        <sex>0</sex>
+                        <supervisionOffer type="supervisionoffer">
+                            <active>false</active>
+                        </supervisionOffer>
+                    </ns2:authorprofile>
+                    <profilepreferences type="authorprofilepreferences"/>
+                    <ns2:authormirprofile type="authormirprofile"/>
+                </leader>
+                <type type="term">
+                    <notActive>false</notActive>
+                </type>
+                <cooperationLevel type="term">
+                    <notActive>false</notActive>
+                </cooperationLevel>
+                <showProfile>true</showProfile>
+                <notActive>false</notActive>
+                <classified xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                <international>false</international>
+            </ns2:team>
+            <mainDiscipline type="discipline">
+                <id>UMVe1ec586d1ea640eb97769eb51d6cd549</id>
+                <owner>sages-kmyczka</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <disciplineType>DOMAIN</disciplineType>
+                <namePL>7.1. Медицина</namePL>
+                <nameEN>7.1. Medicine</nameEN>
+                <discipline type="discipline">
+                    <id>UMV5267051dcd564e5e8a4a2dc0ba0f46a0</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <disciplineType>AREA</disciplineType>
+                    <namePL>7. Здравеопазване и спорт</namePL>
+                    <nameEN>7. Health Care and Sport</nameEN>
+                </discipline>
+            </mainDiscipline>
+            <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+            <staffGroup type="term">
+                <id>WUT4b86b29bf9b9448ab558a479107a1d58</id>
+                <owner>system</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>staffGroup</code>
+                    <name>Employment group</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>researchteachingStaff</systemName>
+                <namePL>изследователски и преподавателски персонал</namePL>
+                <nameEN>Research-teaching staff</nameEN>
+                <ns2:term type="term">
+                    <id>WUT9c1a64ba0377485eb3aac7a30234260b</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <ns2:termtype type="termtype">
+                        <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <code>staffGroup</code>
+                        <name>Employment group</name>
+                        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                    </ns2:termtype>
+                    <systemName>academicStaff</systemName>
+                    <namePL>Академичен персонал</namePL>
+                    <nameEN>Academic staff</nameEN>
+                    <priority>G01</priority>
+                    <notActive>false</notActive>
+                </ns2:term>
+                <priority>G13</priority>
+                <notActive>false</notActive>
+            </staffGroup>
+            <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+            <ns2:authorprofile type="authorprofile">
+                <extid type="termfield">
+                    <id>UMVe32b1cd83cc34dd4a23cc2ab99ea5f79</id>
+                    <owner>marina.klissourova@mu-varna.bg</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>UMVb22b949fda4840b098875e541bf3d46b</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>HR_MUVid</systemName>
+                        <namePL>Идентификатор MUV HR</namePL>
+                        <nameEN>MUV HR Identifier</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>986</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMV190df7d9f3c44de98899ce5fd3912e67</id>
+                    <owner>marina.klissourova@mu-varna.bg</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT0fd794746a704f42a40229c86b4a8543</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>ORCID</systemName>
+                        <namePL>Личен идентификатор ORCID</namePL>
+                        <nameEN>ORCID</nameEN>
+                        <accronymEN>ORCID</accronymEN>
+                        <priority>U130</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>0009-0002-5532-3758</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMV1175080abd0a47ccb7687e0cd7f0c34b</id>
+                    <owner>marina.klissourova@mu-varna.bg</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT06219a5f59ef46d2855a42bc83fabf8f</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>scholar</systemName>
+                        <namePL>Google Наука</namePL>
+                        <nameEN>Google Scholar</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>X7JnHp8AAAAJ</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMV4ccd76c34bb64884a619b269a430aab4</id>
+                    <owner>sglinkov@mu-varna.bg</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>UMV4f918fef38d34f238b6530a719386187</id>
+                        <owner>sglinkov@mu-varna.bg</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>NACIDScientistId</systemName>
+                        <namePL>Номер в РАС НАЦИД</namePL>
+                        <nameEN>NACID RAS lotNumber</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>98121</value>
+                </extid>
+                <hindex>1</hindex>
+                <rankingScore>0.0</rankingScore>
+                <noEvaluation>false</noEvaluation>
+                <sex>0</sex>
+                <supervisionOffer type="supervisionoffer">
+                    <active>false</active>
+                </supervisionOffer>
+            </ns2:authorprofile>
+            <profilepreferences type="authorprofilepreferences"/>
+            <ns2:authormirprofile type="authormirprofile"/>
+        </ns2:author>
+        <ns2:author type="author">
+            <id>UMVbbabd98ce3864af485165277d3f1d597</id>
+            <recordStatus>verified</recordStatus>
+            <active>true</active>
+            <status>PRACOWNIK</status>
+            <officialAcademicDegree type="term">
+                <id>WUTc21c1628c4ec42c8b6b053a2d5ff6c69</id>
+                <owner>wstruk</owner>
+                <affiliationowner>PW</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT4e7b6f866b8d489888bd3347c5a97bb3</id>
+                    <owner>wstruk</owner>
+                    <affiliationowner>PW</affiliationowner>
+                    <code>academicDegree</code>
+                    <name>Stopień/tytuł</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>dr</systemName>
+                <namePL>Доктор</namePL>
+                <nameEN>PhD</nameEN>
+                <accronymPL>Док.</accronymPL>
+                <accronymEN>PhD</accronymEN>
+                <priority>D51</priority>
+                <notActive>false</notActive>
+            </officialAcademicDegree>
+            <belonging2N>false</belonging2N>
+            <name>Евгения Петрова</name>
+            <surname>Димова </surname>
+            <otherName>Владева </otherName>
+            <nameTransliteration>Evgeniya Petrova</nameTransliteration>
+            <surnameTransliteration>Vladeva</surnameTransliteration>
+            <otherNameTransliteration>Dimova</otherNameTransliteration>
+            <email>evgenia.vladeva@mu-varna.bg</email>
+            <ns2:affiliation type="affiliation">
+                <id>MUV04080</id>
+                <recordStatus>completed</recordStatus>
+                <namePL>Катедра по физиотерапия, рехабилитация и морелечение</namePL>
+                <nameEN>Department of Physiotherapy, Rehabilitation and Thalassotherapy</nameEN>
+                <accronymPL>ФИЗТЕР</accronymPL>
+                <accronymEN>PHYSTHER</accronymEN>
+                <ns2:affiliation type="affiliation">
+                    <id>MUV04000</id>
+                    <recordStatus>completed</recordStatus>
+                    <namePL>Факултет по обществено здравеопазване</namePL>
+                    <nameEN>Faculty of Public Health</nameEN>
+                    <accronymPL>ФОЗ</accronymPL>
+                    <accronymEN>FPUB</accronymEN>
+                    <ns2:affiliation type="affiliation">
+                        <id>MUV00000</id>
+                        <recordStatus>verified</recordStatus>
+                        <namePL>Медицински университет „Проф. д-р Параскев Стоянов“ – Варна</namePL>
+                        <nameEN>Medical University - Varna</nameEN>
+                        <accronymPL>UMV</accronymPL>
+                        <presentedAccronymPL>МУВ</presentedAccronymPL>
+                        <accronymEN>MUV</accronymEN>
+                        <ns2:affiliationprofile type="affiliationprofile">
+                            <extid type="termfield">
+<id>UMVb1cc9069220848408477bbc093d89134</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>MUV</affiliationowner>
+<idtype type="term">
+    <id>WUTfe712e9e17404de29f343752164c96a7</id>
+    <owner>system</owner>
+    <affiliationowner>UMV</affiliationowner>
+    <ns2:termtype type="termtype">
+        <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+        <owner>system</owner>
+        <affiliationowner>UMV</affiliationowner>
+        <code>external_id</code>
+        <name>External id</name>
+        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+    </ns2:termtype>
+    <systemName>ScopusId</systemName>
+    <namePL>Идентификатор Scopus</namePL>
+    <nameEN>Scopus Identifier</nameEN>
+    <priority>EI120</priority>
+    <notActive>false</notActive>
+</idtype>
+<value>60005828</value>
+                            </extid>
+                            <certifyingUnit>true</certifyingUnit>
+                        </ns2:affiliationprofile>
+                        <notActive>false</notActive>
+                        <dontPropagateInactivity>false</dontPropagateInactivity>
+                    </ns2:affiliation>
+                    <ns2:affiliationprofile type="affiliationprofile">
+                        <extid type="termfield">
+                            <id>UMVbfedb8c76b0046bfad9684f766504010</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>MUV</affiliationowner>
+                            <idtype type="term">
+<id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+<owner>sages-kmyczka</owner>
+<affiliationowner>UMV</affiliationowner>
+<ns2:termtype type="termtype">
+    <id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+    <owner>wstruk</owner>
+    <affiliationowner>PW</affiliationowner>
+    <code>unit_id</code>
+    <name>Unit id</name>
+    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+</ns2:termtype>
+<systemName>MUVid</systemName>
+<namePL>MUV ID</namePL>
+<nameEN>MUV ID</nameEN>
+<notActive>false</notActive>
+                            </idtype>
+                            <value>FAC04</value>
+                        </extid>
+                        <certifyingUnit>false</certifyingUnit>
+                    </ns2:affiliationprofile>
+                    <notActive>false</notActive>
+                    <dontPropagateInactivity>false</dontPropagateInactivity>
+                </ns2:affiliation>
+                <ns2:affiliationprofile type="affiliationprofile">
+                    <extid type="termfield">
+                        <id>UMV50fcdca73d884efc9e1039d39821911f</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>MUV</affiliationowner>
+                        <idtype type="term">
+                            <id>UMVe23c580c259c4a3e86a0a2365af04c94</id>
+                            <owner>sages-kmyczka</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <ns2:termtype type="termtype">
+<id>WUT8a858a07b1934a2ea26771a719ec755d</id>
+<owner>wstruk</owner>
+<affiliationowner>PW</affiliationowner>
+<code>unit_id</code>
+<name>Unit id</name>
+<nonRepeatableByDefault>false</nonRepeatableByDefault>
+                            </ns2:termtype>
+                            <systemName>MUVid</systemName>
+                            <namePL>MUV ID</namePL>
+                            <nameEN>MUV ID</nameEN>
+                            <notActive>false</notActive>
+                        </idtype>
+                        <value>DPT047</value>
+                    </extid>
+                    <certifyingUnit>true</certifyingUnit>
+                </ns2:affiliationprofile>
+                <notActive>false</notActive>
+                <dontPropagateInactivity>false</dontPropagateInactivity>
+            </ns2:affiliation>
+            <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+            <ns2:team type="team">
+                <id>UMVad51976b95eb41e6ba0b099e3d7cbb2a</id>
+                <recordStatus>completed</recordStatus>
+                <leader type="author">
+                    <recordStatus>completed</recordStatus>
+                    <active>false</active>
+                    <status>ZEWNETRZNY</status>
+                    <belonging2N>false</belonging2N>
+                    <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+                    <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+                    <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                    <ns2:authorprofile type="authorprofile">
+                        <hindex>0</hindex>
+                        <rankingScore>0.0</rankingScore>
+                        <noEvaluation>false</noEvaluation>
+                        <sex>0</sex>
+                        <supervisionOffer type="supervisionoffer">
+                            <active>false</active>
+                        </supervisionOffer>
+                    </ns2:authorprofile>
+                    <profilepreferences type="authorprofilepreferences"/>
+                    <ns2:authormirprofile type="authormirprofile"/>
+                </leader>
+                <type type="term">
+                    <notActive>false</notActive>
+                </type>
+                <cooperationLevel type="term">
+                    <notActive>false</notActive>
+                </cooperationLevel>
+                <showProfile>true</showProfile>
+                <notActive>false</notActive>
+                <classified xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                <international>false</international>
+            </ns2:team>
+            <ns2:team type="team">
+                <id>UMVf96d7bf80d5842b7a2e26415dc6fafbb</id>
+                <recordStatus>completed</recordStatus>
+                <leader type="author">
+                    <recordStatus>completed</recordStatus>
+                    <active>false</active>
+                    <status>ZEWNETRZNY</status>
+                    <belonging2N>false</belonging2N>
+                    <externalAffiliationButEvaluation>false</externalAffiliationButEvaluation>
+                    <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+                    <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                    <ns2:authorprofile type="authorprofile">
+                        <hindex>0</hindex>
+                        <rankingScore>0.0</rankingScore>
+                        <noEvaluation>false</noEvaluation>
+                        <sex>0</sex>
+                        <supervisionOffer type="supervisionoffer">
+                            <active>false</active>
+                        </supervisionOffer>
+                    </ns2:authorprofile>
+                    <profilepreferences type="authorprofilepreferences"/>
+                    <ns2:authormirprofile type="authormirprofile"/>
+                </leader>
+                <type type="term">
+                    <notActive>false</notActive>
+                </type>
+                <cooperationLevel type="term">
+                    <notActive>false</notActive>
+                </cooperationLevel>
+                <showProfile>true</showProfile>
+                <notActive>false</notActive>
+                <classified xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+                <international>false</international>
+            </ns2:team>
+            <mainDiscipline type="discipline">
+                <id>UMVe1ec586d1ea640eb97769eb51d6cd549</id>
+                <owner>sages-kmyczka</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <disciplineType>DOMAIN</disciplineType>
+                <namePL>7.1. Медицина</namePL>
+                <nameEN>7.1. Medicine</nameEN>
+                <discipline type="discipline">
+                    <id>UMV5267051dcd564e5e8a4a2dc0ba0f46a0</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <disciplineType>AREA</disciplineType>
+                    <namePL>7. Здравеопазване и спорт</namePL>
+                    <nameEN>7. Health Care and Sport</nameEN>
+                </discipline>
+            </mainDiscipline>
+            <disciplinesApprovedByAuthor>false</disciplinesApprovedByAuthor>
+            <staffGroup type="term">
+                <id>WUT4b86b29bf9b9448ab558a479107a1d58</id>
+                <owner>system</owner>
+                <affiliationowner>UMV</affiliationowner>
+                <ns2:termtype type="termtype">
+                    <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <code>staffGroup</code>
+                    <name>Employment group</name>
+                    <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                </ns2:termtype>
+                <systemName>researchteachingStaff</systemName>
+                <namePL>изследователски и преподавателски персонал</namePL>
+                <nameEN>Research-teaching staff</nameEN>
+                <ns2:term type="term">
+                    <id>WUT9c1a64ba0377485eb3aac7a30234260b</id>
+                    <owner>system</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <ns2:termtype type="termtype">
+                        <id>WUT3817e163aedd49d0b8011432010847aa</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <code>staffGroup</code>
+                        <name>Employment group</name>
+                        <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                    </ns2:termtype>
+                    <systemName>academicStaff</systemName>
+                    <namePL>Академичен персонал</namePL>
+                    <nameEN>Academic staff</nameEN>
+                    <priority>G01</priority>
+                    <notActive>false</notActive>
+                </ns2:term>
+                <priority>G13</priority>
+                <notActive>false</notActive>
+            </staffGroup>
+            <contribution xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+            <ns2:authorprofile type="authorprofile">
+                <extid type="termfield">
+                    <id>UMV43c2bccf77bd48d79c492fe93689b5e4</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>UMVb22b949fda4840b098875e541bf3d46b</id>
+                        <owner>sages-kmyczka</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>HR_MUVid</systemName>
+                        <namePL>Идентификатор MUV HR</namePL>
+                        <nameEN>MUV HR Identifier</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>667</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMV4d73711600984493bf0383fd2e4e586f</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUTfe712e9e17404de29f343752164c96a7</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>ScopusId</systemName>
+                        <namePL>Идентификатор Scopus</namePL>
+                        <nameEN>Scopus Identifier</nameEN>
+                        <priority>EI120</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>57209534407</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMVacf10127adf5443d8c9c097c433b6817</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT8451786af88c4580b1198f347a0048f5</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT6deee7292297435fb414dcd87dd84f0d</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>external_id</code>
+                            <name>External id</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>WoSId</systemName>
+                        <namePL>Идентификатор WoS</namePL>
+                        <nameEN>WoS Identifier</nameEN>
+                        <priority>EI110</priority>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>GDP-7651-2022</value>
+                </extid>
+                <extid type="termfield">
+                    <id>UMV930a32bbe0f74020a2e385d667deee8e</id>
+                    <owner>sages-kmyczka</owner>
+                    <affiliationowner>UMV</affiliationowner>
+                    <idtype type="term">
+                        <id>WUT06219a5f59ef46d2855a42bc83fabf8f</id>
+                        <owner>system</owner>
+                        <affiliationowner>UMV</affiliationowner>
+                        <ns2:termtype type="termtype">
+                            <id>WUT73721172d9e7483ba46a61d697ffa3b3</id>
+                            <owner>system</owner>
+                            <affiliationowner>UMV</affiliationowner>
+                            <code>person_id</code>
+                            <name>Identyfikator osoby</name>
+                            <nonRepeatableByDefault>false</nonRepeatableByDefault>
+                        </ns2:termtype>
+                        <systemName>scholar</systemName>
+                        <namePL>Google Наука</namePL>
+                        <nameEN>Google Scholar</nameEN>
+                        <notActive>false</notActive>
+                    </idtype>
+                    <value>uklRVO0AAAAJ</value>
+                </extid>
+                <hindex>3</hindex>
+                <rankingScore>0.0</rankingScore>
+                <noEvaluation>false</noEvaluation>
+                <sex>0</sex>
+                <supervisionOffer type="supervisionoffer">
+                    <active>false</active>
+                </supervisionOffer>
+            </ns2:authorprofile>
+            <profilepreferences type="authorprofilepreferences"/>
+            <ns2:authormirprofile type="authormirprofile"/>
+        </ns2:author>
+        <totalAuthorsNo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+        <title>Conceptual Rationale for Combining Galantamine, Iontophoresis, and Black Sea Brine in Peripheral Neuropathy: A Narrative Review</title>
+        <ns2:language type="language">
+            <id>WEITI-bc90626b-ed19-490f-b9c3-daf0bffd1760</id>
+            <owner>admin</owner>
+            <affiliationowner>IN</affiliationowner>
+            <code>en</code>
+            <iso2>eng</iso2>
+            <namePL>Английски</namePL>
+            <nameEN>English</nameEN>
+            <ns2:field type="field">
+                <id>WUT7011e8e4e6f74b38a2ca632b6de071e5</id>
+                <owner>PbnIntegrator</owner>
+                <affiliationowner>IN</affiliationowner>
+                <key>pbn_639-2</key>
+                <value>eng</value>
+            </ns2:field>
+            <ns2:field type="field">
+                <id>WUT73e8cec6538944e383d6282838e2f964</id>
+                <owner>PbnIntegrator</owner>
+                <affiliationowner>IN</affiliationowner>
+                <key>pbn_639-1</key>
+                <value>en</value>
+            </ns2:field>
+            <ns2:field type="field">
+                <id>WUT65f08cfa99d14cd9bf5f0d65185ce27d</id>
+                <owner>PbnIntegrator</owner>
+                <affiliationowner>IN</affiliationowner>
+                <key>pbn_pl</key>
+                <value>angielski</value>
+            </ns2:field>
+            <ns2:field type="field">
+                <id>WUT108a680882134cf18b2f743d829026b5</id>
+                <owner>PbnIntegrator</owner>
+                <affiliationowner>IN</affiliationowner>
+                <key>pbn_en</key>
+                <value>English</value>
+            </ns2:field>
+            <ns2:field type="field">
+                <id>WUT8cbc478cf51c4345a7a1d27ef40339c7</id>
+                <owner>PbnIntegrator</owner>
+                <affiliationowner>IN</affiliationowner>
+                <key>pbn_de</key>
+                <value>Englisch</value>
+            </ns2:field>
+            <ns2:field type="field">
+                <id>WUT7cba2fb293374920b434cde356f0ec3a</id>
+                <owner>PbnIntegrator</owner>
+                <affiliationowner>IN</affiliationowner>
+                <key>pbn_fr</key>
+                <value>anglais</value>
+            </ns2:field>
+        </ns2:language>
+        <doi>10.3390/neurosci7030060</doi>
+        <abstractEN>Background: Peripheral neuropathy is a common and clinically heterogeneous neurological condition caused by metabolic, inflammatory, toxic, or traumatic factors and is associated with sensory deficits, neuropathic pain, motor impairment, and reduced functional capacity. Management remains challenging and often requires multimodal therapeutic approaches, as pharmacological monotherapy frequently provides incomplete symptom control. Objective: This narrative review explores the conceptual rationale for combining galantamine with iontophoresis and Black Sea brine-based therapy as a potential multimodal strategy for peripheral neuropathy management. Main Findings: Galantamine, a reversible acetylcholinesterase inhibitor and positive allosteric modulator of nicotinic acetylcholine receptors, has demonstrated neuroprotective, neuromodulatory, and anti-inflammatory properties in experimental settings. Iontophoresis may provide a non-invasive method for targeted local drug delivery while reducing systemic exposure. Black Sea brine, widely used in Bulgarian balneological and rehabilitation practice, has been associated with improved circulation, pain reduction, and neuromuscular support. The reviewed evidence suggests biologically plausible complementary mechanisms; however, no direct clinical studies evaluating the combined intervention were identified. Limitations: Current evidence is indirect and derived from separate investigations of galantamine, iontophoresis, and brine-based therapy, as well as heterogeneous historical and regional sources. Therefore, the proposed combination should be considered hypothesis-generating rather than evidence-established. Conclusions: The combination of galantamine, iontophoresis, and Black Sea brine represents a potentially interesting multimodal concept for peripheral neuropathy rehabilitation. Well-designed preclinical and clinical studies are required to determine safety, feasibility, optimal treatment parameters, and therapeutic efficacy.</abstractEN>
+        <keywordsEN>galantamine; iontophoresis; Black Sea brine; peripheral neuropathy; transdermal drug delivery; rehabilitation; narrative review</keywordsEN>
+        <classified xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+        <fees type="publicationfees">
+            <id>UMVb87d4328652e41028741d96c043b5f6c</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <costFreePublication>false</costFreePublication>
+            <researchPotentialFinancialResources>false</researchPotentialFinancialResources>
+            <researchOrDevelopmentProjectsFinancialResources>false</researchOrDevelopmentProjectsFinancialResources>
+            <other>false</other>
+        </fees>
+        <pbnIntegration type="integrationinfo">
+            <id>UMV712f84f8e301445e8f113425a8ebb508</id>
+        </pbnIntegration>
+        <ns2:field type="field">
+            <id>UMVac31c152a51c48fdb2f31e3a1a9777f9</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <key>csl</key>
+            <value>{"id":"WOS:001803095000001","type":"article-journal","language":"English","author":[{"family":"Ivanova","given":"Mariya"},{"family":"Panayotova-Ovcharova","given":"Liliya"},{"family":"Nedyalkova-Petkova","given":"Detelina"},{"family":"Petkov","given":"Petar"},{"family":"Boshev","given":"Georgi"},{"family":"Vladeva","given":"Evgeniya"}],"event-date":{"date-parts":[[2026]]},"issued":{"date-parts":[[2026]]},"abstract":"Background: Peripheral neuropathy is a common and clinically heterogeneous neurological condition caused by metabolic, inflammatory, toxic, or traumatic factors and is associated with sensory deficits, neuropathic pain, motor impairment, and reduced functional capacity. Management remains challenging and often requires multimodal therapeutic approaches, as pharmacological monotherapy frequently provides incomplete symptom control. Objective: This narrative review explores the conceptual rationale for combining galantamine with iontophoresis and Black Sea brine-based therapy as a potential multimodal strategy for peripheral neuropathy management. Main Findings: Galantamine, a reversible acetylcholinesterase inhibitor and positive allosteric modulator of nicotinic acetylcholine receptors, has demonstrated neuroprotective, neuromodulatory, and anti-inflammatory properties in experimental settings. Iontophoresis may provide a non-invasive method for targeted local drug delivery while reducing systemic exposure. Black Sea brine, widely used in Bulgarian balneological and rehabilitation practice, has been associated with improved circulation, pain reduction, and neuromuscular support. The reviewed evidence suggests biologically plausible complementary mechanisms; however, no direct clinical studies evaluating the combined intervention were identified. Limitations: Current evidence is indirect and derived from separate investigations of galantamine, iontophoresis, and brine-based therapy, as well as heterogeneous historical and regional sources. Therefore, the proposed combination should be considered hypothesis-generating rather than evidence-established. Conclusions: The combination of galantamine, iontophoresis, and Black Sea brine represents a potentially interesting multimodal concept for peripheral neuropathy rehabilitation. Well-designed preclinical and clinical studies are required to determine safety, feasibility, optimal treatment parameters, and therapeutic efficacy.","container-title":"NEUROSCI","DOI":"10.3390/neurosci7030060","event-place":"MDPI AG, Grosspeteranlage 5, CH-4052 BASEL, SWITZERLAND","keyword":"galantamine; iontophoresis; Black Sea brine; peripheral neuropathy; transdermal drug delivery; rehabilitation; narrative review","number":"3","publisher":"MDPI","publisher-place":"MDPI AG, Grosspeteranlage 5, CH-4052 BASEL, SWITZERLAND","title":"Conceptual Rationale for Combining Galantamine, Iontophoresis, and Black Sea Brine in Peripheral Neuropathy: A Narrative Review","volume":"7"}</value>
+        </ns2:field>
+        <ns2:field type="field">
+            <id>UMVc2426fbf6a054001a85a3d3be52c73e6</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <key>importId</key>
+            <value>1790687335976</value>
+        </ns2:field>
+    <userfield type="field"><id>UMV3202185b32c34e48b5ac2d8a2f2307a2</id><owner>sglinkov@mu-varna.bg</owner><affiliationowner>UMV</affiliationowner><key>wos_categories</key><value>Clinical Neurology | Neurosciences</value></userfield><userfield type="field"><id>UMVb50a1353d4f34e7d90f1427399da83bf</id><owner>sglinkov@mu-varna.bg</owner><affiliationowner>UMV</affiliationowner><key>wos_research_areas</key><value>Neurosciences &amp; Neurology</value></userfield><userfield type="field"><id>UMVf111633640a5484498cf725229c29979</id><owner>sglinkov@mu-varna.bg</owner><affiliationowner>UMV</affiliationowner><key>wos_keywords_plus</key><value>DIAGNOSIS | DELIVERY | PAIN</value></userfield><userfield type="field"><id>UMVc8f578085fb0447394a4b7874a19adb1</id><owner>sglinkov@mu-varna.bg</owner><affiliationowner>UMV</affiliationowner><key>wos_grant_agencies</key><value>Medical University-Varna: Project-Enhancing Translational Excellence in Medicine (MUVE-TEAM)</value></userfield><userfield type="field"><id>UMVd806974df3fc451a99f4f36aa9526886</id><owner>sglinkov@mu-varna.bg</owner><affiliationowner>UMV</affiliationowner><key>wos_grant_ids</key><value>BG-RRP-2.0040009-C02</value></userfield><userfield type="field"><id>UMVb2a52ea445fa4dad974a91ebe817d9fc</id><owner>sglinkov@mu-varna.bg</owner><affiliationowner>UMV</affiliationowner><key>wos_fund_text</key><value>"Medical University-Varna: Project-Enhancing Translational Excellence in Medicine (MUVE-TEAM)" BG-RRP-2.0040009-C02.</value></userfield></ns2:article>
+</collection>
