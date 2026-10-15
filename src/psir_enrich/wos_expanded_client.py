@@ -327,14 +327,71 @@ class WosExpandedClient:
 
         out["early_access_date"] = _s(pi.get("early_access_date"))
         out["early_access_year"] = _s(pi.get("early_access_year"))
+
+        # page block may contain article_number-like data or page count only.
         page = pi.get("page") or {}
         if isinstance(page, dict):
             out["page_begin"] = _s(page.get("begin"))
-            out["page_end"]   = _s(page.get("end"))
+            out["page_end"] = _s(page.get("end"))
             out["page_count"] = _s(page.get("page_count"))
             content = page.get("content")
             if content:
                 out["collation"] = _s(content)
+
+            # Search commonly used keys and also any key whose name contains
+            # "article" in the page block.
+            artno = (
+                _s(page.get("article_no"))
+                or _s(page.get("articleNumber"))
+                or _s(page.get("article-number"))
+                or _s(page.get("articleNo"))
+                or _s(page.get("article"))
+            )
+            if not artno:
+                for key, value in page.items():
+                    if isinstance(key, str) and "article" in key.lower():
+                        cand = _s(value)
+                        if cand:
+                            artno = cand
+                            break
+            if artno:
+                out["article_no"] = artno
+
+        # Some payloads expose article number as a top-level pub_info key or in
+        # cluster_related identifiers under type='art_no'. We cover both.
+        if "article_no" not in out:
+            artno = (
+                _s(pi.get("article_no"))
+                or _s(pi.get("articleNumber"))
+                or _s(pi.get("article-number"))
+                or _s(pi.get("articleNo"))
+                or _s(pi.get("article"))
+            )
+            if not artno:
+                for key, value in pi.items():
+                    if isinstance(key, str) and "article" in key.lower():
+                        cand = _s(value)
+                        if cand:
+                            artno = cand
+                            break
+            if artno:
+                out["article_no"] = artno
+
+        # Clarivate can expose article number in related identifiers as a type of
+        # 'art_no'; capture it here too.
+        if "article_no" not in out:
+            cluster = rec.get("dynamic_data", {}).get("cluster_related", {})
+            ids = cluster.get("identifiers", {}).get("identifier", [])
+            if isinstance(ids, dict):
+                ids = [ids]
+            for item in ids or []:
+                if not isinstance(item, dict):
+                    continue
+                if str(item.get("type", "")).lower() == "art_no":
+                    cand = _s(item.get("value"))
+                    if cand:
+                        out["article_no"] = cand
+                        break
 
         return out
 
