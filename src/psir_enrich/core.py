@@ -11,7 +11,6 @@ fields, extids, and free-key fields added or updated in-place.  Import into
 PSIR with:
 
   Tab: XML
-  Update record action: overwrite
   Update external identifiers: ✓ CHECKED
   Default field update action: overwrite
 
@@ -548,8 +547,11 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
     if state.new_collation:
         _set_or_create_text_element(article, "collation", state.new_collation)
 
-    # --- Article number (only if no collation available) ---
-    if state.new_articleNo and not state.new_collation:
+    # --- Article number (write whenever available) ---
+    # Previously this was only written when no collation existed.  Some
+    # records include both a page-like collation and an article number; write
+    # articleNo whenever Expanded API supplies one so target imports include it.
+    if state.new_articleNo:
         _set_or_create_text_element(article, "articleNo", state.new_articleNo)
 
     # --- Vol / issue on journalissue ---
