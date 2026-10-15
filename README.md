@@ -2,7 +2,7 @@
 
 **Enrich OMEGA-PSIR publication XML records with Web of Science identifiers, PubMed IDs, and selected WoS Expanded metadata.**
 
-`psir-enrich` provides a Streamlit GUI for routine use and a CLI for batch work. It was built for the OMEGA-PSIR 4.6.4 installation at the Medical University of Varna, with MU-Varna dictionary UUIDs and XML conventions baked into the import/export logic.
+`psir-enrich` provides a Streamlit GUI for routine use and a CLI for batch work. It was built for the OMEGA-PSIR 4.6.4 installation at the Medical University of Varna, with MU-Varna dictionary UUID[...] 
 
 ---
 
@@ -29,16 +29,16 @@ For each `<ns2:article>` in a PSIR XML export, the tool builds an audit trail an
 
 When a WoS Expanded API key is provided, records with an eligible UT are fetched through Expanded `/id/{uid}?optionView=FR`.
 
-The tool fills these fields only when missing in PSIR:
+The tool fills these fields only when missing in PSIR (or when the Expanded API provides a value and the field is absent):
 
 - `abstractEN`
 - `keywordsEN`
-- `collation`
-- `articleNo` (when no page range is available and no article number already exists in the source XML)
+- `collation` (page range derived from WoS `page.begin` / `page.end`)
+- `articleNo` (written when the WoS Expanded record provides an article number and the source does not already have one)
 - journal issue `vol`
 - journal issue `no`
 
-For page locations, WoS `page.begin` / `page.end` are mapped to PSIR `<collation>`. If the record has no pages, the tool uses the WoS article number (`pub_info.page` / article number field) as `<articleNo>` when the input XML lacks both a page range and an existing article number.
+For page locations, WoS `page.begin` / `page.end` are mapped to PSIR `<collation>`. If the record has no pages, the tool will use the WoS article number (when present) as `<articleNo>`. Note: recent change — article numbers returned by Expanded are now written into the output whenever the Expanded API supplies one (subject to not overwriting an existing `articleNo` in the source XML).
 
 For issue number, WoS `issue` is preferred. If there is no regular issue, supplement/special issue values are mapped to PSIR `<no>`, for example:
 
@@ -202,7 +202,7 @@ python -m pip install -e ".[dev]"
 python -m pytest tests/ -v --ignore=tests/test_expanded.py
 ```
 
-The standard test command currently runs 73 tests covering XML parsing, CSL note extraction, Starter lookup construction, PubMed fallback, Expanded extraction helpers, funding handling, and CLI behavior.
+The standard test command currently runs 73 tests covering XML parsing, CSL note extraction, Starter lookup construction, PubMed fallback, Expanded extraction helpers, funding handling, and CLI b[...]
 
 ---
 
