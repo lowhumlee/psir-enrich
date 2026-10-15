@@ -3,10 +3,10 @@
     <ns2:article type="article">
         <metaData>
             <lastModifiedBy>sglinkov@mu-varna.bg</lastModifiedBy>
-            <lastModified>2026-10-15T08:54:02.129+02:00</lastModified>
+            <lastModified>2026-10-15T09:01:34.258+02:00</lastModified>
             <created>2026-09-29T15:10:35.944+02:00</created>
         </metaData>
-        <meta_datestamp>1792047242129</meta_datestamp>
+        <meta_datestamp>1792047694258</meta_datestamp>
         <ns2:journalissue type="journalissue">
             <id>UMV776517c8113e42ddae9958e85d583232</id>
             <owner>sglinkov@mu-varna.bg</owner>
@@ -173,7 +173,7 @@
             </ns2:indicatordata>
         </ns2:indicator>
         <ns2:indicator type="indicator">
-            <id>UMV899ba17f830b4e84a370a017a18b7a41</id>
+            <id>UMV5ba01d2d93f843188c44683143f95fc1</id>
             <owner>sglinkov@mu-varna.bg</owner>
             <affiliationowner>UMV</affiliationowner>
             <name type="term">
@@ -201,11 +201,11 @@
                 <year>2025</year>
                 <value>1.9</value>
                 <svalue>2</svalue>
-                <evaluationDate>2026-10-15T08:54:02+0200</evaluationDate>
+                <evaluationDate>2026-10-15T09:01:34+0200</evaluationDate>
             </ns2:indicatordata>
         </ns2:indicator>
         <ns2:indicator type="indicator">
-            <id>UMV464e85444d514749bc1bf589ee49c66a</id>
+            <id>UMV568966096dae4f2e9f182491bda6da6b</id>
             <owner>sglinkov@mu-varna.bg</owner>
             <affiliationowner>UMV</affiliationowner>
             <name type="term">
@@ -232,7 +232,7 @@
                 <affiliationowner>UMV</affiliationowner>
                 <year>2025</year>
                 <value>3</value>
-                <evaluationDate>2026-10-15T08:54:02+0200</evaluationDate>
+                <evaluationDate>2026-10-15T09:01:34+0200</evaluationDate>
             </ns2:indicatordata>
         </ns2:indicator>
         <ns2:author type="author">
@@ -2361,5 +2361,47 @@
             <key>importId</key>
             <value>1790687335976</value>
         </ns2:field>
+        <userfield type="field">
+            <id>UMV3202185b32c34e48b5ac2d8a2f2307a2</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <key>wos_categories</key>
+            <value>Clinical Neurology | Neurosciences</value>
+        </userfield>
+        <userfield type="field">
+            <id>UMVb50a1353d4f34e7d90f1427399da83bf</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <key>wos_research_areas</key>
+            <value>Neurosciences &amp; Neurology</value>
+        </userfield>
+        <userfield type="field">
+            <id>UMVf111633640a5484498cf725229c29979</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <key>wos_keywords_plus</key>
+            <value>DIAGNOSIS | DELIVERY | PAIN</value>
+        </userfield>
+        <userfield type="field">
+            <id>UMVc8f578085fb0447394a4b7874a19adb1</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <key>wos_grant_agencies</key>
+            <value>Medical University-Varna: Project-Enhancing Translational Excellence in Medicine (MUVE-TEAM)</value>
+        </userfield>
+        <userfield type="field">
+            <id>UMVd806974df3fc451a99f4f36aa9526886</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <key>wos_grant_ids</key>
+            <value>BG-RRP-2.0040009-C02</value>
+        </userfield>
+        <userfield type="field">
+            <id>UMVb2a52ea445fa4dad974a91ebe817d9fc</id>
+            <owner>sglinkov@mu-varna.bg</owner>
+            <affiliationowner>UMV</affiliationowner>
+            <key>wos_fund_text</key>
+            <value>"Medical University-Varna: Project-Enhancing Translational Excellence in Medicine (MUVE-TEAM)" BG-RRP-2.0040009-C02.</value>
+        </userfield>
     </ns2:article>
 </collection>
