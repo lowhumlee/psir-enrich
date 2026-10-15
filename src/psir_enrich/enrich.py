@@ -6,7 +6,7 @@ re-import into PSIR's XML import dialog.
 
 Enrichment ladder
 -----------------
-Tier 0   csl-WoS promotion        free, no API call
+Tier 0   csl-WoS promotion        free, no API.
 Tier S1  Starter DOI lookup       fills WoSId + PubMedID
 Tier S2  Starter UID lookup       fills PubMedID if UT known
 Tier X   Expanded full record     fills abstract, keywords, pages, vol,
@@ -193,7 +193,11 @@ def enrich_one_expanded(
     if not state.existing_collation and not state.new_collation:
         # No pages — try to use article number as location
         # We don't overwrite existing articleNo (could be a conference code etc.)
-        pass  # articleNo is populated by the record itself; don't derive from WoS
+        if not state.existing_articleNo:
+            artno = pi.get("article_no")
+            if artno:
+                state.new_articleNo = str(artno).strip()
+                state.actions.append("expanded_articleNo")
 
     if not state.existing_vol and pi.get("vol"):
         state.new_vol = pi["vol"]
@@ -365,6 +369,8 @@ def run_enrichment(
             "new_keywords":         bool(s.new_keywordsEN),
             "had_collation":        bool(s.existing_collation),
             "new_collation":        s.new_collation or "",
+            "had_articleNo":        bool(s.existing_articleNo),
+            "new_articleNo":        s.new_articleNo or "",
             "had_vol":              bool(s.existing_vol),
             "new_vol":              s.new_vol or "",
             "had_issue":            bool(s.existing_issue),
