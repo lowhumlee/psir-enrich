@@ -145,25 +145,24 @@ class WosExpandedClient:
 
     @staticmethod
     def _normalize_article_no(raw: Optional[str]) -> Optional[str]:
-        """Normalize article number values.
+        """Remove the literal ARTN prefix exactly as returned by the API.
 
-        Strip common ARTN prefixes (case-insensitive) and return the first
-        digit sequence found. Examples:
+        Examples:
           'ARTN 345' -> '345'
-          'artn:345' -> '345'
-          '345 (electronic)' -> '345'
-          'A-123' -> '123' (first digit sequence)
-        If no digits are present, return the cleaned string.
+          'ARTN e4456' -> 'e4456'
         """
         if raw is None:
             return None
+
         s = str(raw).strip()
         if not s:
             return None
-        # Remove leading ARTN tokens like 'ARTN', 'ARTN:', 'ARTN -', etc.
-        s = re.sub(r'^\s*ARTN[:\s-]*', '', s, flags=re.IGNORECASE)
-        m = re.search(r'\d+', s)
-        return m.group(0) if m else s or None
+
+        # Remove the exact literal prefix "ARTN " from the value.
+        if s.startswith("ARTN "):
+            return s[len("ARTN "):]
+
+        return s
 
     # ------------------------------------------------------------------
     # Public API
@@ -275,19 +274,6 @@ class WosExpandedClient:
 
         out["vol"] = _s(pi.get("vol"))
 
-        # WoS may store issue-like information as:
-        #   issue
-        #   supplement
-        #   special_issue
-        #
-        # PSIR has only <no>, so:
-        #   issue wins if present
-        #   otherwise use supplement / special issue as fallback
-        #
-        # Examples:
-        #   supplement = "1"                     -> "Suppl 1"
-        #   supplement = "1", special_issue="SI" -> "Suppl 1, SI"
-        #   special_issue = "SI"                 -> "SI"
         issue = _s(pi.get("issue"))
 
         raw_supplement = (
@@ -325,11 +311,9 @@ class WosExpandedClient:
 
             low = s.lower().strip()
 
-            # WoS may expose special issue as SI, yes/true, or similar.
             if low in {"si", "special issue", "special_issue", "y", "yes", "true", "1"}:
                 return "SI"
 
-            # If WoS gives a more specific label, preserve it.
             return s
 
         supplement = _format_supplement(raw_supplement)
@@ -350,7 +334,6 @@ class WosExpandedClient:
         out["early_access_date"] = _s(pi.get("early_access_date"))
         out["early_access_year"] = _s(pi.get("early_access_year"))
 
-        # page block may contain article_number-like data or page count only.
         page = pi.get("page") or {}
         if isinstance(page, dict):
             out["page_begin"] = _s(page.get("begin"))
@@ -360,8 +343,6 @@ class WosExpandedClient:
             if content:
                 out["collation"] = _s(content)
 
-            # Search commonly used keys and also any key whose name contains
-            # "article" in the page block.
             artno = (
                 _s(page.get("article_no"))
                 or _s(page.get("articleNumber"))
@@ -377,11 +358,8 @@ class WosExpandedClient:
                             artno = cand
                             break
             if artno:
-                artno = WosExpandedClient._normalize_article_no(artno)
-                out["article_no"] = artno
+                out["article_no"] = WosExpandedClient._normalize_article_no(artno)
 
-        # Some payloads expose article number as a top-level pub_info key or in
-        # cluster_related identifiers under type='art_no'. We cover both.
         if "article_no" not in out:
             artno = (
                 _s(pi.get("article_no"))
@@ -398,11 +376,8 @@ class WosExpandedClient:
                             artno = cand
                             break
             if artno:
-                artno = WosExpandedClient._normalize_article_no(artno)
-                out["article_no"] = artno
+                out["article_no"] = WosExpandedClient._normalize_article_no(artno)
 
-        # Clarivate can expose article number in related identifiers as a type of
-        # 'art_no'; capture it here too.
         if "article_no" not in out:
             cluster = rec.get("dynamic_data", {}).get("cluster_related", {})
             ids = cluster.get("identifiers", {}).get("identifier", [])
@@ -414,8 +389,7 @@ class WosExpandedClient:
                 if str(item.get("type", "")).lower() == "art_no":
                     cand = _s(item.get("value"))
                     if cand:
-                        cand = WosExpandedClient._normalize_article_no(cand)
-                        out["article_no"] = cand
+                        out["article_no"] = WosExpandedClient._normalize_article_no(cand)
                         break
 
         return out
@@ -426,9 +400,9 @@ class WosExpandedClient:
 
         Returns dict:
           wos_categories  : list[str]  – ascatype=='traditional' subjects
-                                         e.g. ['Medicine, General & Internal']
+                                          e.g. ['Medicine, General & Internal']
           research_areas  : list[str]  – ascatype=='extended' subjects
-                                         e.g. ['General & Internal Medicine']
+                                          e.g. ['General & Internal Medicine']
           heading         : str        – broad heading ('Science & Technology')
           subheadings     : list[str]  – ['Life Sciences & Biomedicine']
         """
@@ -445,7 +419,6 @@ class WosExpandedClient:
         except (KeyError, TypeError):
             return out
 
-        # Subjects — split traditional vs extended
         subjects = ci.get("subjects", {}).get("subject", [])
         if isinstance(subjects, dict):
             subjects = [subjects]
@@ -458,7 +431,6 @@ class WosExpandedClient:
             elif s.get("ascatype") == "extended":
                 out["research_areas"].append(content)
 
-        # Heading (broad: 'Science & Technology')
         heading = ci.get("headings", {})
         if isinstance(heading, dict):
             h = heading.get("heading")
@@ -467,7 +439,6 @@ class WosExpandedClient:
             elif h:
                 out["heading"] = str(h).strip()
 
-        # Subheadings ('Life Sciences & Biomedicine', 'Physical Sciences', …)
         subh = ci.get("subheadings", {}).get("subheading", [])
         if isinstance(subh, str):
             subh = [subh]
@@ -502,12 +473,9 @@ class WosExpandedClient:
         except (KeyError, AttributeError, TypeError):
             return out
 
-        # WoS Expanded may return fund_ack as None, empty string, list,
-        # or another unexpected shape. Only dict is usable here.
         if not isinstance(fa, dict):
             return out
 
-        # ---- Raw funding text ------------------------------------------
         fund_text = fa.get("fund_text")
         p = None
 
@@ -522,7 +490,6 @@ class WosExpandedClient:
         elif p:
             out["fund_text"] = str(p).strip() or None
 
-        # ---- Structured grants -----------------------------------------
         grants_block = fa.get("grants")
         if not isinstance(grants_block, dict):
             return out
@@ -544,7 +511,6 @@ class WosExpandedClient:
             if agency:
                 out["agencies"].append(str(agency).strip())
 
-            # grant_agency_names may be list, dict, None, or malformed
             agency_names = g.get("grant_agency_names") or []
             if isinstance(agency_names, dict):
                 agency_names = [agency_names]
@@ -557,7 +523,6 @@ class WosExpandedClient:
                     if name:
                         out["agencies"].append(str(name).strip())
 
-            # grant_ids may be dict, string, list, None, or malformed
             gids = g.get("grant_ids") or {}
             ids = []
 
@@ -575,11 +540,11 @@ class WosExpandedClient:
                 if gid:
                     out["grant_ids"].append(str(gid).strip())
 
-        # Deduplicate, preserve order
         out["agencies"] = list(dict.fromkeys(x for x in out["agencies"] if x))
         out["grant_ids"] = list(dict.fromkeys(x for x in out["grant_ids"] if x))
 
         return out
+
     @staticmethod
     def extract_reprint_seq(rec: dict) -> Optional[int]:
         """Return the 1-based sequence number of the reprint (corresponding) author."""
