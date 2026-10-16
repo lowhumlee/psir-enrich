@@ -4,32 +4,38 @@ This guide reflects the current `psir-enrich` Streamlit/CLI tool: Starter enrich
 
 ---
 
-## 1. Local setup
+# 1. Install Python 3.10+ from python.org (check "Add to PATH")
+python --version
 
-```bash
+# 2. Clone and enter repo
+cd $HOME
 git clone https://github.com/lowhumlee/psir-enrich.git
 cd psir-enrich
-python -m pip install -e ".[dev]"
-```
 
-Run the standard test suite:
+# 3. Create + activate virtual env
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+# If blocked: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-```bash
+# 4. Install
+python -m pip install --upgrade pip
+python -m pip install -e ".[gui,dev]"
+
+# 5. Run tests
 python -m pytest tests/ -v --ignore=tests/test_expanded.py
-```
 
-At the current state this command runs 73 tests. The legacy/extended `tests/test_expanded.py` file is intentionally ignored by the standard CI command.
-
-Run the app locally:
-
-```bash
+# 6. Launch GUI
 streamlit run app.py
-```
+# Opens http://localhost:8501
 
-Open `http://localhost:8501`.
+# 7. (Optional) Set env keys instead of pasting in GUI
+$env:WOS_API_KEY = "your-key"
+$env:WOS_EXPANDED_API_KEY = "your-key"
+$env:SCOPUS_API_KEY = "your-key"
+streamlit run app.py
 
----
-
+# 8. Deactivate when done
+deactivate
 ## 2. API keys and secrets
 
 The app can run in several modes:
