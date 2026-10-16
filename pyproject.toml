@@ -1,52 +1,39 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "psir-enrich"
-version = "0.4.0"
-description = "Enrich OMEGA-PSIR publication records with WoS Identifiers and PubMed IDs via the Clarivate WoS Starter API. Web GUI + CLI."
+version = "0.5.0"
+description = "Enrich OMEGA-PSIR publication XML records with WoS identifiers, PubMed IDs, Scopus IDs, and selected WoS Expanded metadata."
 readme = "README.md"
-requires-python = ">=3.9"
-license = { text = "MIT" }
+license = {text = "MIT"}
+requires-python = ">=3.10"
 authors = [
-    { name = "Medical University of Varna" }
-]
-keywords = ["omega-psir", "psir", "web-of-science", "clarivate", "bibliometrics", "cris", "streamlit"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Scientific/Engineering :: Information Analysis",
+    {name = "lowhumlee"},
 ]
 dependencies = [
     "lxml>=4.9",
-    "pandas>=2.0",
-    "requests>=2.31",
-    "streamlit>=1.45",
+    "requests>=2.28",
+    "pandas>=1.5",
 ]
 
 [project.optional-dependencies]
+gui = [
+    "streamlit>=1.30",
+]
 dev = [
-    "pytest>=7",
-    "pytest-cov>=4",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "responses>=0.23",
 ]
 
 [project.scripts]
 psir-enrich = "psir_enrich.cli:main"
 
-[project.urls]
-Homepage = "https://github.com/YOUR_GITHUB_USER/psir-enrich"
-Issues = "https://github.com/YOUR_GITHUB_USER/psir-enrich/issues"
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.package-data]
-psir_enrich = ["py.typed"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
