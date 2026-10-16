@@ -1,0 +1,186 @@
+"""Tests for psir_enrich.enrich — enrichment pipeline logic."""
+from __future__ import annotations
+
+import pytest
+from unittest.mock import MagicMock, patch
+from lxml import etree
+
+from psir_enrich.core import NS_URI, ArticleState, survey_article
+from psir_enrich.enrich import (
+    _needs_article_no,
+    enrich_one_scopus,
+    run_enrichment,
+)
+
+
+# --------------------------------------------------------------------------
+# _needs_article_no
+# --------------------------------------------------------------------------
+
+class TestNeedsArticleNo:
+    def test_needs_when_nothing_present(self):
+        s = ArticleState()
+        assert _needs_article_no(s) is True
+
+    def test_not_needed_when_existing(self):
+        s = ArticleState()
+        s.existing_articleNo = "e70932"
+        assert _needs_article_no(s) is False
+
+    def test_not_needed_when_new(self):
+        s = ArticleState()
+        s.new_articleNo = "1947"
+        assert _needs_article_no(s) is False
+
+    def test_needed_even_with_collation(self):
+        """articleNo and collation can coexist — collation should NOT block articleNo."""
+        s = ArticleState()
+        s.existing_collation = "4-13"
+        assert _needs_article_no(s) is True
+
+    def test_needed_even_with_new_collation(self):
+        s = ArticleState()
+        s.new_collation = "4-13"
+        assert _needs_article_no(s) is True
+
+
+# --------------------------------------------------------------------------
+# enrich_one_scopus
+# --------------------------------------------------------------------------
+
+class TestEnrichOneScopus:
+    def _make_state(self, **kwargs) -> ArticleState:
+        s = ArticleState()
+        s.psir_id = "UMV001"
+        s.title = "Test Article"
+        s.doi = "10.1016/j.test.2024.001"
+        for k, v in kwargs.items():
+            setattr(s, k, v)
+        return s
+
+    def test_csl_scopus_promotion(self):
+        """Tier 0: csl_scopus is promoted without API call."""
+        s = self._make_state(csl_scopus="85028623301")
+        enrich_one_scopus(s, client=None)
+        assert s.new_scopus == "85028623301"
+        assert "csl_scopus_id" in s.actions
+
+    def test_no_client_skips(self):
+        s = self._make_state()
+        enrich_one_scopus(s, client=None)
+        assert "scopus api skipped (no client)" in s.notes
+
+    def test_doi_lookup_fills_scopus_id(self):
+        s = self._make_state()
+        mock_client = MagicMock()
+        mock_client.lookup_by_doi.return_value = {
+            "scopus_id": "85028623301",
+            "pmid": "12345678",
+            "articleNo": "e70932",
+        }
+
+        enrich_one_scopus(s, mock_client)
+
+        assert s.new_scopus == "85028623301"
+        assert s.new_pmid == "12345678"
+        assert s.new_articleNo == "e70932"
+        assert "api_scopus_doi" in s.actions
+
+    def test_article_no_filled_even_with_collation(self):
+        """Scopus articleNo should be filled even if collation exists."""
+        s = self._make_state(existing_collation="4-13")
+        mock_client = MagicMock()
+        mock_client.lookup_by_doi.return_value = {
+            "scopus_id": "85028623301",
+            "pmid": None,
+            "articleNo": "e70932",
+        }
+
+        enrich_one_scopus(s, mock_client)
+
+        assert s.new_articleNo == "e70932"
+        assert "api_scopus_doi_articleNo" in s.actions
+
+    def test_abstract_retrieval_when_id_known(self):
+        """When Scopus ID is known but abstract is missing, use Abstract Retrieval."""
+        s = self._make_state(existing_scopus="85028623301")
+        mock_client = MagicMock()
+        mock_client.lookup_abstract.return_value = {
+            "abstract": "This is the abstract.",
+            "keywords": "kw1; kw2",
+            "pmid": None,
+            "articleNo": None,
+        }
+
+        enrich_one_scopus(s, mock_client)
+
+        assert s.new_abstractEN == "This is the abstract."
+        assert s.new_keywordsEN == "kw1; kw2"
+        assert "api_scopus_abstract" in s.actions
+        # Should NOT have called search API
+        mock_client.lookup_by_doi.assert_not_called()
+        mock_client.lookup_by_title_author.assert_not_called()
+
+    def test_no_api_call_when_all_present(self):
+        """If everything is already filled, no API calls should be made."""
+        s = self._make_state(
+            existing_scopus="85028623301",
+            existing_pmid="12345678",
+            existing_abstractEN="Abstract",
+            existing_keywordsEN="kw1",
+            existing_articleNo="e70932",
+        )
+        mock_client = MagicMock()
+
+        enrich_one_scopus(s, mock_client)
+
+        mock_client.lookup_by_doi.assert_not_called()
+        mock_client.lookup_by_title_author.assert_not_called()
+        mock_client.lookup_abstract.assert_not_called()
+
+
+# --------------------------------------------------------------------------
+# run_enrichment (integration)
+# --------------------------------------------------------------------------
+
+class TestRunEnrichment:
+    def test_empty_collection(self):
+        xml = b'<?xml version="1.0"?><collection xmlns:ns2="http://ii.pw.edu.pl/lib"></collection>'
+        result = run_enrichment(xml)
+        assert result.n_articles == 0
+        assert result.n_enriched == 0
+
+    def test_single_article_no_api(self):
+        xml = b"""<?xml version="1.0"?>
+        <collection xmlns:ns2="http://ii.pw.edu.pl/lib">
+            <ns2:article>
+                <id>UMV001</id>
+                <title>Test</title>
+                <doi>10.1016/j.test.2024.001</doi>
+            </ns2:article>
+        </collection>"""
+        result = run_enrichment(xml)
+        assert result.n_articles == 1
+        assert result.n_enriched == 0  # no API keys, nothing to enrich
+
+    def test_scopus_key_creates_client(self):
+        """When scopus_api_key is provided, ScopusClient should be instantiated."""
+        xml = b"""<?xml version="1.0"?>
+        <collection xmlns:ns2="http://ii.pw.edu.pl/lib">
+            <ns2:article>
+                <id>UMV001</id>
+                <title>Test</title>
+                <doi>10.1016/j.test.2024.001</doi>
+            </ns2:article>
+        </collection>"""
+
+        with patch("psir_enrich.enrich.ScopusClient") as mock_scopus_cls:
+            mock_scopus_cls.return_value = MagicMock()
+            mock_scopus_cls.return_value.daily_count = 0
+            mock_scopus_cls.return_value.errors = 0
+
+            result = run_enrichment(xml, scopus_api_key="test_key")
+            mock_scopus_cls.assert_called_once_with(
+                api_key="test_key",
+                min_interval=0.35,
+            )
