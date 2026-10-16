@@ -12,7 +12,6 @@ Import settings in PSIR:
   Update external identifiers: CHECKED
   Default field update action: overwrite (or Add new values)
 """
-
 from __future__ import annotations
 
 import argparse
@@ -25,9 +24,7 @@ from psir_enrich import __version__
 from psir_enrich.enrich import run_enrichment
 from psir_enrich.wos_client import WosStarterClient
 
-
 DEFAULT_INTERVALS = {"free": 2.0, "subscriber": 0.25, "advanced": 0.1}
-
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
@@ -73,13 +70,11 @@ def _build_parser() -> argparse.ArgumentParser:
                    help="Don't skip meeting abstracts for PubMed lookup")
     return p
 
-
 def _print_progress(i: int, total: int, state) -> None:
     if state.actions or state.notes:
         tag = " | ".join(state.actions) or "no_change"
         note = f"  {state.notes[0]}" if state.notes else ""
         print(f"  [{i:2d}/{total}] {state.psir_id[:36]}  {tag}{note}")
-
 
 def main(argv: Optional[list] = None) -> int:
     args = _build_parser().parse_args(argv)
@@ -110,7 +105,6 @@ def main(argv: Optional[list] = None) -> int:
         input_label=args.input.name,
         progress_cb=_print_progress,
     )
-
     print(f"\nLoaded {result.n_articles} articles")
     if api_key:
         print(f"API calls: {result.n_api_calls}, errors: {result.n_api_errors}")
@@ -122,7 +116,6 @@ def main(argv: Optional[list] = None) -> int:
 
     result.audit_df.to_csv(args.report, index=False, encoding="utf-8-sig")
     print(f"Audit CSV  : {args.report}")
-
     print(f"\nSummary: {result.n_enriched} enriched, "
           f"{result.n_articles - result.n_enriched} already complete")
 
@@ -131,8 +124,8 @@ def main(argv: Optional[list] = None) -> int:
     print("  Update record action: overwrite")
     print("  Update external identifiers: CHECKED <- important")
     print("  Default field update action: overwrite")
-    return 0
 
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())
