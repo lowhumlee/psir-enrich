@@ -1,27 +1,28 @@
 """Core PSIR XML logic — parsing, state, normalisation, XML emission.
 
 This module is API-free: it knows about the PSIR XML format and per-article
-state, but does not call Clarivate or any other external service.
+state, but does not call Clarivate, Elsevier or any other external service.
 
 Output strategy (v0.3.x+)
 --------------------------
-The output XML is a ``<collection>`` containing only the records that were
+The output XML is a `<collection>` containing only the records that were
 enriched.  Each enriched article is a deep copy of the original with new
 fields, extids, and free-key fields added or updated in-place.  Import into
 PSIR with:
 
   Tab: XML
-  Update external identifiers: ✓ CHECKED
+  Update record action: overwrite
+  Update external identifiers: CHECKED
   Default field update action: overwrite
 
 Enrichment ladder
 -----------------
-Tier 0  csl-WoS promotion       free
-Tier ID Starter API lookup       WoSId + PubMedID   (Starter key)
-Tier X  Expanded full record     metadata, abstract, keywords,
-                                  categories, funding, pages, …  (Expanded key)
+Tier 0   csl promotion           free (WoS UT, PMID, Scopus ID from CSL)
+Tier S   Starter API lookup      WoSId + PubMedID          (Starter key)
+Tier SC  Scopus API lookup       ScopusId + PubMedID + articleNo + metadata
+Tier X   Expanded full record    metadata, abstract, keywords, categories,
+                                 funding, pages, ...       (Expanded key)
 """
-
 from __future__ import annotations
 
 import json
@@ -29,9 +30,7 @@ import re
 import uuid as uuidlib
 from copy import deepcopy
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Optional
-
 from lxml import etree
 
 # --------------------------------------------------------------------------
@@ -52,6 +51,12 @@ EXTID_DEFINITIONS = {
         "name_en": "WoS Identifier",
         "name_pl": "Идентификатор WoS",
         "priority": "EI110",
+    },
+    "ScopusId": {
+        "idtype_uuid": "WUTfe712e9e17404de29f343752164c96a7",
+        "name_en": "Scopus Identifier",
+        "name_pl": "Идентификатор Scopus",
+        "priority": "EI120",
     },
     "PubMedID": {
         "idtype_uuid": "WUT0bfbfdfcb0974f4db3731f2527055a27",
@@ -83,6 +88,10 @@ EXCLUDED_DOC_TYPES_FOR_PMID = (
     "abstract of published item",
 )
 
+# Canonical order for the main article-level text fields.  Newly created
+# elements are inserted after the closest preceding field that already
+# exists, keeping the patch XML close to the native PSIR export layout.
+_ARTICLE_FIELD_ORDER = ["doi", "articleNo", "collation", "abstractEN", "keywordsEN"]
 
 # --------------------------------------------------------------------------
 # UUID helpers
@@ -97,7 +106,6 @@ def _article_owner(article) -> str:
         return owner.text.strip()
     return AFFILIATION_OWNER.lower() + "@mu-varna.bg"
 
-
 def _article_affiliation_owner(article) -> str:
     aff = article.find("affiliationowner")
     if aff is not None and aff.text:
@@ -109,14 +117,7 @@ def _article_affiliation_owner(article) -> str:
 # --------------------------------------------------------------------------
 
 def norm_wos_ut(value) -> Optional[str]:
-    """Normalise a WoS UT to its canonical stored form.
-
-    Accepts any UT whose prefix is a known WoS collection code and returns
-    it verbatim (uppercasing the prefix).  Also accepts bare numeric strings
-    (≥8 digits) and promotes them to ``WOS:<digits>``.  Rejects Zotero-style
-    csl keys, Scopus EIDs, and non-WoS identifiers — returns None so the
-    caller falls through to an API lookup instead.
-    """
+    """Normalise a WoS UT to its canonical stored form."""
     if not value:
         return None
     s = str(value).strip()
@@ -137,7 +138,6 @@ def norm_wos_ut(value) -> Optional[str]:
         return f"WOS:{s}"
     return None
 
-
 def norm_doi(value) -> Optional[str]:
     if not value:
         return None
@@ -145,8 +145,8 @@ def norm_doi(value) -> Optional[str]:
     s = re.sub(r"^https?://(dx\.)?doi\.org/", "", s)
     return s if s.startswith("10.") else None
 
-
 def norm_pmid(value) -> Optional[str]:
+    """Normalise a PubMed ID to bare digits (strips MEDLINE: etc.)."""
     if value is None:
         return None
     s = str(value).strip()
@@ -155,13 +155,25 @@ def norm_pmid(value) -> Optional[str]:
     digits = re.sub(r"\D", "", s)
     return digits or None
 
+def norm_scopus_id(value) -> Optional[str]:
+    """Normalise a Scopus document id to its pure numeric form.
+    
+    Accepts 2-s2.0-85028623301, SCOPUS_ID:105028165798 and bare
+    numeric strings; returns the numeric part (8+ digits) or None.
+    """
+    if not value:
+        return None
+    s = str(value).strip()
+    if not s or s.lower() in ("none", "nan"):
+        return None
+    match = re.search(r"(\d{8,})", s)
+    return match.group(1) if match else None
 
 def is_meeting_abstract(doc_type: Optional[str]) -> bool:
     if not doc_type:
         return False
     dt = str(doc_type).strip().lower()
     return any(excl in dt for excl in EXCLUDED_DOC_TYPES_FOR_PMID)
-
 
 # --------------------------------------------------------------------------
 # Per-article state
@@ -181,12 +193,17 @@ class ArticleState:
     new_wos: Optional[str] = None
     new_pmid: Optional[str] = None
 
+    # --- Scopus-tier identifiers ---
+    existing_scopus: Optional[str] = None
+    csl_scopus: Optional[str] = None
+    new_scopus: Optional[str] = None
+
     # --- Starter lookup state ---
     api_doc_type: Optional[str] = None
     skip_pmid_lookup: bool = False
 
-    # --- Expanded-tier metadata ---
-    # Abstract: None = not checked; "" = confirmed absent in WoS; str = value
+    # --- Metadata (Expanded / Scopus tiers) ---
+    # Abstract: None = not checked; "" = confirmed absent; str = value
     existing_abstractEN: Optional[str] = None
     new_abstractEN: Optional[str] = None
 
@@ -194,11 +211,11 @@ class ArticleState:
     existing_keywordsEN: Optional[str] = None
     new_keywordsEN: Optional[str] = None        # semicolon-separated string
 
-    # Pages / collation
+    # Pages / collation / article number
     existing_collation: Optional[str] = None    # "begin-end" or None
     existing_articleNo: Optional[str] = None
-    new_collation: Optional[str] = None         # "begin-end" from WoS page block
-    new_articleNo: Optional[str] = None         # article number if no pages
+    new_collation: Optional[str] = None         # "begin-end" page range
+    new_articleNo: Optional[str] = None         # electronic article number
 
     # Vol / issue (journalissue level — only filled if missing)
     existing_vol: Optional[str] = None
@@ -208,9 +225,9 @@ class ArticleState:
 
     # WoS categories (free fields)
     new_wos_categories: Optional[list] = None       # traditional ascatype
-    new_research_areas: Optional[list] = None        # extended ascatype
+    new_research_areas: Optional[list] = None       # extended ascatype
     new_keywords_plus: Optional[list] = None
-  
+
     # Funding (structured)
     new_fund_agencies: Optional[list] = None
     new_fund_grant_ids: Optional[list] = None
@@ -231,6 +248,9 @@ class ArticleState:
             return False
         return not self.existing_pmid and not self.new_pmid
 
+    def needs_scopus(self) -> bool:
+        return not self.existing_scopus and not self.new_scopus
+
     def has_known_wos(self) -> Optional[str]:
         return self.existing_wos or self.new_wos
 
@@ -238,6 +258,7 @@ class ArticleState:
         return bool(
             self.new_wos
             or self.new_pmid
+            or self.new_scopus
             or self.new_abstractEN
             or self.new_keywordsEN
             or self.new_collation
@@ -258,7 +279,6 @@ class ArticleState:
         prefix = uid.split(":")[0].upper() if ":" in uid else "WOS"
         return prefix not in _EXPANDED_UID_UNSUPPORTED
 
-
 # --------------------------------------------------------------------------
 # XML reading
 # --------------------------------------------------------------------------
@@ -273,23 +293,15 @@ def parse_existing_extids(article) -> dict:
             found[sn.text.strip()] = v.text.strip()
     return found
 
-
 def _extract_wos_ut_from_text(text: str) -> Optional[str]:
-    """Extract a WoS-style UT from free text.
-
-    Handles examples such as:
-      Web of Science ID: WOS:000308718600143
-      Web of Science ID: CABI:20183028270
-    """
+    """Extract a WoS-style UT from free text."""
     if not isinstance(text, str):
         return None
 
-    # First try the whole string. This handles plain "WOS:..." or "CABI:...".
     direct = norm_wos_ut(text)
     if direct:
         return direct
 
-    # Then search inside notes/free text.
     m = re.search(
         r"\b(?:Web\s+of\s+Science\s+ID|WoS\s+ID|UT)\s*:\s*([A-Za-z]+:[A-Za-z0-9_.-]+)",
         text,
@@ -300,15 +312,32 @@ def _extract_wos_ut_from_text(text: str) -> Optional[str]:
 
     return norm_wos_ut(m.group(1))
 
+def _extract_scopus_id_from_text(text: str) -> Optional[str]:
+    """Extract a Scopus document id from free text.
+    
+    Only unambiguous patterns are accepted:
+       * a full EID:         2-s2.0-85028623301
+       * an explicit label:  "Scopus ID: 21100775663", "SCOPUS_ID:105028165798"
+    
+    Bare digit strings are deliberately NOT accepted — they are routinely
+    confused with WoS accession numbers and PubMed IDs.
+    """
+    if not isinstance(text, str) or not text:
+        return None
+    m = re.search(r"2-s2\.0-(\d+)", text)
+    if m:
+        return m.group(1)
+    m = re.search(
+        r"\bScopus[\s_-]*ID\s*:\s*(?:2-s2\.0-)?(\d{8,})",
+        text,
+        flags=re.IGNORECASE,
+    )
+    if m:
+        return m.group(1)
+    return None
 
 def parse_csl_wos(article) -> Optional[str]:
-    """Extract publication WoS ID from CSL JSON.
-
-    Checks both:
-      - CSL id, when it directly contains a UT
-      - CSL note/annote, when it contains text like
-        "Web of Science ID: WOS:..." or "Web of Science ID: CABI:..."
-    """
+    """Extract publication WoS ID from CSL JSON."""
     for f in article.findall(f"{{{NS_URI}}}field", NS):
         k = f.find("key")
         v = f.find("value")
@@ -328,7 +357,6 @@ def parse_csl_wos(article) -> Optional[str]:
 
     return None
 
-
 def parse_csl_pmid(article) -> Optional[str]:
     """Extract PubMed ID from csl JSON if present."""
     for f in article.findall(f"{{{NS_URI}}}field"):
@@ -345,6 +373,43 @@ def parse_csl_pmid(article) -> Optional[str]:
             return norm_pmid(pmid)
     return None
 
+def parse_csl_scopus(article) -> Optional[str]:
+    """Extract a Scopus document id from the CSL JSON blob, if present.
+    
+    Checks the ``URL`` field for a scopus.com record/publications link and
+    ``id`` / ``note`` / ``annote`` for explicitly labelled Scopus IDs.
+    Bare numbers are deliberately ignored so that WoS accession numbers
+    (e.g. ``id: "WOS:001855667600001"``) are never mistaken for Scopus IDs.
+    """
+    for f in article.findall(f"{{{NS_URI}}}field"):
+        k = f.find("key")
+        v = f.find("value")
+        if k is None or k.text != "csl" or v is None or not v.text:
+            continue
+        try:
+            d = json.loads(v.text)
+        except json.JSONDecodeError:
+            continue
+
+        # 1. Scopus URL, e.g.
+        #    https://www.scopus.com/record/display.uri?eid=2-s2.0-850...
+        #    https://www.scopus.com/pages/publications/21100775663
+        url = d.get("URL", "")
+        if isinstance(url, str) and "scopus.com" in url.lower():
+            m_eid = re.search(r"2-s2\.0-(\d+)", url)
+            if m_eid:
+                return m_eid.group(1)
+            m_num = re.search(r"/publications/(\d{8,})", url)
+            if m_num:
+                return m_num.group(1)
+
+        # 2. Explicitly labelled ids in id / note / annote
+        for key in ("id", "note", "annote"):
+            found = _extract_scopus_id_from_text(d.get(key, ""))
+            if found:
+                return found
+
+    return None
 
 def survey_article(article) -> ArticleState:
     """Build an ArticleState from a parsed <ns2:article> element."""
@@ -357,15 +422,20 @@ def survey_article(article) -> ArticleState:
     d = article.find("doi")
     s.doi = norm_doi(d.text) if d is not None and d.text else None
 
-    # Extids on the article
+    # Extids on the article (tolerate legacy uppercase-D "ScopusID" spelling)
     extids = parse_existing_extids(article)
-    s.existing_wos  = norm_wos_ut(extids.get("WoSId"))
+    s.existing_wos = norm_wos_ut(extids.get("WoSId"))
     s.existing_pmid = norm_pmid(extids.get("PubMedID"))
+    s.existing_scopus = norm_scopus_id(
+        extids.get("ScopusId") or extids.get("ScopusID")
+    )
 
     # csl
     s.csl_wos = parse_csl_wos(article)
     if not s.existing_pmid:
         s.existing_pmid = parse_csl_pmid(article)
+    if not s.existing_scopus:
+        s.csl_scopus = parse_csl_scopus(article)
 
     # Obligatory metadata presence checks
     ab = article.find("abstractEN")
@@ -383,16 +453,15 @@ def survey_article(article) -> ArticleState:
     # Vol / issue live on the <journalissue> child
     ji = article.find(f"{{{NS_URI}}}journalissue")
     if ji is not None:
-        vol_el  = ji.find("vol")
-        no_el   = ji.find("no")
-        s.existing_vol   = vol_el.text.strip()  if vol_el  is not None and vol_el.text  else None
-        s.existing_issue = no_el.text.strip()   if no_el   is not None and no_el.text   else None
+        vol_el = ji.find("vol")
+        no_el = ji.find("no")
+        s.existing_vol = vol_el.text.strip() if vol_el is not None and vol_el.text else None
+        s.existing_issue = no_el.text.strip() if no_el is not None and no_el.text else None
 
     return s
 
-
 # --------------------------------------------------------------------------
-# XML writing — extids (Starter tier)
+# XML writing — extids (Starter & Scopus tiers)
 # --------------------------------------------------------------------------
 
 def _build_extid_element(system_name: str, value: str) -> etree._Element:
@@ -425,10 +494,9 @@ def _build_extid_element(system_name: str, value: str) -> etree._Element:
     etree.SubElement(extid, "value").text = value
     return extid
 
-
 def _update_extids_on_article(article, state: ArticleState) -> None:
-    """Add new_wos / new_pmid extid elements to article in-place."""
-    if not state.new_wos and not state.new_pmid:
+    """Add new_wos / new_scopus / new_pmid extid elements to article in-place."""
+    if not state.new_wos and not state.new_pmid and not state.new_scopus:
         return
 
     existing_extid_els = {}
@@ -444,7 +512,9 @@ def _update_extids_on_article(article, state: ArticleState) -> None:
     if last_extid_idx >= 0:
         insert_after = last_extid_idx
     else:
-        anchor_tags = ["verifier", "affiliationowner", "owner", "id"]
+        # Last tag found wins — ordered weakest→strongest so the new extid
+        # lands right after the owner block, like in native PSIR exports.
+        anchor_tags = ["id", "owner", "affiliationowner", "verifier"]
         insert_after = 0
         for tag in anchor_tags:
             for i, child in enumerate(children):
@@ -461,6 +531,22 @@ def _update_extids_on_article(article, state: ArticleState) -> None:
         else:
             to_insert.append(_build_extid_element("WoSId", state.new_wos))
 
+    if state.new_scopus:
+        # Accept legacy uppercase-D spelling if present, and normalise it.
+        target_el = existing_extid_els.get("ScopusId") or existing_extid_els.get("ScopusID")
+        if target_el is not None:
+            v = target_el.find("value")
+            if v is not None:
+                v.text = state.new_scopus
+            sn = target_el.find(".//systemName")
+            if sn is not None and sn.text == "ScopusID":
+                sn.text = "ScopusId"
+                name_en = target_el.find(".//nameEN")
+                if name_en is not None:
+                    name_en.text = EXTID_DEFINITIONS["ScopusId"]["name_en"]
+        else:
+            to_insert.append(_build_extid_element("ScopusId", state.new_scopus))
+
     if state.new_pmid:
         if "PubMedID" in existing_extid_els:
             v = existing_extid_els["PubMedID"].find("value")
@@ -472,20 +558,35 @@ def _update_extids_on_article(article, state: ArticleState) -> None:
     for offset, el in enumerate(to_insert):
         article.insert(insert_after + 1 + offset, el)
 
-
 # --------------------------------------------------------------------------
-# XML writing — obligatory metadata (Expanded tier)
+# XML writing — obligatory metadata (Expanded / Scopus tiers)
 # --------------------------------------------------------------------------
 
 def _set_or_create_text_element(article, tag: str, value: str) -> None:
-    """Set text on an existing element, or create it as a direct child."""
+    """Set text on an existing element, or create it as a direct child.
+    
+    New elements are inserted following the canonical PSIR field order
+    (doi → articleNo → collation → abstractEN → keywordsEN) so the patch
+    XML matches the layout of a native PSIR export.
+    """
     el = article.find(tag)
     if el is not None:
         el.text = value
-    else:
-        new_el = etree.SubElement(article, tag)
-        new_el.text = value
+        return
 
+    new_el = etree.Element(tag)
+    new_el.text = value
+    if tag in _ARTICLE_FIELD_ORDER:
+        idx = _ARTICLE_FIELD_ORDER.index(tag)
+        anchor = None
+        for prev_tag in _ARTICLE_FIELD_ORDER[:idx]:
+            prev_el = article.find(prev_tag)
+            if prev_el is not None:
+                anchor = prev_el
+        if anchor is not None:
+            anchor.addnext(new_el)
+            return
+    article.append(new_el)
 
 def _update_journalissue_field(article, tag: str, value: str) -> None:
     """Update vol/no inside <ns2:journalissue>."""
@@ -498,43 +599,29 @@ def _update_journalissue_field(article, tag: str, value: str) -> None:
     else:
         etree.SubElement(ji, tag).text = value
 
-
 def _build_userfield(article, key: str, value: str) -> etree._Element:
     """Build a <userfield type="field"> element."""
-
     f = etree.Element("userfield", type="field")
-
     etree.SubElement(f, "id").text = gen_local_uuid()
     etree.SubElement(f, "owner").text = _article_owner(article)
     etree.SubElement(f, "affiliationowner").text = _article_affiliation_owner(article)
     etree.SubElement(f, "key").text = key
     etree.SubElement(f, "value").text = value
-
     return f
 
 def _upsert_userfield(article, key: str, value: str) -> None:
     """Update existing userfield or append a new one."""
-
     for f in article.findall("userfield"):
         k = f.find("key")
-
         if k is not None and k.text == key:
             v = f.find("value")
-
             if v is not None:
                 v.text = value
             return
-
     article.append(_build_userfield(article, key, value))
 
-
 def inject_expanded_metadata(article, state: ArticleState) -> None:
-    """Apply all Expanded-tier enrichment to article element in-place.
-
-    Called after enrich_one_expanded() has populated state.new_* fields.
-    Only fields with non-None new values are touched; existing populated
-    fields are never overwritten.
-    """
+    """Apply all metadata enrichment to the article element in-place."""
     # --- Abstract ---
     if state.new_abstractEN:
         _set_or_create_text_element(article, "abstractEN", state.new_abstractEN)
@@ -550,7 +637,7 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
     # --- Article number (write whenever available) ---
     # Previously this was only written when no collation existed.  Some
     # records include both a page-like collation and an article number; write
-    # articleNo whenever Expanded API supplies one so target imports include it.
+    # articleNo whenever the API supplies one so target imports include it.
     if state.new_articleNo:
         _set_or_create_text_element(article, "articleNo", state.new_articleNo)
 
@@ -576,7 +663,6 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
             " | ".join(state.new_research_areas),
         )
 
-    
     # --- KeyWords Plus ---
     if state.new_keywords_plus:
         _upsert_userfield(
@@ -585,8 +671,7 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
             " | ".join(state.new_keywords_plus),
         )
 
-    
-    # --- Funding (structured) — stored separately from existing Funding userfield ---
+    # --- Funding (structured) ---
     if state.new_fund_agencies:
         _upsert_userfield(
             article,
@@ -599,8 +684,6 @@ def inject_expanded_metadata(article, state: ArticleState) -> None:
             "wos_grant_ids",
             " | ".join(state.new_fund_grant_ids),
         )
-    # Raw WoS funding text: always write / overwrite wos_fund_text.
-    # Do not skip just because a generic Funding userfield already exists.
     if state.new_fund_text:
         _upsert_userfield(article, "wos_fund_text", state.new_fund_text)
 
