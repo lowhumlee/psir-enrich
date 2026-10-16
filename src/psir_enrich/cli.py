@@ -2,15 +2,6 @@
 
 After installation the `psir-enrich` command is on PATH. Run
 `psir-enrich --help` for usage.
-
-Output is a full-fidelity XML (same structure as the input) with new extid
-blocks added in-place — ready for PSIR's XML import dialog.
-
-Import settings in PSIR:
-  Tab: XML
-  Update record action: overwrite
-  Update external identifiers: CHECKED
-  Default field update action: overwrite (or Add new values)
 """
 from __future__ import annotations
 
@@ -30,18 +21,19 @@ def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="psir-enrich",
         description=(
-            "Enrich an OMEGA-PSIR XML export with WoS Identifiers and "
-            "PubMed IDs via the Clarivate WoS Starter API. Produces a "
-            "full-fidelity output XML (same format as the input) ready "
-            "for re-import into PSIR, plus an audit CSV."
+            "Enrich an OMEGA-PSIR XML export with WoS Identifiers, "
+            "PubMed IDs, and Scopus IDs via Clarivate and Elsevier APIs. "
+            "Produces a full-fidelity output XML ready for re-import into PSIR, "
+            "plus an audit CSV."
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
             "  Dry run, no API:\n"
             "    psir-enrich -i in.xml -o enriched.xml --no-api\n\n"
-            "  Real run with key from env:\n"
+            "  Real run with keys from env:\n"
             "    export WOS_API_KEY=abc123\n"
+            "    export SCOPUS_API_KEY=def456\n"
             "    psir-enrich -i in.xml -o enriched.xml --plan subscriber\n\n"
             "Or run the web GUI:\n"
             "    streamlit run app.py\n"
@@ -51,21 +43,31 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--input", "-i", required=True, type=Path,
                    help="Input PSIR XML")
     p.add_argument("--output", "-o", required=True, type=Path,
-                   help="Output XML (full collection, extids updated)")
+                   help="Output XML (patch collection)")
     p.add_argument("--report", "-r", type=Path, default=None,
                    help="Audit CSV (default: <output>.audit.csv)")
     p.add_argument("--no-api", action="store_true",
-                   help="Skip Clarivate API — csl-WoS extraction only")
+                   help="Skip all API calls — csl extraction only")
+    
+    # Starter API
     p.add_argument("--api-base", default=None,
-                   help=f"Override Clarivate base URL "
-                        f"(default: {WosStarterClient.DEFAULT_BASE_URL})")
+                   help=f"Override Clarivate Starter base URL")
     p.add_argument("--api-key", default=None,
-                   help="API key (default: env WOS_API_KEY)")
+                   help="Starter API key (default: env WOS_API_KEY)")
+    
+    # Expanded API
+    p.add_argument("--expanded-api-key", default=None,
+                   help="Expanded API key (default: env WOS_EXPANDED_API_KEY)")
+                   
+    # Scopus API
+    p.add_argument("--scopus-api-key", default=None,
+                   help="Scopus API key (default: env SCOPUS_API_KEY)")
+                   
     p.add_argument("--plan", choices=tuple(DEFAULT_INTERVALS),
                    default="subscriber",
-                   help="Plan tier — sets default rate limit")
+                   help="Plan tier — sets default rate limit for Starter")
     p.add_argument("--rate-limit", type=float, default=None,
-                   help="Override min seconds between API calls")
+                   help="Override min seconds between Starter API calls")
     p.add_argument("--include-meeting-abstracts-pmid", action="store_true",
                    help="Don't skip meeting abstracts for PubMed lookup")
     return p
@@ -87,10 +89,16 @@ def main(argv: Optional[list] = None) -> int:
         return 2
 
     api_key = None
+    expanded_api_key = None
+    scopus_api_key = None
+    
     if not args.no_api:
         api_key = args.api_key or os.environ.get("WOS_API_KEY")
-        if not api_key:
-            print("WARNING: no API key supplied. Running in csl-only mode.")
+        expanded_api_key = args.expanded_api_key or os.environ.get("WOS_EXPANDED_API_KEY")
+        scopus_api_key = args.scopus_api_key or os.environ.get("SCOPUS_API_KEY")
+        
+        if not any([api_key, expanded_api_key, scopus_api_key]):
+            print("WARNING: no API keys supplied. Running in csl-only mode.")
 
     rate = args.rate_limit if args.rate_limit is not None \
         else DEFAULT_INTERVALS[args.plan]
@@ -100,19 +108,25 @@ def main(argv: Optional[list] = None) -> int:
         xml_input=args.input,
         api_key=api_key,
         api_base=args.api_base,
+        expanded_api_key=expanded_api_key,
+        scopus_api_key=scopus_api_key,
         skip_meeting_abstracts=not args.include_meeting_abstracts_pmid,
         rate_limit=rate,
         input_label=args.input.name,
         progress_cb=_print_progress,
     )
     print(f"\nLoaded {result.n_articles} articles")
+    
     if api_key:
-        print(f"API calls: {result.n_api_calls}, errors: {result.n_api_errors}")
+        print(f"Starter API calls: {result.n_api_calls}, errors: {result.n_api_errors}")
+    if expanded_api_key:
+        print(f"Expanded API calls: {result.n_expanded_calls}, errors: {result.n_expanded_errors}")
+    if scopus_api_key:
+        print(f"Scopus API calls: {result.n_scopus_calls}, errors: {result.n_scopus_errors}")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(result.output_xml_bytes)
     print(f"\nOutput XML : {args.output}  ({result.n_enriched} article(s) enriched)")
-    print(f"           -> all {result.n_articles} articles included (PSIR needs full collection)")
 
     result.audit_df.to_csv(args.report, index=False, encoding="utf-8-sig")
     print(f"Audit CSV  : {args.report}")
