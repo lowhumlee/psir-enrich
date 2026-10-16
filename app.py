@@ -3,23 +3,19 @@
 Run with:
     streamlit run app.py
 """
-
 from __future__ import annotations
 
 import os
 from datetime import datetime
-
 import streamlit as st
 
 from psir_enrich import __version__
 from psir_enrich.enrich import run_enrichment
 from psir_enrich.wos_client import WosStarterClient
 
-
 # --------------------------------------------------------------------------
 # Page config — must be the very first Streamlit call
 # --------------------------------------------------------------------------
-
 st.set_page_config(
     page_title="OMEGA-PSIR enrichment",
     page_icon="📚",
@@ -30,33 +26,24 @@ st.set_page_config(
 PLAN_INTERVALS = {"free": 2.0, "subscriber": 0.25, "advanced": 0.1}
 
 # --------------------------------------------------------------------------
-# Session state — keeps results alive across reruns triggered by downloads
+# Session state
 # --------------------------------------------------------------------------
-# Keys stored:
-#   result       — EnrichmentResult object from the last successful run
-#   run_filename — name of the file that produced the result
-#   timestamp    — formatted timestamp for file naming
-
 for _k in ("result", "run_filename", "timestamp"):
     if _k not in st.session_state:
         st.session_state[_k] = None
 
-
 # --------------------------------------------------------------------------
 # Sidebar
 # --------------------------------------------------------------------------
-
 with st.sidebar:
     st.header("⚙️ Settings")
 
     # ── Starter API key ────────────────────────────────────────────────────
-    # Check secrets → env var → let user type it
     secrets_key = ""
     try:
         secrets_key = st.secrets.get("WOS_API_KEY", "")
     except Exception:
         pass
-
     env_key = os.environ.get("WOS_API_KEY", "")
     default_key = secrets_key or env_key
 
@@ -76,13 +63,11 @@ with st.sidebar:
         st.caption("✓ Starter key loaded from `WOS_API_KEY` env var")
 
     # ── Expanded API key ───────────────────────────────────────────────────
-    # Separate institutional subscription — enables metadata fill tier
     expanded_secrets_key = ""
     try:
         expanded_secrets_key = st.secrets.get("WOS_EXPANDED_API_KEY", "")
     except Exception:
         pass
-
     expanded_env_key = os.environ.get("WOS_EXPANDED_API_KEY", "")
     expanded_default = expanded_secrets_key or expanded_env_key
 
@@ -104,6 +89,31 @@ with st.sidebar:
     elif expanded_env_key:
         st.caption("✓ Expanded key loaded from `WOS_EXPANDED_API_KEY` env var")
 
+    # ── Scopus API key ───────────────────────────────────────────────────
+    scopus_secrets_key = ""
+    try:
+        scopus_secrets_key = st.secrets.get("SCOPUS_API_KEY", "")
+    except Exception:
+        pass
+    scopus_env_key = os.environ.get("SCOPUS_API_KEY", "")
+    scopus_default = scopus_secrets_key or scopus_env_key
+
+    scopus_api_key = st.text_input(
+        "Elsevier Scopus API key (optional)",
+        value=scopus_default,
+        type="password",
+        help=(
+            "Elsevier Scopus API key. Fills missing Scopus ID (numeric format). "
+            "If abstract/keywords are missing, it will also use the Abstract Retrieval API "
+            "to fetch them. "
+            "Leave blank if you don't have a Scopus API key."
+        ),
+    )
+    if scopus_secrets_key:
+        st.caption("✓ Scopus key loaded from `st.secrets`")
+    elif scopus_env_key:
+        st.caption("✓ Scopus key loaded from `SCOPUS_API_KEY` env var")
+
     # ── Plan / rate limit ─────────────────────────────────────────────────
     plan = st.selectbox(
         "Plan tier (Starter API)",
@@ -112,7 +122,6 @@ with st.sidebar:
         help="Sets the default rate limit for Starter API calls. "
              "Free=2s, subscriber=0.25s, advanced=0.1s.",
     )
-
     skip_meetings = st.checkbox(
         "Skip PubMed lookup for meeting abstracts",
         value=True,
@@ -146,10 +155,19 @@ with st.sidebar:
             format="%.1f",
             help="Expanded API allows ~2 requests/second. Default 0.5 s is safe.",
         )
+        scopus_rate_limit = st.number_input(
+            "Scopus rate limit (seconds between calls)",
+            value=0.35,
+            min_value=0.1,
+            max_value=10.0,
+            step=0.1,
+            format="%.2f",
+            help="Scopus API allows ~3 requests/second. Default 0.35 s is safe.",
+        )
 
     st.markdown("---")
 
-    # "New run" button — clears stored results so user can upload a new file
+    # "New run" button
     if st.session_state.result is not None:
         if st.button("🔄 New run", use_container_width=True):
             st.session_state.result = None
@@ -159,100 +177,60 @@ with st.sidebar:
 
     st.caption(f"psir-enrich v{__version__}")
 
-
 # --------------------------------------------------------------------------
-# Main panel — header + help expanders
+# Main panel
 # --------------------------------------------------------------------------
-
 st.title("📚 OMEGA-PSIR enrichment")
 st.markdown(
     "Upload a PSIR XML export, enrich each record with identifiers and metadata "
-    "from the Clarivate APIs, then download a patch XML ready to re-import into PSIR."
+    "from Clarivate and Scopus APIs, then download a patch XML ready to re-import into PSIR."
 )
 
-with st.expander("ℹ️ What this tool does — two tiers"):
+with st.expander("ℹ️ What this tool does — three tiers"):
     st.markdown(
         """
         **Tier 1 — Identifier enrichment (Starter API key)**
-
+        
         For every `<ns2:article>` in your input XML, the tool:
-
-        1. **Surveys** existing `<extid>` blocks — if WoSId and PubMedID are
-           both present the record is skipped (zero API calls).
-        2. **Promotes csl-WoS** — if the `csl` JSON field already contains a
-           `WOS:` ID, it's promoted for free (no API call).
-        3. **Looks up by DOI** — calls Clarivate `/documents?q=DO=<doi>` for
-           any record still missing identifiers.
-        4. **Falls back to UID lookup** — for records with a WoS UT but no
-           PMID, calls `/documents/{uid}`.
-        5. **Excludes meeting abstracts** from PubMed lookups (configurable).
-
+         1. **Surveys** existing `<extid>` blocks — if WoSId and PubMedID are
+            both present the record is skipped (zero API calls).
+         2. **Promotes csl-WoS** — if the `csl` JSON field already contains a
+            `WOS:` ID, it's promoted for free (no API call).
+         3. **Looks up by DOI** — calls Clarivate `/documents?q=DO=<doi>` for
+            any record still missing identifiers.
+         4. **Falls back to UID lookup** — for records with a WoS UT but no
+            PMID, calls `/documents/{uid}`.
+         5. **Excludes meeting abstracts** from PubMed lookups (configurable).
+         
         ---
-
-        **Tier 2 — Metadata enrichment (Expanded API key)**
-
+        **Tier 2 — Scopus enrichment (Scopus API key)**
+        
+        For each article missing a Scopus ID:
+         - Looks up the numeric **Scopus ID** via the Scopus Search API (by DOI or Title).
+         - If abstract/keywords are missing in PSIR, fetches them via the Abstract Retrieval API.
+         
+        ---
+        **Tier 3 — Metadata enrichment (Expanded API key)**
+        
         For each article that has a WoS UT, fetches the full WoS record and:
-
-        - Fills **abstract** and **author keywords** if missing in PSIR.
-        - Fills **pages/collation**, **volume**, **issue** if missing.
-        - Always writes **WoS subject categories** (e.g. "Food Science & Technology")
-          and **research areas** (e.g. "General & Internal Medicine") — stored
-          in separate fields because they are different classification systems.
-        - Always writes **WoS editions** (SCI / SSCI / ESCI / AHCI).
-        - Always writes **KeyWords Plus** (algorithmically derived from references).
-        - Writes **early access date** if present.
-        - Writes **structured funding** (grant agencies and grant IDs) in
-          separate fields alongside the existing free-text Funding field.
-
+         - Fills **abstract** and **author keywords** if missing in PSIR (skipped if Scopus already filled them).
+         - Fills **pages/collation**, **volume**, **issue** if missing.
+         - Always writes **WoS subject categories** and **research areas**.
+         - Always writes **WoS editions**, **KeyWords Plus**, and **early access date**.
+         - Writes **structured funding** in separate fields alongside the existing free-text Funding field.
+         
         ---
-
         **Output**: a patch XML containing only the changed records, plus an
         audit CSV showing every decision made for every article.
-        """
-    )
-
-with st.expander("🔑 How do I get a Clarivate API key?"):
-    st.markdown(
-        """
-        **Starter API** (for WoS UT + PubMed ID lookup):
-        1. Go to the [Clarivate Developer Portal](https://developer.clarivate.com/).
-        2. Sign in with your Web of Science institutional credentials.
-        3. Register a new application.
-        4. Subscribe it to **Web of Science Starter API**.
-        5. Copy the API key from the application page.
-
-        The **Subscriber** plan (5,000 requests/day) is the right tier for
-        regular institutional use. The **Free** plan (50/day) is fine for testing.
-
-        ---
-
-        **Expanded API** (for full metadata enrichment):
-        - This requires an institutional subscription to the WoS Expanded API.
-        - Contact your Clarivate account manager — it is separate from the
-          Starter API and has its own key and annual record quota.
-        - The key goes in the "WoS Expanded API key" field in the sidebar.
-        """
-    )
-
-with st.expander("🆔 PubMedID dictionary UUID — auto-detected"):
-    st.markdown(
-        """
-        **No action needed.** The PubMedID dictionary UUID is automatically read
-        from the input XML itself.
-
-        UUID confirmed for this PSIR installation:
-        `WUT0bfbfdfcb0974f4db3731f2527055a27`
         """
     )
 
 st.markdown("---")
 
 # --------------------------------------------------------------------------
-# Upload + run  (only shown when no result is stored)
+# Upload + run
 # --------------------------------------------------------------------------
-
 if st.session_state.result is None:
-
     uploaded = st.file_uploader(
         "📄 Upload PSIR XML export",
         type=["xml"],
@@ -296,10 +274,12 @@ if st.session_state.result is None:
                 xml_input=xml_bytes,
                 api_key=api_key.strip() or None,
                 expanded_api_key=expanded_api_key.strip() or None,
+                scopus_api_key=scopus_api_key.strip() or None,
                 api_base=api_base.strip() or None,
                 skip_meeting_abstracts=skip_meetings,
                 rate_limit=rate_limit,
                 expanded_rate_limit=expanded_rate_limit,
+                scopus_rate_limit=scopus_rate_limit,
                 input_label=fname,
                 progress_cb=_progress,
             )
@@ -311,53 +291,43 @@ if st.session_state.result is None:
             st.exception(exc)
             st.stop()
 
-        # Store in session state — survives download button reruns
         st.session_state.result = result
         st.session_state.run_filename = fname
         st.session_state.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        st.rerun()   # re-render cleanly to show results panel
+        st.rerun()
 
     elif uploaded is None:
         st.info("⬆ Upload a PSIR XML to get started.")
 
-
 # --------------------------------------------------------------------------
-# Results panel  (shown whenever session_state.result is set)
+# Results panel
 # --------------------------------------------------------------------------
-
 else:
     result = st.session_state.result
     base_name = st.session_state.run_filename.rsplit(".", 1)[0]
     timestamp = st.session_state.timestamp
 
-    # --- Summary metrics ---
     st.markdown("## ✅ Done")
 
-    # Row 1: article counts
     c1, c2, c3 = st.columns(3)
     c1.metric("Articles in input", result.n_articles)
     c2.metric("Records enriched", result.n_enriched)
     c3.metric(
         "API errors",
-        result.n_api_errors + result.n_expanded_errors,
-        delta=None if (result.n_api_errors + result.n_expanded_errors) == 0
+        result.n_api_errors + result.n_expanded_errors + result.n_scopus_errors,
+        delta=None if (result.n_api_errors + result.n_expanded_errors + result.n_scopus_errors) == 0
               else "check audit",
         delta_color="inverse",
     )
 
-    # Row 2: API call counts
     c4, c5, c6 = st.columns(3)
     c4.metric("Starter API calls", result.n_api_calls)
     c5.metric("Expanded API calls", result.n_expanded_calls)
-    c6.metric(
-        "Quota used (Expanded)",
-        result.n_expanded_calls,
-        help="Each Expanded call consumes 1 record from your annual quota.",
-    )
+    c6.metric("Scopus API calls", result.n_scopus_calls)
 
-    if result.n_api_errors + result.n_expanded_errors > 0:
+    if result.n_api_errors + result.n_expanded_errors + result.n_scopus_errors > 0:
         st.warning(
-            f"There were {result.n_api_errors + result.n_expanded_errors} API error(s). "
+            f"There were {result.n_api_errors + result.n_expanded_errors + result.n_scopus_errors} API error(s). "
             "See the `notes` column in the audit table below."
         )
 
@@ -367,7 +337,6 @@ else:
             "all available fields. Nothing to import."
         )
 
-    # --- PSIR import instructions ---
     with st.expander("📋 How to import into PSIR", expanded=(result.n_enriched > 0)):
         st.markdown(
             """
@@ -381,7 +350,6 @@ else:
             """
         )
 
-    # --- Downloads ---
     st.markdown("### 📥 Downloads")
     dc1, dc2 = st.columns(2)
 
@@ -417,7 +385,6 @@ else:
             "WoS categories, and any error notes."
         )
 
-    # --- Audit table ---
     st.markdown("### 📋 Audit table")
     st.dataframe(
         result.audit_df,
@@ -438,7 +405,7 @@ else:
             ),
             "new_abstract": st.column_config.CheckboxColumn(
                 "Abstract added",
-                help="Abstract was filled from WoS Expanded API",
+                help="Abstract was filled from WoS Expanded or Scopus API",
             ),
             "had_keywords": st.column_config.CheckboxColumn(
                 "Had keywords",
@@ -455,36 +422,24 @@ else:
             "had_issue": st.column_config.CheckboxColumn(
                 "Had issue",
             ),
+            "existing_scopus": st.column_config.TextColumn("Existing Scopus", width="small"),
+            "new_scopus": st.column_config.TextColumn("New Scopus", width="small"),
             "title": st.column_config.TextColumn("Title", width="medium"),
             "wos_categories": st.column_config.TextColumn(
                 "WoS categories", width="medium",
-                help="WoS subject categories (traditional classification)",
             ),
             "research_areas": st.column_config.TextColumn(
                 "Research areas", width="medium",
-                help="WoS research areas (extended classification)",
             ),
             "actions": st.column_config.TextColumn("Actions", width="medium"),
             "notes": st.column_config.TextColumn("Notes", width="medium"),
         },
     )
 
-    # --- XML preview ---
-    #if result.n_enriched > 0:
-    #    with st.expander("👁 Preview patch XML"):
-    #        st.code(
-    #            result.output_xml_bytes.decode("utf-8"),
-    #            language="xml",
-    #            line_numbers=True,
-    #        )
-
-# --------------------------------------------------------------------------
-# Footer
-# --------------------------------------------------------------------------
-
 st.markdown("---")
 st.caption(
     "Built for OMEGA-PSIR 4.6.4 · "
-    "[Clarivate WoS Starter API](https://developer.clarivate.com/apis/wos-starter) · "
-    "[Clarivate WoS Expanded API](https://developer.clarivate.com/apis/wos)"
+    "Clarivate WoS Starter API · "
+    "Clarivate WoS Expanded API · "
+    "Elsevier Scopus API"
 )
