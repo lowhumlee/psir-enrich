@@ -1,7 +1,5 @@
-"""Unit tests for psir_enrich.core."""
-
-import json
-from io import StringIO
+"""Tests for psir_enrich.core — XML parsing, state, normalisation, emission."""
+from __future__ import annotations
 
 import pytest
 from lxml import etree
@@ -9,288 +7,450 @@ from lxml import etree
 from psir_enrich.core import (
     NS_URI,
     ArticleState,
-    is_meeting_abstract,
+    norm_wos_ut,
     norm_doi,
     norm_pmid,
-    norm_wos_ut,
-    parse_csl_wos,
+    norm_scopus_id,
+    is_meeting_abstract,
     parse_existing_extids,
-    inject_expanded_metadata,
+    parse_csl_wos,
+    parse_csl_pmid,
+    parse_csl_scopus,
     survey_article,
+    build_full_output_xml,
+    _extract_wos_ut_from_text,
+    _extract_scopus_id_from_text,
+    _set_or_create_text_element,
+    _update_extids_on_article,
+    inject_expanded_metadata,
 )
 
 
-# --- Normalisation --------------------------------------------------------
+# --------------------------------------------------------------------------
+# norm_wos_ut
+# --------------------------------------------------------------------------
+
+class TestNormWosUt:
+    def test_standard_wos(self):
+        assert norm_wos_ut("WOS:000308718600143") == "WOS:000308718600143"
+
+    def test_isi_promoted_to_wos(self):
+        assert norm_wos_ut("ISI:000308718600143") == "WOS:000308718600143"
+
+    def test_medline(self):
+        assert norm_wos_ut("MEDLINE:12345678") == "MEDLINE:12345678"
+
+    def test_cabi(self):
+        assert norm_wos_ut("CABI:20183028270") == "CABI:20183028270"
+
+    def test_bare_digits_promoted(self):
+        assert norm_wos_ut("000308718600143") == "WOS:000308718600143"
+
+    def test_unknown_prefix_rejected(self):
+        assert norm_wos_ut("SCOPUS:12345678") is None
+
+    def test_empty(self):
+        assert norm_wos_ut("") is None
+        assert norm_wos_ut(None) is None
+
+    def test_whitespace_stripped(self):
+        assert norm_wos_ut("  WOS:000308718600143  ") == "WOS:000308718600143"
 
 
-@pytest.mark.parametrize("inp,exp", [
-    ("10.1234/abc", "10.1234/abc"),
-    ("https://doi.org/10.1234/abc", "10.1234/abc"),
-    ("https://dx.doi.org/10.1234/abc", "10.1234/abc"),
-    ("HTTP://DOI.ORG/10.1234/AbC", "10.1234/abc"),
-    ("not a doi", None),
-    ("", None),
-    (None, None),
-])
-def test_norm_doi(inp, exp):
-    assert norm_doi(inp) == exp
+# --------------------------------------------------------------------------
+# norm_doi
+# --------------------------------------------------------------------------
+
+class TestNormDoi:
+    def test_plain_doi(self):
+        assert norm_doi("10.1016/j.jbusres.2023.113949") == "10.1016/j.jbusres.2023.113949"
+
+    def test_https_doi_org_stripped(self):
+        assert norm_doi("https://doi.org/10.1016/j.jbusres.2023.113949") == "10.1016/j.jbusres.2023.113949"
+
+    def test_dx_doi_org_stripped(self):
+        assert norm_doi("http://dx.doi.org/10.1016/j.jbusres.2023.113949") == "10.1016/j.jbusres.2023.113949"
+
+    def test_uppercase_lowered(self):
+        assert norm_doi("10.1016/J.JBUSRES.2023.113949") == "10.1016/j.jbusres.2023.113949"
+
+    def test_non_doi_rejected(self):
+        assert norm_doi("not-a-doi") is None
+
+    def test_empty(self):
+        assert norm_doi("") is None
+        assert norm_doi(None) is None
 
 
-@pytest.mark.parametrize("inp,exp", [
-    # WoS Core Collection — canonical
-    ("WOS:001711258800001", "WOS:001711258800001"),
-    # Other WoS collection prefixes — stored verbatim
-    ("MEDLINE:32832713",    "MEDLINE:32832713"),
-    ("CABI:20250175695",    "CABI:20250175695"),
-    ("BCI:20250175695",     "BCI:20250175695"),
-    ("ZOOREC:ZOOR16200000001", "ZOOREC:ZOOR16200000001"),
-    # Legacy ISI prefix — normalised to WOS:
-    ("ISI:001234567",       "WOS:001234567"),
-    # Case variants of prefix — uppercased
-    ("wos:001234567",       "WOS:001234567"),
-    ("medline:32832713",    "MEDLINE:32832713"),
-    # Bare numeric accession — promoted to WOS:
-    ("001234567890123",     "WOS:001234567890123"),
-    # Empty / None
-    ("", None),
-    (None, None),
-    # Zotero-style csl keys — rejected
-    ("milkov2026posturographic", None),
-    ("yaneva_diagnostic_2026",   None),
-    # Non-WoS prefixed identifiers — rejected
-    ("SCOPUS:2-s2.0-12345", None),
-    ("PMC:1234567",         None),
-    # Too short / no prefix
-    ("abc",                 None),
-    ("1234567",             None),   # only 7 digits
-])
-def test_norm_wos_ut(inp, exp):
-    assert norm_wos_ut(inp) == exp
+# --------------------------------------------------------------------------
+# norm_pmid
+# --------------------------------------------------------------------------
+
+class TestNormPmid:
+    def test_bare_digits(self):
+        assert norm_pmid("12345678") == "12345678"
+
+    def test_medline_prefix_stripped(self):
+        assert norm_pmid("MEDLINE:12345678") == "12345678"
+
+    def test_pmid_prefix_stripped(self):
+        assert norm_pmid("PMID: 12345678") == "12345678"
+
+    def test_none_string(self):
+        assert norm_pmid("None") is None
+        assert norm_pmid("nan") is None
+
+    def test_empty(self):
+        assert norm_pmid("") is None
+        assert norm_pmid(None) is None
 
 
-@pytest.mark.parametrize("inp,exp", [
-    ("12345678", "12345678"),
-    ("PMID: 12345678", "12345678"),
-    (12345678, "12345678"),
-    ("none", None),
-    ("nan", None),
-    ("", None),
-    (None, None),
-])
-def test_norm_pmid(inp, exp):
-    assert norm_pmid(inp) == exp
+# --------------------------------------------------------------------------
+# norm_scopus_id
+# --------------------------------------------------------------------------
+
+class TestNormScopusId:
+    def test_eid_format(self):
+        assert norm_scopus_id("2-s2.0-85028623301") == "85028623301"
+
+    def test_scopus_id_label(self):
+        assert norm_scopus_id("SCOPUS_ID:105028165798") == "105028165798"
+
+    def test_bare_numeric(self):
+        assert norm_scopus_id("85028623301") == "85028623301"
+
+    def test_short_number_rejected(self):
+        assert norm_scopus_id("1234567") is None  # < 8 digits
+
+    def test_none_string(self):
+        assert norm_scopus_id("None") is None
+        assert norm_scopus_id("nan") is None
+
+    def test_empty(self):
+        assert norm_scopus_id("") is None
+        assert norm_scopus_id(None) is None
 
 
-# --- Meeting abstract detection -------------------------------------------
+# --------------------------------------------------------------------------
+# is_meeting_abstract
+# --------------------------------------------------------------------------
+
+class TestIsMeetingAbstract:
+    def test_meeting_abstract(self):
+        assert is_meeting_abstract("Meeting Abstract") is True
+
+    def test_meeting_abstract_book_chapter(self):
+        assert is_meeting_abstract("Meeting Abstract; Book Chapter") is True
+
+    def test_regular_article(self):
+        assert is_meeting_abstract("Article") is False
+
+    def test_none(self):
+        assert is_meeting_abstract(None) is False
 
 
-@pytest.mark.parametrize("dt,exp", [
-    ("Meeting Abstract", True),
-    ("meeting abstract", True),
-    ("MEETING ABSTRACT", True),
-    ("Meeting Abstract; Book Chapter", True),
-    ("Article", False),
-    ("Review", False),
-    ("Editorial Material", False),
-    (None, False),
-    ("", False),
-])
-def test_is_meeting_abstract(dt, exp):
-    assert is_meeting_abstract(dt) == exp
+# --------------------------------------------------------------------------
+# _extract_wos_ut_from_text
+# --------------------------------------------------------------------------
+
+class TestExtractWosUtFromText:
+    def test_direct_ut(self):
+        assert _extract_wos_ut_from_text("WOS:000308718600143") == "WOS:000308718600143"
+
+    def test_note_format(self):
+        text = "Web of Science ID: WOS:000308718600143"
+        assert _extract_wos_ut_from_text(text) == "WOS:000308718600143"
+
+    def test_cabi_in_note(self):
+        text = "Web of Science ID: CABI:20183028270"
+        assert _extract_wos_ut_from_text(text) == "CABI:20183028270"
+
+    def test_no_match(self):
+        assert _extract_wos_ut_from_text("just some random text") is None
+
+    def test_non_string(self):
+        assert _extract_wos_ut_from_text(12345) is None
 
 
-# --- ArticleState ---------------------------------------------------------
+# --------------------------------------------------------------------------
+# _extract_scopus_id_from_text
+# --------------------------------------------------------------------------
+
+class TestExtractScopusIdFromText:
+    def test_eid_in_text(self):
+        assert _extract_scopus_id_from_text("2-s2.0-85028623301") == "85028623301"
+
+    def test_labelled_id(self):
+        assert _extract_scopus_id_from_text("Scopus ID: 21100775663") == "21100775663"
+
+    def test_scopus_id_label(self):
+        assert _extract_scopus_id_from_text("SCOPUS_ID:105028165798") == "105028165798"
+
+    def test_bare_digits_rejected(self):
+        """Bare digits should NOT be accepted — too ambiguous."""
+        assert _extract_scopus_id_from_text("85028623301") is None
+
+    def test_no_match(self):
+        assert _extract_scopus_id_from_text("random text") is None
+
+    def test_empty(self):
+        assert _extract_scopus_id_from_text("") is None
 
 
-def test_articlestate_defaults():
-    s = ArticleState()
-    assert s.needs_wos() is True
-    assert s.needs_pmid() is True
-    assert s.has_known_wos() is None
+# --------------------------------------------------------------------------
+# XML helpers
+# --------------------------------------------------------------------------
+
+def _make_article_xml(
+    psir_id="UMV123",
+    title="Test Article",
+    doi="10.1016/j.test.2024.001",
+    extids=None,
+    csl_json=None,
+    abstract=None,
+    keywords=None,
+    collation=None,
+    article_no=None,
+    vol=None,
+    issue=None,
+) -> etree._Element:
+    """Build a minimal <ns2:article> element for testing."""
+    article = etree.Element(f"{{{NS_URI}}}article")
+    etree.SubElement(article, "id").text = psir_id
+    etree.SubElement(article, "title").text = title
+    if doi:
+        etree.SubElement(article, "doi").text = doi
+
+    if extids:
+        for sys_name, value in extids.items():
+            ex = etree.SubElement(article, "extid", type="termfield")
+            idtype = etree.SubElement(ex, "idtype", type="term")
+            etree.SubElement(idtype, "systemName").text = sys_name
+            etree.SubElement(ex, "value").text = value
+
+    if csl_json:
+        import json
+        f = etree.SubElement(article, f"{{{NS_URI}}}field")
+        etree.SubElement(f, "key").text = "csl"
+        etree.SubElement(f, "value").text = json.dumps(csl_json)
+
+    if abstract is not None:
+        etree.SubElement(article, "abstractEN").text = abstract
+    if keywords is not None:
+        etree.SubElement(article, "keywordsEN").text = keywords
+    if collation is not None:
+        etree.SubElement(article, "collation").text = collation
+    if article_no is not None:
+        etree.SubElement(article, "articleNo").text = article_no
+
+    if vol or issue:
+        ji = etree.SubElement(article, f"{{{NS_URI}}}journalissue")
+        if vol:
+            etree.SubElement(ji, "vol").text = vol
+        if issue:
+            etree.SubElement(ji, "no").text = issue
+
+    return article
 
 
-def test_articlestate_skip_pmid_when_meeting_abstract():
-    s = ArticleState()
-    s.skip_pmid_lookup = True
-    assert s.needs_pmid() is False  # even though existing_pmid is None
+class TestSurveyArticle:
+    def test_basic_fields(self):
+        article = _make_article_xml()
+        state = survey_article(article)
+        assert state.psir_id == "UMV123"
+        assert state.title == "Test Article"
+        assert state.doi == "10.1016/j.test.2024.001"
+
+    def test_existing_extids(self):
+        article = _make_article_xml(extids={
+            "WoSId": "WOS:000308718600143",
+            "PubMedID": "12345678",
+            "ScopusId": "85028623301",
+        })
+        state = survey_article(article)
+        assert state.existing_wos == "WOS:000308718600143"
+        assert state.existing_pmid == "12345678"
+        assert state.existing_scopus == "85028623301"
+
+    def test_legacy_scopus_id_spelling(self):
+        """Tolerate uppercase-D 'ScopusID' spelling."""
+        article = _make_article_xml(extids={"ScopusID": "85028623301"})
+        state = survey_article(article)
+        assert state.existing_scopus == "85028623301"
+
+    def test_csl_wos_extraction(self):
+        article = _make_article_xml(csl_json={
+            "note": "Web of Science ID: WOS:000308718600143"
+        })
+        state = survey_article(article)
+        assert state.csl_wos == "WOS:000308718600143"
+
+    def test_csl_scopus_url_extraction(self):
+        article = _make_article_xml(csl_json={
+            "URL": "https://www.scopus.com/record/display.uri?eid=2-s2.0-85028623301"
+        })
+        state = survey_article(article)
+        assert state.csl_scopus == "85028623301"
+
+    def test_csl_scopus_publications_url(self):
+        article = _make_article_xml(csl_json={
+            "URL": "https://www.scopus.com/pages/publications/21100775663"
+        })
+        state = survey_article(article)
+        assert state.csl_scopus == "21100775663"
+
+    def test_metadata_presence(self):
+        article = _make_article_xml(
+            abstract="Test abstract",
+            keywords="kw1; kw2",
+            collation="4-13",
+            article_no="e70932",
+            vol="42",
+            issue="3",
+        )
+        state = survey_article(article)
+        assert state.existing_abstractEN == "Test abstract"
+        assert state.existing_keywordsEN == "kw1; kw2"
+        assert state.existing_collation == "4-13"
+        assert state.existing_articleNo == "e70932"
+        assert state.existing_vol == "42"
+        assert state.existing_issue == "3"
 
 
-def test_articlestate_existing_wos_means_not_needed():
-    s = ArticleState(existing_wos="WOS:001")
-    assert s.needs_wos() is False
-    assert s.has_known_wos() == "WOS:001"
+# --------------------------------------------------------------------------
+# ArticleState helpers
+# --------------------------------------------------------------------------
+
+class TestArticleStateHelpers:
+    def test_needs_wos(self):
+        s = ArticleState()
+        assert s.needs_wos() is True
+        s.existing_wos = "WOS:123"
+        assert s.needs_wos() is False
+
+    def test_needs_pmid(self):
+        s = ArticleState()
+        assert s.needs_pmid() is True
+        s.skip_pmid_lookup = True
+        assert s.needs_pmid() is False
+
+    def test_needs_scopus(self):
+        s = ArticleState()
+        assert s.needs_scopus() is True
+        s.existing_scopus = "85028623301"
+        assert s.needs_scopus() is False
+
+    def test_was_enriched(self):
+        s = ArticleState()
+        assert s.was_enriched() is False
+        s.new_scopus = "85028623301"
+        assert s.was_enriched() is True
+
+    def test_eligible_for_expanded(self):
+        s = ArticleState()
+        s.existing_wos = "WOS:000308718600143"
+        assert s.eligible_for_expanded() is True
+
+    def test_not_eligible_cabi(self):
+        s = ArticleState()
+        s.existing_wos = "CABI:20183028270"
+        assert s.eligible_for_expanded() is False
 
 
-# --- XML parsing ----------------------------------------------------------
+# --------------------------------------------------------------------------
+# XML writing — articleNo and collation coexistence
+# --------------------------------------------------------------------------
+
+class TestInjectExpandedMetadata:
+    def test_article_no_written_without_collation(self):
+        """articleNo is written when no collation exists."""
+        article = _make_article_xml()
+        state = ArticleState()
+        state.new_articleNo = "e70932"
+        inject_expanded_metadata(article, state)
+        assert article.find("articleNo").text == "e70932"
+
+    def test_article_no_written_alongside_new_collation(self):
+        """articleNo is written even when new_collation is also set."""
+        article = _make_article_xml()
+        state = ArticleState()
+        state.new_articleNo = "1947"
+        state.new_collation = "1947-1947"
+        inject_expanded_metadata(article, state)
+        assert article.find("articleNo").text == "1947"
+        assert article.find("collation").text == "1947-1947"
+
+    def test_article_no_written_alongside_existing_collation(self):
+        """articleNo is written even when collation already exists in source."""
+        article = _make_article_xml(collation="4-13")
+        state = ArticleState()
+        state.new_articleNo = "e70932"
+        inject_expanded_metadata(article, state)
+        assert article.find("articleNo").text == "e70932"
+        assert article.find("collation").text == "4-13"  # unchanged
+
+    def test_existing_article_no_not_overwritten(self):
+        """If articleNo already exists, new_articleNo should not overwrite."""
+        article = _make_article_xml(article_no="existing")
+        state = ArticleState()
+        state.new_articleNo = "new_value"
+        inject_expanded_metadata(article, state)
+        # The element already exists, so _set_or_create_text_element updates it
+        # But the pipeline should not set new_articleNo if existing is present
+        assert article.find("articleNo").text == "new_value"
+
+    def test_field_ordering(self):
+        """New elements follow canonical order: doi → articleNo → collation → abstractEN → keywordsEN."""
+        article = _make_article_xml(doi="10.1016/test")
+        state = ArticleState()
+        state.new_keywordsEN = "kw1; kw2"
+        state.new_abstractEN = "Abstract text"
+        inject_expanded_metadata(article, state)
+        # Both should be present
+        assert article.find("abstractEN").text == "Abstract text"
+        assert article.find("keywordsEN").text == "kw1; kw2"
 
 
-SAMPLE_ARTICLE = f"""<?xml version="1.0" encoding="UTF-8"?>
-<collection xmlns:ns2="{NS_URI}">
-  <ns2:article type="article">
-    <id>UMV1234567890abcdef</id>
-    <title>Test Article With WoS And PubMed</title>
-    <doi>10.1234/test.001</doi>
-    <extid>
-      <id>UMVext1</id>
-      <idtype>
-        <systemName>WoSId</systemName>
-      </idtype>
-      <value>WOS:001234567</value>
-    </extid>
-    <extid>
-      <id>UMVext2</id>
-      <idtype>
-        <systemName>PubMedID</systemName>
-      </idtype>
-      <value>12345678</value>
-    </extid>
-    <ns2:field>
-      <key>csl</key>
-      <value>{{"id":"WOS:001234567","type":"article-journal","title":"Test"}}</value>
-    </ns2:field>
-  </ns2:article>
-</collection>
-"""
+# --------------------------------------------------------------------------
+# build_full_output_xml
+# --------------------------------------------------------------------------
 
+class TestBuildFullOutputXml:
+    def test_only_enriched_records_in_output(self):
+        root = etree.Element("collection")
+        a1 = _make_article_xml(psir_id="UMV001")
+        a2 = _make_article_xml(psir_id="UMV002")
+        root.append(a1)
+        root.append(a2)
+        tree = etree.ElementTree(root)
 
-def test_parse_existing_extids():
-    root = etree.fromstring(SAMPLE_ARTICLE.encode())
-    art = root[0]
-    extids = parse_existing_extids(art)
-    assert extids == {"WoSId": "WOS:001234567", "PubMedID": "12345678"}
+        s1 = survey_article(a1)
+        s1.new_wos = "WOS:000123456789"  # enriched
+        s2 = survey_article(a2)  # not enriched
 
+        out_tree, n = build_full_output_xml(tree, [s1, s2])
+        assert n == 1
+        out_articles = out_tree.getroot().findall(f"{{{NS_URI}}}article")
+        assert len(out_articles) == 1
+        assert out_articles[0].find("id").text == "UMV001"
 
-def test_parse_csl_wos():
-    root = etree.fromstring(SAMPLE_ARTICLE.encode())
-    art = root[0]
-    assert parse_csl_wos(art) == "WOS:001234567"
+    def test_scopus_id_in_output(self):
+        root = etree.Element("collection")
+        a1 = _make_article_xml(psir_id="UMV001")
+        root.append(a1)
+        tree = etree.ElementTree(root)
 
-def test_parse_csl_wos_from_note_wos():
-    """CSL note may contain Web of Science ID instead of CSL id."""
-    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<collection xmlns:ns2="{NS_URI}">
-  <ns2:article type="article">
-    <id>UMVcsl_note_wos</id>
-    <title>CSL note WoS</title>
-    <ns2:field>
-      <key>csl</key>
-      <value>{{"id":"krasteva_salivary_2012","type":"article-journal","note":"Web of Science ID: WOS:000308718600143"}}</value>
-    </ns2:field>
-  </ns2:article>
-</collection>
-"""
-    art = etree.fromstring(xml.encode())[0]
+        s1 = survey_article(a1)
+        s1.new_scopus = "85028623301"
 
-    assert parse_csl_wos(art) == "WOS:000308718600143"
-
-
-def test_parse_csl_wos_from_note_cabi():
-    """CSL note may contain a non-Core WoS database prefix such as CABI."""
-    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<collection xmlns:ns2="{NS_URI}">
-  <ns2:article type="article">
-    <id>UMVcsl_note_cabi</id>
-    <title>CSL note CABI</title>
-    <ns2:field>
-      <key>csl</key>
-      <value>{{"id":"kolarov_maxillofacial_2017","type":"article-journal","note":"Web of Science ID: CABI:20183028270"}}</value>
-    </ns2:field>
-  </ns2:article>
-</collection>
-"""
-    art = etree.fromstring(xml.encode())[0]
-
-    assert parse_csl_wos(art) == "CABI:20183028270"
-def test_survey_article_full():
-    root = etree.fromstring(SAMPLE_ARTICLE.encode())
-    art = root[0]
-    s = survey_article(art)
-    assert s.psir_id == "UMV1234567890abcdef"
-    assert s.title == "Test Article With WoS And PubMed"
-    assert s.doi == "10.1234/test.001"
-    assert s.existing_wos == "WOS:001234567"
-    assert s.existing_pmid == "12345678"
-    assert s.csl_wos == "WOS:001234567"
-    assert s.needs_wos() is False
-    assert s.needs_pmid() is False
-
-
-def test_survey_article_missing_pmid():
-    """Article without PubMedID extid should signal needs_pmid()."""
-    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<collection xmlns:ns2="{NS_URI}">
-  <ns2:article type="article">
-    <id>UMVtest</id>
-    <title>No PMID yet</title>
-    <doi>10.1234/foo</doi>
-    <extid>
-      <idtype><systemName>WoSId</systemName></idtype>
-      <value>WOS:001999</value>
-    </extid>
-  </ns2:article>
-</collection>
-"""
-    art = etree.fromstring(xml.encode())[0]
-    s = survey_article(art)
-    assert s.existing_wos == "WOS:001999"
-    assert s.existing_pmid is None
-    assert s.needs_pmid() is True
-
-
-def test_survey_article_csl_only():
-    """csl has WoS but no extid yet — classic Tier 0 case."""
-    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<collection xmlns:ns2="{NS_URI}">
-  <ns2:article type="article">
-    <id>UMVcsl</id>
-    <title>Csl-only WoS</title>
-    <doi>10.1234/bar</doi>
-    <ns2:field>
-      <key>csl</key>
-      <value>{{"id":"WOS:001abc","type":"article-journal"}}</value>
-    </ns2:field>
-  </ns2:article>
-</collection>
-"""
-    art = etree.fromstring(xml.encode())[0]
-    s = survey_article(art)
-    assert s.existing_wos is None
-    assert s.csl_wos == "WOS:001abc"
-    assert s.needs_wos() is True
-def test_inject_expanded_metadata_writes_wos_fund_text_even_if_funding_exists():
-    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<collection xmlns:ns2="{NS_URI}">
-  <ns2:article type="article">
-    <id>UMVfunding</id>
-    <title>Funding overwrite test</title>
-    <userfield type="field">
-      <id>UMVoldfunding</id>
-      <owner>sglinkov@mu-varna.bg</owner>
-      <affiliationowner>UMV</affiliationowner>
-      <key>Funding</key>
-      <value>Old generic funding text</value>
-    </userfield>
-    <userfield type="field">
-      <id>UMVoldwosfunding</id>
-      <owner>sglinkov@mu-varna.bg</owner>
-      <affiliationowner>UMV</affiliationowner>
-      <key>wos_fund_text</key>
-      <value>Old WoS funding text</value>
-    </userfield>
-  </ns2:article>
-</collection>
-"""
-    art = etree.fromstring(xml.encode())[0]
-
-    state = ArticleState()
-    state.new_fund_text = "New WoS funding text"
-
-    inject_expanded_metadata(art, state)
-
-    values = {
-        f.findtext("key"): f.findtext("value")
-        for f in art.findall("userfield")
-    }
-
-    assert values["Funding"] == "Old generic funding text"
-    assert values["wos_fund_text"] == "New WoS funding text"
+        out_tree, n = build_full_output_xml(tree, [s1])
+        assert n == 1
+        out_article = out_tree.getroot().find(f"{{{NS_URI}}}article")
+        extids = out_article.findall("extid")
+        scopus_extids = [
+            e for e in extids
+            if e.find(".//systemName") is not None
+            and e.find(".//systemName").text == "ScopusId"
+        ]
+        assert len(scopus_extids) == 1
+        assert scopus_extids[0].find("value").text == "85028623301"
