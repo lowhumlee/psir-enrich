@@ -143,6 +143,28 @@ class WosExpandedClient:
             return payload
         return None
 
+    @staticmethod
+    def _normalize_article_no(raw: Optional[str]) -> Optional[str]:
+        """Normalize article number values.
+
+        Strip common ARTN prefixes (case-insensitive) and return the first
+        digit sequence found. Examples:
+          'ARTN 345' -> '345'
+          'artn:345' -> '345'
+          '345 (electronic)' -> '345'
+          'A-123' -> '123' (first digit sequence)
+        If no digits are present, return the cleaned string.
+        """
+        if raw is None:
+            return None
+        s = str(raw).strip()
+        if not s:
+            return None
+        # Remove leading ARTN tokens like 'ARTN', 'ARTN:', 'ARTN -', etc.
+        s = re.sub(r'^\s*ARTN[:\s-]*', '', s, flags=re.IGNORECASE)
+        m = re.search(r'\d+', s)
+        return m.group(0) if m else s or None
+
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
@@ -355,6 +377,7 @@ class WosExpandedClient:
                             artno = cand
                             break
             if artno:
+                artno = WosExpandedClient._normalize_article_no(artno)
                 out["article_no"] = artno
 
         # Some payloads expose article number as a top-level pub_info key or in
@@ -375,6 +398,7 @@ class WosExpandedClient:
                             artno = cand
                             break
             if artno:
+                artno = WosExpandedClient._normalize_article_no(artno)
                 out["article_no"] = artno
 
         # Clarivate can expose article number in related identifiers as a type of
@@ -390,6 +414,7 @@ class WosExpandedClient:
                 if str(item.get("type", "")).lower() == "art_no":
                     cand = _s(item.get("value"))
                     if cand:
+                        cand = WosExpandedClient._normalize_article_no(cand)
                         out["article_no"] = cand
                         break
 
